@@ -1,0 +1,5 @@
+{
+  "private":    {"actions": {"MILD":"ALLOW","STRONG":"ALLOW","SEVERE":"MASK","ILLEGAL":"BLOCK"}},
+  "public":     {"actions": {"MILD":"ALLOW","STRONG":"MASK","SEVERE":"BLOCK","ILLEGAL":"BLOCK"}},
+  "identifier": {"actions": {"MILD":"BLOCK","STRONG":"BLOCK","SEVERE":"BLOCK","ILLEGAL":"BLOCK"}}
+}

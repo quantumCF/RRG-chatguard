@@ -1,0 +1,35 @@
+{"_comment": "Language-agnostic conformance vectors. ANY port must reproduce these."}
+{"_comment": "lexicon: fuck/shit/bitch=tier2 prefix, cunt/rape=tier3 word, puta=tier2 es|pt"}
+{"_comment": "allow: shitake assassin classic grape analysis bass hit wall baal seller scunthorpe"}
+{"_comment": "--- clean text must stay untouched ---"}
+{"id": "clean-1", "text": "hello there friend", "surface": "public", "action": "ALLOW"}
+{"id": "clean-2", "text": "selling +7 gear in prontera", "surface": "public", "action": "ALLOW"}
+{"_comment": "--- the Scunthorpe class: legitimate words containing a blocked substring ---"}
+{"id": "fp-scunthorpe", "text": "I live in Scunthorpe", "surface": "public", "action": "ALLOW"}
+{"id": "fp-shitake", "text": "I love shitake mushrooms", "surface": "public", "action": "ALLOW"}
+{"id": "fp-assassin", "text": "Assassin Cross build", "surface": "public", "action": "ALLOW"}
+{"id": "fp-grape", "text": "Grape Juice x5", "surface": "public", "action": "ALLOW"}
+{"id": "fp-analysis", "text": "classic analysis", "surface": "public", "action": "ALLOW"}
+{"id": "fp-basshit", "text": "bass hit", "surface": "public", "action": "ALLOW"}
+{"id": "fp-doubles", "text": "Baal the wall seller", "surface": "public", "action": "ALLOW"}
+{"_comment": "--- true positives, plain ---"}
+{"id": "tp-plain", "text": "this is shit", "surface": "public", "action": "MASK", "filtered": "this is ****"}
+{"id": "tp-tier3", "text": "cunt", "surface": "public", "action": "BLOCK"}
+{"_comment": "--- evasion: all of these fold onto the same term ---"}
+{"id": "ev-spaced", "text": "f u c k", "surface": "public", "action": "MASK"}
+{"id": "ev-dotted", "text": "f.u.c.k", "surface": "public", "action": "MASK"}
+{"id": "ev-dashed", "text": "f-u-c-k", "surface": "public", "action": "MASK"}
+{"id": "ev-repeat", "text": "fuuuuck", "surface": "public", "action": "MASK"}
+{"id": "ev-leet", "text": "sh1t", "surface": "public", "action": "MASK"}
+{"id": "ev-fullwidth", "text": "ｆｕｃｋ", "surface": "public", "action": "MASK"}
+{"id": "ev-cyrillic", "text": "shіt", "surface": "public", "action": "MASK"}
+{"_comment": "--- surface policy: same text, different verdict by where it appears ---"}
+{"id": "pol-private", "text": "this is shit", "surface": "private", "action": "ALLOW"}
+{"id": "pol-public", "text": "this is shit", "surface": "public", "action": "MASK"}
+{"id": "pol-identifier", "text": "shit", "surface": "identifier", "action": "BLOCK"}
+{"_comment": "--- locale scoping: the fix for shipping one market's list to another ---"}
+{"id": "loc-es-hit", "text": "eres una puta", "surface": "public", "locale": "es", "action": "MASK"}
+{"id": "loc-en-miss", "text": "eres una puta", "surface": "public", "locale": "en", "action": "ALLOW"}
+{"_comment": "--- masking must land on the right characters in the ORIGINAL string ---"}
+{"id": "mask-offset", "text": "omg shit happens", "surface": "public", "action": "MASK", "filtered": "omg **** happens"}
+{"id": "mask-unicode", "text": "café shit café", "surface": "public", "action": "MASK", "filtered": "café **** café"}

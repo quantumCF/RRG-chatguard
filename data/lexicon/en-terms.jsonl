@@ -1,0 +1,43 @@
+{"_comment": "English starter lexicon. tier: 1=mild 2=strong 3=severe 4=illegal. mode: word|prefix|sub."}
+{"_comment": "DELIBERATELY INCOMPLETE. Tier-3 slur inventory is NOT shipped here -- see docs/ADOPTION.md."}
+{"_comment": "You already own a vocabulary you trust. What was broken is the MATCHING, not the words."}
+{"text": "fuck", "tier": 2, "mode": "prefix"}
+{"text": "shit", "tier": 2, "mode": "prefix"}
+{"text": "bitch", "tier": 2, "mode": "prefix"}
+{"text": "cunt", "tier": 3, "mode": "word"}
+{"text": "asshole", "tier": 2, "mode": "prefix"}
+{"text": "bastard", "tier": 1, "mode": "prefix"}
+{"text": "dick", "tier": 1, "mode": "word"}
+{"text": "cock", "tier": 1, "mode": "word"}
+{"text": "piss", "tier": 1, "mode": "prefix"}
+{"text": "damn", "tier": 1, "mode": "prefix"}
+{"text": "crap", "tier": 1, "mode": "prefix"}
+{"text": "whore", "tier": 2, "mode": "prefix"}
+{"text": "slut", "tier": 2, "mode": "prefix"}
+{"text": "wanker", "tier": 2, "mode": "prefix"}
+{"text": "bollocks", "tier": 1, "mode": "word"}
+{"text": "arsehole", "tier": 2, "mode": "prefix"}
+{"text": "twat", "tier": 2, "mode": "word"}
+{"text": "prick", "tier": 1, "mode": "word"}
+{"text": "douche", "tier": 1, "mode": "prefix"}
+{"text": "retard", "tier": 3, "mode": "prefix"}
+{"text": "rape", "tier": 3, "mode": "word"}
+{"text": "rapist", "tier": 3, "mode": "word"}
+{"text": "nazi", "tier": 3, "mode": "word"}
+{"text": "pedo", "tier": 3, "mode": "prefix"}
+{"text": "paedo", "tier": 3, "mode": "prefix"}
+{"_comment": "--- tier 4: the category a wordlist actually earns its keep on ---"}
+{"_comment": "RMT / gold-selling / phishing. These are what damage an MMO economy."}
+{"text": "goldselling", "tier": 4, "mode": "sub"}
+{"text": "cheapzeny", "tier": 4, "mode": "sub"}
+{"text": "buyzeny", "tier": 4, "mode": "sub"}
+{"text": "sellzeny", "tier": 4, "mode": "sub"}
+{"text": "sellaccount", "tier": 4, "mode": "sub"}
+{"text": "buyaccount", "tier": 4, "mode": "sub"}
+{"text": "discordgg", "tier": 4, "mode": "sub"}
+{"text": "whatsapp", "tier": 4, "mode": "sub"}
+{"text": "telegram", "tier": 4, "mode": "sub"}
+{"_comment": "Locale-scoped example: a term that is vulgar in one market only."}
+{"text": "puta", "tier": 2, "mode": "word", "locales": ["es", "pt"]}
+{"text": "mierda", "tier": 2, "mode": "word", "locales": ["es"]}
+{"text": "merda", "tier": 2, "mode": "word", "locales": ["pt"]}
