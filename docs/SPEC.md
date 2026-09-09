@@ -129,12 +129,31 @@ positive generator.
 
 ## 4. Rescue
 
-For each surviving hit, find the boundary-pass token whose original span
-**contains** the hit's original span. If that token is not itself the term and
-is present in the allowlist, the hit is **discarded** and the token SHOULD be
-reported in `rescued`.
+Two rules, applied in order. Both are longest-match-wins.
 
-This single rule is what fixes the Scunthorpe class of false positive.
+### 4.1 Phrase shelter (REQUIRED, script-agnostic)
+
+Run a second automaton over the allowlist to find every allowlisted phrase
+occurring in the text. A hit whose original span is **strictly contained** in
+such an occurrence is discarded, and the sheltering phrase SHOULD be reported in
+`rescued`.
+
+"Strictly" is normative: a phrase identical to the term must not rescue it, or
+adding a word to the blocklist that also appears in the allowlist would silently
+do nothing.
+
+This rule is required rather than optional because it is the **only** rescue that
+works for Chinese, Japanese and Thai. Those scripts do not separate words with
+spaces, so a token rule can never fire: a single blocked Han character inside an
+ordinary two-character word has no token boundary to appeal to. Phrase shelters
+handle `日` inside `日光` and `shit` inside `shitake` with the same mechanism.
+
+### 4.2 Token shelter
+
+For each remaining hit, find the boundary-pass token whose original span contains
+it. If that token is not itself the term and is in the allowlist, discard the hit.
+
+Together these fix the Scunthorpe class of false positive and its CJK equivalent.
 
 ---
 

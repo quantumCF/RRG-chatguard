@@ -1,0 +1,9 @@
+# Ragnarok: Rebirth Global -- observed live server behaviour, 2026-09-09
+# Reported by a player in normal play. "blocked" = message did not go through
+# or was masked.
+{"text": "cucumber", "blocked": true}
+{"text": "okkk", "blocked": true}
+{"text": "kkk", "blocked": true}
+{"text": "Heisenberg", "blocked": true}
+{"text": "okay", "blocked": false}
+{"text": "thank", "blocked": false}

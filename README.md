@@ -1,93 +1,122 @@
 # chatguard
 
-A drop-in replacement for substring-blocklist chat filtering.
+Tools and a reference engine for chat filters that block `cucumber`.
 
-It exists because blocklists fail in **both** directions at once — they censor
-ordinary words while letting obvious evasion straight through — and because the
-fix is unglamorous, deterministic, and about 600 lines long.
+That is not a joke example. It is a live, reproducible defect in a shipping MMO:
+`cucumber` is blocked, `Heisenberg` is blocked, `thank` was blocked — while
+`f u c k` passes untouched. All of it has one cause. Blocklists matched as raw
+substrings fail in **both** directions at once.
 
 ```
-Freezing                 ->  ****zing
-Immunity Control         ->  i**unity control
-Savage Card              ->  **vage card
-Card Skills              ->  card ski**s
-Downpour                 ->  downpo**
+Freezing            ->  ****zing          Card Skills   ->  card ski**s
+Immunity Control    ->  i**unity control  Downpour      ->  downpo**
+Savage Card         ->  **vage card       Ignite        ->  igni**
 ```
 
-Those are not hypotheticals. They are a live game's own item and skill names,
-run through that same game's own shipped filter list. Meanwhile `f u c k`,
-`ｆｕｃｋ` and `sh1t` all pass it untouched.
+Those are a game's own item and skill names, run through that game's own filter.
 
-## What it does
+---
 
-| | |
-|---|---|
-| **Fixes over-blocking** | Word boundaries + a longest-match rescue allowlist. On the same vocabulary, English-dictionary false positives drop from **37.1% to 0.0%**. |
-| **Fixes under-blocking** | Unicode/confusable/leet normalization + bounded fuzzy matching. Obfuscated-abuse recall rises from **22.9% to 84.3%**. |
-| **Scopes by locale** | A term table carries a `locales` field, so one market's compliance list stops being applied to another market's players. |
-| **Grades by surface** | The same word can be fine in guild chat, masked in world chat, and refused in a permanent character name. |
-| **Ships without risk** | Shadow mode runs it beside your existing filter and changes nothing until you say so. |
+## Start here
 
-## The two problems are independent
+**Reporting a filter defect to a developer?** → [`docs/REPORT.md`](docs/REPORT.md)
+— one page, evidence first, three concrete fixes ordered smallest to largest.
 
-This is the most useful thing the measurements showed, and it decides how you
-adopt:
+**You own a chat filter and want to know if it has this problem?** → run one
+command, no dependencies, nothing to install:
 
-* **Over-blocking is an engine problem.** Give chatguard's matcher the *exact
-  same word list* and dictionary false positives go 37.1% → 0.0%.
-* **Under-blocking is a vocabulary problem.** A list that is 93% one language
-  will not catch abuse in another, whatever the matcher does.
+```sh
+python3 tools/selftest_filter.py --list <your word list> --strings <your localization>
+```
 
-They are fixed by different changes, and **each ships on its own**. You do not
-have to do both at once, and Tier 1 below requires no code at all.
+It enforces a single invariant: *no string you authored may be flagged by your
+own filter.* If `Freezing` trips it, the filter is wrong.
 
-## Use it
+**Want to know which of your entries cause the damage?**
+
+```sh
+python3 tools/remediate.py --list <your list> --game-corpus <your localization> \
+                           --out remediation.csv
+```
+
+In the case measured, **20 entries caused 89% of all false positives** and
+191 of 5,695 needed any change at all. The CSV gives per-entry blast radius, a
+worked example, and a recommended action.
+
+**Can't see the list, only the behaviour?**
+
+```sh
+python3 tools/blackbox.py infer  --obs observations/live-2026-09-09.jsonl
+python3 tools/blackbox.py design --obs observations/live-2026-09-09.jsonl
+```
+
+`infer` turns "these strings were blocked, these were fine" into the smallest set
+of terms that explains it. `design` picks the next probes to type. Useful because
+the list inside a client is often **not** the list the server enforces — that was
+true here.
+
+---
+
+## The engine
+
+If you want to fix the matching rather than patch the list:
 
 ```python
 from chatguard import ChatGuard
 
 guard = ChatGuard.from_files("data/lexicon/en-terms.jsonl",
-                             ["data/lexicon/en-allow.txt",
-                              "data/domain/game-terms.txt"])
+                             ["data/lexicon/en-allow.txt"])
 
-guard.check("Assassin Cross build")          # False  - not flagged
+guard.check("Assassin Cross build")          # False
 guard.filter("this is shit").filtered        # 'this is ****'
 guard.filter("f u c k").action.name          # 'MASK'
 guard.filter("shit", surface="identifier")   # BLOCK - names are stricter
 ```
 
-The API is deliberately shaped like the one you already have: a boolean check
-and a masked-string filter. If your server exposes something like
-`check_block_word(text) -> bool` and `filter_block_word(text) -> filtered`,
-chatguard slots in at that exact seam with no protocol change.
+| | |
+|---|---|
+| **Over-blocking** | word boundaries + longest-match rescue allowlist. Same vocabulary: dictionary false positives **37.1% → 0.0%** |
+| **Under-blocking** | NFKC, confusable, leet, repeat and separator normalization + bounded fuzzy. Obfuscation recall **22.9% → 84.3%** |
+| **CJK** | rescue by allowlist *phrase* containment, so `日` inside `日光` is safe — languages without word spacing need this and token rules cannot provide it |
+| **Locale** | terms carry a `locales` field; one market's list stops hitting another's players |
+| **Surface** | `private` / `public` / `identifier` — permanent public names get stricter treatment |
+| **Rollout** | `shadow.py` runs it beside your existing filter and changes nothing until you flip one value |
+
+~650 lines, no dependencies, MIT.
 
 ## Layout
 
 ```
-impl/python/chatguard.py   the engine, no dependencies
-impl/python/shadow.py      run beside an existing filter, change nothing
-data/lexicon/              terms (tier + match mode + locale) and allowlist
-data/domain/               game nouns, auto-generated from your localization
-vectors/golden.jsonl       25 conformance vectors -- the contract for any port
-tools/audit.py             measure any list against any corpus, both directions
-tools/conformance.py       run the vectors
-docs/ADOPTION.md           three adoption tiers and every objection, answered
-docs/EVIDENCE.md           the measurements, and how to reproduce them
-docs/SPEC.md               normative behaviour, for porting
+docs/REPORT.md        the one-page defect report            <- start here
+docs/EVIDENCE.md      all measurements, method, caveats
+docs/RESEARCH.md      what a 2026 moderation stack looks like
+docs/ADOPTION.md      three adoption tiers, objections answered
+docs/SPEC.md          normative behaviour, written to port from
+
+impl/python/          the engine + shadow wrapper
+tools/                selftest, remediate, audit, blackbox, build_lexicon, conformance
+data/lexicon/         starter terms + public-domain rescue allowlist
+vectors/golden.jsonl  25 conformance vectors -- the contract for any port
+tests/test_all.py     51 tests
+observations/         live filter behaviour, as recorded
 ```
 
-## Verify it yourself
+## Verify
 
 ```sh
-python3 tools/conformance.py                       # 25 passed, 0 failed
-python3 tools/audit.py --list YOUR_LIST.json \
-        --corpus your_strings.txt --ascii-only     # both failure directions
+python3 tests/test_all.py       # 51 passed
+python3 tools/conformance.py    # 25 passed, 0 failed
 ```
 
-Every number in `docs/EVIDENCE.md` came out of `tools/audit.py`. Point it at
-your own list and your own corpora and check.
+Any port in any language is conformant exactly when it reproduces
+`vectors/golden.jsonl`. No shared code required.
 
-## License
+## Clean-room
 
-MIT. No dependencies. Clean-room: no third-party code was copied into this
-repository, and no proprietary word list is redistributed by it.
+No code from any client was copied here, and no proprietary word list is
+redistributed. The English allowlist derives from the public-domain web2/SCOWL
+dictionary. Domain lexicons are **not shipped** — `tools/build_lexicon.py`
+generates them from your own localization export, which is also why the allowlist
+protecting your content involves no outsider's judgement about your language.
+
+MIT.

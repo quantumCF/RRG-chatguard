@@ -214,14 +214,21 @@ def main():
     if args.ascii_only:
         audited = [t for t in audited if t.isascii() and t.isalpha()]
 
+    # data/domain/ is empty in this repository on purpose: domain lexicons are
+    # generated from YOUR localization with tools/build_lexicon.py, not shipped.
+    # Anything found there is picked up automatically.
+    allow_paths = [os.path.join(root, "data/lexicon/en-allow.txt")]
+    domain = os.path.join(root, "data/domain")
+    if os.path.isdir(domain):
+        allow_paths += [os.path.join(domain, f) for f in sorted(os.listdir(domain))
+                        if f.endswith(".txt")]
+
     guard = ChatGuard(
         load_terms_table(os.path.join(root, "data/lexicon/en-terms.jsonl")),
-        load_allow([os.path.join(root, "data/lexicon/en-allow.txt"),
-                    os.path.join(root, "data/domain/game-terms.txt")]),
+        load_allow(allow_paths),
     )
 
-    allow = load_allow([os.path.join(root, "data/lexicon/en-allow.txt"),
-                        os.path.join(root, "data/domain/game-terms.txt")])
+    allow = load_allow(allow_paths)
     engines = [SubstringBaseline(audited), WholeWordBaseline(audited),
                GuardSameVocab(audited, allow), GuardAdapter(guard)]
 

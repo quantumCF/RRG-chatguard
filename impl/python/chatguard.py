@@ -12,8 +12,11 @@ Pipeline:
                 the original string so masking lands on the right characters
     2 match     Aho-Corasick over the normalized form; each term carries a match
                 mode (word | prefix | sub) and a severity tier
-    3 rescue    allowlist longest-match override; a hit inside an allowlisted
-                token is dropped. This is what fixes the Scunthorpe problem.
+    3 rescue    allowlist longest-match override, applied two ways: a hit
+                inside an allowlisted PHRASE occurrence (script-agnostic, works
+                for Chinese/Japanese/Thai which have no word spacing) or inside
+                an allowlisted token. This is what fixes the Scunthorpe problem
+                and its CJK equivalent.
     4 fuzzy     bounded edit-distance<=1, tier-3 core terms only, len>=5
     5 decide    tier x channel -> allow | mask | block | review
     6 emit      masked string via the offset map, plus a structured verdict
@@ -385,6 +388,15 @@ class ChatGuard:
         self.allow -= self._term_texts
         self.policies = dict(policies or DEFAULT_POLICIES)
         self.automaton = Automaton(self.terms)
+        # A second automaton over the allowlist. Token-based rescue only works
+        # for scripts that put spaces between words; Chinese, Japanese and Thai
+        # do not, so a hit on a single Han character inside an ordinary word
+        # could never be rescued by a token rule. Matching allowlist PHRASES
+        # directly and rescuing any hit they contain is script-agnostic, and it
+        # subsumes the token rule for Latin text as well.
+        self._allow_terms = [Term(a, Tier.NONE, MatchMode.SUB)
+                             for a in self.allow if a]
+        self._allow_automaton = Automaton(self._allow_terms) if self._allow_terms else None
         self.fuzzy_tiers = fuzzy_tiers
         self.fuzzy_min_len = fuzzy_min_len
         self._fuzzy_terms = [t for t in self.terms
@@ -436,6 +448,15 @@ class ChatGuard:
         if self._fuzzy_terms:
             candidates.extend(self._fuzzy_find(norm, tokens))
 
+        # Every allowlisted phrase occurring in this text, as ORIGINAL spans.
+        # A hit strictly inside one of these is a fragment of something
+        # legitimate and must not fire.
+        shelters = []
+        if self._allow_automaton is not None:
+            for a_s, a_e, a_term in self._allow_automaton.find(norm.text):
+                o = norm.span(a_s, a_e)
+                shelters.append((o[0], o[1], a_term.text))
+
         # Rescue + locale gate.
         kept = []
         rescued = []
@@ -447,6 +468,10 @@ class ChatGuard:
             if key in seen:
                 continue
             seen.add(key)
+            shelter = self._shelter(shelters, o_start, o_end, term.text)
+            if shelter is not None:
+                rescued.append(shelter)
+                continue
             host = self._host_token(norm, tokens, o_start, o_end)
             if host is not None and host != term.text and host in self.allow:
                 rescued.append(host)
@@ -493,6 +518,23 @@ class ChatGuard:
         # Spaced-out obfuscation writes 1-2 characters between separators.
         parts = re.split(_SEP_SPLIT_RE, span)
         return all(len(p) <= 2 for p in parts)
+
+    @staticmethod
+    def _shelter(shelters, o_start, o_end, term_text):
+        """
+        The longest allowlisted phrase that strictly contains this hit.
+
+        "Strictly" matters: a phrase identical to the term must not rescue it,
+        or adding a word to the blocklist that also sits in the allowlist would
+        silently do nothing. Longest-match wins so the most specific legitimate
+        reading is the one that counts.
+        """
+        best = None
+        for s, e, text in shelters:
+            if s <= o_start and o_end <= e and (e - s) > (o_end - o_start):
+                if text != term_text and (best is None or (e - s) > best[0]):
+                    best = (e - s, text)
+        return best[1] if best else None
 
     @staticmethod
     def _host_token(norm, tokens, o_start, o_end):

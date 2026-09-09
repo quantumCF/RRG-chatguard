@@ -7,6 +7,13 @@ The ask is deliberately tiered. **Tier 1 requires no code and no dependency.**
 Most of the player-visible damage is fixed there. Tiers 2 and 3 exist if you
 want them, not because Tier 1 is a trap that requires them later.
 
+One thing to establish first, because it changes what you should trust here: the
+word list shipped inside a game client is **not necessarily the list the server
+enforces**. In the case measured, it demonstrably was not — see `EVIDENCE.md` §3.
+So no specific row named in these documents should be actioned directly. Run
+`tools/remediate.py` against your own list and act on that. The tools take your
+data as input precisely so that this caveat does not matter.
+
 ---
 
 ## Tier 1 — data only. No code, no dependency, no build. Hours, not sprints.
@@ -28,6 +35,14 @@ Expected effect, measured on the real list and the real content: game-name
 false positives fall from **46.1% to roughly 2.5%** — that is the gap between
 substring matching on an unscoped list and whole-word matching, before any
 engine change at all.
+
+A third change costs nothing and is worth doing at the same time: under
+substring matching, **59.6% of the list cannot affect any outcome**, because a
+shorter entry already matches inside each of those entries. Dropping all 57,051
+leaves behaviour bit-identical. That is worth sitting with — substring matching
+has collapsed a 95,660-entry list into the behaviour of its shortest ~38,000
+entries. Moving to word-boundary matching does not weaken the list; it **restores
+the other 57,051 entries to usefulness**.
 
 If you stop reading here, this is still worth doing.
 
@@ -154,11 +169,19 @@ vectors that fail loudly if someone breaks it.
 Tier 1 is a configuration change. It needs a trust-and-safety decision, not a
 sprint.
 
+**"We can't see our own server list from where you sit, so how would you know?"**
+We don't, and we say so. That is what `tools/blackbox.py` is for: it infers the
+responsible terms from observed behaviour alone — "this string was blocked, this
+one was fine" — eliminates impossible candidates, reports the smallest consistent
+explanation, and designs the next probes. It is correct whatever your list
+actually contains.
+
 **"Players are exaggerating; the filter is mostly fine."**
-Measured on the shipped list against the game's own English content: **46.1%**
-of item and skill name strings are flagged under substring matching, and
-**69.0%** of all localized strings. `Freezing` becomes `****zing`. That is not a
-perception problem.
+`cucumber` is blocked in the live game. So is `Heisenberg`. `thank` was.
+Separately, measured on the shipped list against the game's own English content:
+**46.1%** of item and skill name strings are flagged under substring matching,
+and **69.0%** of all localized strings — rising to **52.1%** for Portuguese.
+`Freezing` becomes `****zing`. That is not a perception problem.
 
 **"We should use an ML classifier instead."**
 Different problem, and worth doing — later, on top. A classifier addresses
