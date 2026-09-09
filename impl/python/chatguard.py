@@ -562,6 +562,8 @@ class ChatGuard:
                 if not line or line.startswith("#"):
                     continue
                 rec = json.loads(line)
+                if "text" not in rec:
+                    continue          # documentation rows carry only _comment
                 terms.append(Term(
                     text=rec["text"].lower(),
                     tier=Tier(rec.get("tier", int(Tier.STRONG))),
