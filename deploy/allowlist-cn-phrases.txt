@@ -1,0 +1,6 @@
+# CJK/Thai phrase shelters for locale 'cn'.
+# A blocked character occurring strictly inside one of these
+# is part of an ordinary word. Languages without word spacing
+# cannot be protected by a word list -- only by phrases.
+# entries: 1
+出战

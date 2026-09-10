@@ -1,0 +1,50 @@
+# Candidates REJECTED by the safety screen. Review before use.
+# format: word <TAB> reason <TAB> sources
+bastard	exact profanity	dict
+bastardy	bastard+y	dict
+bitch	exact profanity	dict
+cock	exact profanity	dict,propernoun
+cocked	cock+ed	dict
+cocker	cock+er	dict,propernoun
+cockhead	cock+head	dict
+cocking	cock+ing	dict,propernoun
+cockish	cock+ish	dict
+cocks	cock+s	propernoun
+cocky	cock+y	dict
+crap	exact profanity	dict
+craps	crap+s	dict,propernoun
+crapy	crap+y	dict
+damn	exact profanity	dict
+damned	damn+ed	dict
+damner	damn+er	dict
+damning	damn+ing	dict
+dick	exact profanity	dict,proper,propernoun
+dicker	dick+er	dict,propernoun
+dickes	dick+es	propernoun
+dickie	dick+ie	propernoun
+dicks	dick+s	propernoun
+dicky	dick+y	dict,propernoun
+douche	exact profanity	dict
+nazi	exact profanity	dict,propernoun
+piss	exact profanity	dict
+prick	exact profanity	dict
+pricked	prick+ed	dict
+pricker	prick+er	dict
+pricking	prick+ing	dict
+prickish	prick+ish	dict
+pricks	prick+s	dict
+pricky	prick+y	dict
+rape	exact profanity	dict,propernoun
+rapes	rape+s	propernoun
+rapist	exact profanity	dict
+retard	exact profanity	dict
+retarded	retard+ed	dict
+retarder	retard+er	dict
+retarding	retard+ing	dict
+slut	exact profanity	dict
+slutter	slut+ter	dict,propernoun
+slutty	slut+ty	dict
+telegram	exact profanity	dict
+twat	exact profanity	dict
+wanker	exact profanity	propernoun
+whore	exact profanity	dict
