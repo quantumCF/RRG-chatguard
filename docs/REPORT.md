@@ -90,42 +90,84 @@ are yours to generate.
 
 ## What would fix it
 
-Three things, smallest first. Each is independently useful.
+Three options, smallest first. Each works alone; they compose.
 
-**1 — Run the self-test. (~40 lines, no dependencies, no library to adopt.)**
+### 1 — One line. No data, no list review.
 
-```sh
-python3 tools/selftest_filter.py --list <your filter list> \
-                                 --strings <your en localization>
+> **A blocked entry shorter than N characters matches only as a whole word,
+> never inside a longer one.**
+
+```
+if (entry.length < 4 && !isWholeWord(text, matchStart, matchEnd))
+    continue;               // short entries must stand alone
 ```
 
-It enforces one invariant: *no string we authored may be flagged by our own
-filter*. If `Freezing` trips your filter, the filter is wrong — there is no
-reading in which that is profanity. It has a `--max-failures` ratchet so it can
-go into CI today at whatever level is currently true, then be tightened.
+Measured on your own localized item and skill names:
 
-**2 — Rank your own entries by damage, and fix the worst.**
+| locale | today | N=3 | **N=4** | N=5 |
+|---|---|---|---|---|
+| English | 46.1% | 7.6% | **4.0%** | 3.0% |
+| Portuguese | 52.1% | 8.2% | **0.9%** | 0.5% |
+| Indonesian | 48.0% | 6.2% | **3.1%** | 2.2% |
+| Thai | 30.0% | 4.3% | **2.4%** | 1.9% |
+| Vietnamese | 9.7% | 3.4% | **2.5%** | 2.4% |
+| Chinese (Simp) | 8.4% | 2.5% | **2.3%** | 2.1% |
+| Chinese (Trad) | 9.7% | 2.9% | **2.7%** | 2.6% |
+| Korean | 0.0% | 0.0% | 0.0% | 0.0% |
+
+**Nothing is deleted.** Every entry keeps working; short ones simply stop
+matching inside longer words. No entry needs reviewing, no new data is required,
+and — the part that matters most — it covers vocabulary nobody has enumerated.
+Surnames, place names, next year's slang, and the proper nouns that no
+dictionary contains are all protected by a rule rather than by a list.
+
+Ship it behind a config value defaulting to 1 (today's behaviour), set it to 4,
+revert by setting it back. Reproduce the table with:
 
 ```sh
-python3 tools/remediate.py --list <your list> --game-corpus <your localization> \
-                           --out remediation.csv
+python3 tools/lengthrule.py --list <your list> --corpus en:<your en export>
 ```
 
-On the client copy, false positives were extremely concentrated: **20 entries
-caused 89%** of them, and fixing those 20 took own-content false positives from
-46.1% to 6.2%. Only 191 of 5,695 entries needed any change. The tool emits a CSV
-with, per entry, its measured blast radius, a worked example, and a recommended
-action — `scope to zh` (keeps the entry, restricts it to the market it was
-written for — **deletes nothing**), `whole-word only`, or `delete`.
+### 2 — An allowlist of words that must never be censored.
 
-**3 — Fix the matching.**
+`deploy/allowlist-en.txt` — **473,841 words**, assembled from the public-domain
+web2 dictionary, GeoNames world cities and countries, US Census 2010 surnames,
+BSD given names, and hand-written MMO vocabulary.
 
-Word boundaries plus a rescue allowlist. Same vocabulary, no new words:
-English-dictionary false positives drop **37.1% → 0.0%**. With a domain lexicon
-generated from your own localization, false positives on your own item names go
-**46.1% → 0.0%** while obfuscation recall rises **22.9% → 84.3%**.
+Wire it in immediately before your filter returns "blocked":
 
-On the cases you can verify yourself:
+```python
+if rescue.is_rescued(text, match_start, match_end):
+    pass          # ordinary word — let it through
+else:
+    block()       # your existing behaviour, unchanged
+```
+
+Suppress the block when the span sits **strictly inside** an allowlisted word.
+Strictly: a word identical to the blocked term never rescues itself, so adding a
+term to your blocklist cannot silently stop working. Measured 76 MB resident,
+0.08 s load, **0.35 µs per check**.
+
+This is purely additive — it can only ever unblock, never block more — and
+`tools/build_allowlist.py` regenerates it from your own localization export, so
+the list protecting your content involves nobody's judgement but yours.
+
+### 3 — Replace the matcher.
+
+`impl/python/chatguard.py`, ~650 lines, no dependencies, MIT. Word boundaries,
+per-term match modes, rescue allowlist, Unicode/confusable/leet normalization,
+bounded fuzzy matching, severity tiers, per-surface policy, per-locale scoping.
+
+Same vocabulary, no new words: English-dictionary false positives **37.1% → 0.0%**.
+With a domain lexicon generated from your own localization, false positives on
+your own content go **46.1% → 0.0%** while obfuscation recall rises
+**22.9% → 84.3%**.
+
+`impl/python/shadow.py` runs it beside your existing filter and returns **your**
+filter's answer every time, recording only the disagreements. Flip authority when
+your own traffic says to; rollback is the same config value.
+
+On the cases you can check yourself:
 
 | input | filter today | with the fix |
 |---|---|---|
@@ -136,9 +178,23 @@ On the cases you can verify yourself:
 | `kkk` | blocked | **still blocked** |
 | `f u c k` | passes | **caught** |
 
-The engine is MIT-licensed, dependency-free, ~650 lines, and ships with a
-shadow mode that runs beside your existing filter and changes nothing until you
-choose to switch.
+## Measure it properly rather than trusting our numbers
+
+`tools/testbattery.py` generates a standardized, seeded, stratified probe set —
+401 probes across nine strata — and scores results with Wilson 95% confidence
+intervals:
+
+```sh
+python3 tools/testbattery.py generate --out battery --margin 0.05
+# type the probes, fill in the result column, then:
+python3 tools/testbattery.py score --results battery/battery.csv
+```
+
+Three of the nine strata are honesty controls: obfuscated profanity (so the
+result cannot be read as "filter less"), nonsense strings (so a broken harness
+is not mistaken for a broken filter), and plain profanity (so a disabled filter
+is not mistaken for a well-behaved one). Pooled precision at the default size is
+±4.9%.
 
 ## Nothing here requires a client update
 

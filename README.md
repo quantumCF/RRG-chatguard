@@ -19,29 +19,49 @@ Those are a game's own item and skill names, run through that game's own filter.
 
 ## Start here
 
-**Reporting a filter defect to a developer?** → [`docs/REPORT.md`](docs/REPORT.md)
-— one page, evidence first, three concrete fixes ordered smallest to largest.
+**Reporting a filter defect to a developer?**
+→ [`docs/report-onepage.pdf`](docs/Ragnarok-Rebirth-chat-filter-report.pdf) (one page)
+or [`docs/REPORT.md`](docs/REPORT.md) (full).
 
-**You own a chat filter and want to know if it has this problem?** → run one
-command, no dependencies, nothing to install:
+**You own a chat filter?** The highest-leverage change is one conditional:
 
-```sh
-python3 tools/selftest_filter.py --list <your word list> --strings <your localization>
-```
+> An entry shorter than N characters matches only as a **whole word**,
+> never inside a longer one.
 
-It enforces a single invariant: *no string you authored may be flagged by your
-own filter.* If `Freezing` trips it, the filter is wrong.
-
-**Want to know which of your entries cause the damage?**
+Measure it on your own list and your own content:
 
 ```sh
-python3 tools/remediate.py --list <your list> --game-corpus <your localization> \
-                           --out remediation.csv
+python3 tools/lengthrule.py --list <your list> --corpus en:<your localization>
 ```
 
-In the case measured, **20 entries caused 89% of all false positives** and
-191 of 5,695 needed any change at all. The CSV gives per-entry blast radius, a
-worked example, and a recommended action.
+On the case measured, N=4 took own-content false positives from **46.1% to 4.0%**
+in English and **52.1% to 0.9%** in Portuguese. Nothing deleted, no entry
+reviewed, no new data — and it covers proper nouns nobody has enumerated, which
+no allowlist can.
+
+**Everything ready to deploy** lives in [`deploy/`](deploy/): a 473,841-word
+allowlist of terms that must never be censored, a ~20-line rescue check, and
+deployment notes.
+
+**Does your filter censor your own content?** One command, no dependencies:
+
+```sh
+python3 tools/selftest_filter.py --list <your list> --strings <your localization>
+```
+
+It enforces one invariant — *no string you authored may be flagged by your own
+filter* — and belongs in CI. If `Freezing` trips it, the filter is wrong.
+
+**Want a real measurement instead of anecdotes?**
+
+```sh
+python3 tools/testbattery.py generate --out battery --margin 0.05
+python3 tools/testbattery.py score --results battery/battery.csv
+```
+
+401 stratified probes, Wilson confidence intervals, and three honesty controls so
+the result cannot be misread as "filter less" and a disabled filter cannot be
+mistaken for a well-behaved one.
 
 **Can't see the list, only the behaviour?**
 
@@ -50,12 +70,9 @@ python3 tools/blackbox.py infer  --obs observations/live-2026-09-09.jsonl
 python3 tools/blackbox.py design --obs observations/live-2026-09-09.jsonl
 ```
 
-`infer` turns "these strings were blocked, these were fine" into the smallest set
-of terms that explains it. `design` picks the next probes to type. Useful because
-the list inside a client is often **not** the list the server enforces — that was
-true here.
-
----
+Turns "these were blocked, these were fine" into the smallest set of terms that
+explains it, then picks the next probes. Useful because the list inside a client
+is often **not** the list the server enforces — that was true here.
 
 ## The engine
 
@@ -87,18 +104,29 @@ guard.filter("shit", surface="identifier")   # BLOCK - names are stricter
 ## Layout
 
 ```
-docs/REPORT.md        the one-page defect report            <- start here
-docs/EVIDENCE.md      all measurements, method, caveats
-docs/RESEARCH.md      what a 2026 moderation stack looks like
-docs/ADOPTION.md      three adoption tiers, objections answered
-docs/SPEC.md          normative behaviour, written to port from
+docs/  Ragnarok-Rebirth-chat-filter-report.pdf   one page, for sending
+       REPORT.md      the full report
+       EVIDENCE.md    every measurement, method and caveat
+       RESEARCH.md    what a 2026 moderation stack looks like
+       ADOPTION.md    adoption tiers, objections answered
+       SPEC.md        normative behaviour, written to port from
 
-impl/python/          the engine + shadow wrapper
-tools/                selftest, remediate, audit, blackbox, build_lexicon, conformance
-data/lexicon/         starter terms + public-domain rescue allowlist
-vectors/golden.jsonl  25 conformance vectors -- the contract for any port
-tests/test_all.py     51 tests
-observations/         live filter behaviour, as recorded
+deploy/                 <- self-contained drop-in
+       allowlist-en.txt  473,841 words that must never be censored
+       rescue.py         ~20-line integration
+       README.md         deployment notes
+
+tools/ lengthrule.py     measure the one-line fix
+       selftest_filter.py CI guard: no self-authored string may be flagged
+       testbattery.py    stratified live test battery + Wilson CIs
+       remediate.py      rank your entries by measured blast radius
+       blackbox.py       infer the list from behaviour alone
+       build_allowlist.py / build_lexicon.py / audit.py / conformance.py
+
+impl/python/            the replacement matcher + shadow-mode wrapper
+tests/test_all.py       51 tests
+vectors/golden.jsonl    25 conformance vectors -- the contract for any port
+observations/           live filter behaviour, as recorded
 ```
 
 ## Verify
@@ -111,12 +139,32 @@ python3 tools/conformance.py    # 25 passed, 0 failed
 Any port in any language is conformant exactly when it reproduces
 `vectors/golden.jsonl`. No shared code required.
 
-## Clean-room
+## Provenance and licensing
 
 No code from any client was copied here, and no proprietary word list is
-redistributed. The English allowlist derives from the public-domain web2/SCOWL
-dictionary. Domain lexicons are **not shipped** — `tools/build_lexicon.py`
-generates them from your own localization export, which is also why the allowlist
-protecting your content involves no outsider's judgement about your language.
+redistributed. Everything shipped is public-domain, permissively licensed, or
+written for this repository.
 
-MIT.
+| component | source | license |
+|---|---|---|
+| English dictionary words | web2 (Webster's 1913, via BSD `/usr/share/dict`) | public domain |
+| given names | BSD `propernames` | public domain |
+| surnames | US Census Bureau, 2010 Surname File | public domain (US Gov) |
+| cities and countries | [GeoNames](https://www.geonames.org/) | **CC BY 4.0** |
+| MMO / chat vocabulary | written here | MIT |
+| all code | written here | MIT |
+
+**Attribution:** place-name data in `deploy/allowlist-en.txt` is derived from
+[GeoNames](https://www.geonames.org/), used under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). If you redistribute
+that file, carry this attribution with it. `tools/build_allowlist.py` can
+regenerate the list without the GeoNames sources if you would rather not take on
+the attribution requirement — omit `--extra`.
+
+Domain lexicons derived from a publisher's own localization are **not shipped**;
+`tools/build_lexicon.py` and `tools/build_allowlist.py` generate them from your
+own export. That keeps this repository clean-room, and it is also why the
+allowlist protecting your content involves no outsider's judgement about your
+language.
+
+Code: MIT.

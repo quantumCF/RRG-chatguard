@@ -1,0 +1,14 @@
+allowlist-en.txt -- provenance
+
+  English dictionary words   web2 (Webster's 1913, BSD /usr/share/dict)  public domain
+  given names                BSD propernames                             public domain
+  surnames                   US Census Bureau 2010 Surname File          public domain
+  cities, countries          GeoNames (https://www.geonames.org/)        CC BY 4.0
+  MMO / chat vocabulary      written for this repository                 MIT
+
+Place-name data is derived from GeoNames and used under CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/). Carry this attribution if you
+redistribute the file. To avoid the attribution requirement entirely, regenerate
+without the GeoNames sources:
+
+    python3 tools/build_allowlist.py --out . --terms ../data/lexicon/en-terms.jsonl
