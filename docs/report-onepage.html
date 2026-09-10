@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chat filter accuracy defect</title>
+<style>
+  @page { size: Letter; margin: 0; }
+  * { box-sizing: border-box; }
+  html { margin: 0; padding: 0; }
+  body {
+    margin: 0;
+    padding: 11mm 13mm 8mm 13mm;
+    width: 215.9mm;
+    overflow: hidden;
+    font: 8.4pt/1.32 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #16191d; background: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { width: 100%; }
+
+  header { border-bottom: 2.2pt solid #16191d; padding-bottom: 4pt; margin-bottom: 7pt; }
+  h1 { font-size: 15pt; margin: 0 0 2pt; letter-spacing: -0.35pt; font-weight: 700; }
+  .sub { font-size: 8pt; color: #5b636d; display: flex; justify-content: space-between; }
+  .lede {
+    font-size: 9.4pt; line-height: 1.35; margin: 7pt 0 8pt;
+    padding-left: 7pt; border-left: 2.2pt solid #b8332e; color: #22262b;
+  }
+  .lede b { color: #b8332e; }
+
+  .cols { column-count: 2; column-gap: 11pt; column-fill: balance; }
+  section { break-inside: avoid; margin-bottom: 8pt; }
+  h2 {
+    font-size: 7.4pt; text-transform: uppercase; letter-spacing: 0.7pt;
+    color: #6b7480; margin: 0 0 3.5pt; font-weight: 700;
+    border-bottom: 0.5pt solid #d7dbe0; padding-bottom: 2pt;
+  }
+  p { margin: 0 0 4pt; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 7.9pt; }
+  th { text-align: left; font-weight: 700; color: #6b7480; font-size: 7pt;
+       text-transform: uppercase; letter-spacing: 0.4pt; padding: 0 0 2pt; }
+  td { padding: 1.5pt 0; border-top: 0.4pt solid #e6e9ec; vertical-align: baseline; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.5pt; }
+  .bad  { color: #b8332e; font-weight: 700; }
+  .good { color: #1d7a45; font-weight: 700; }
+  .dim  { color: #7d858f; }
+
+  .demo {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.4pt;
+    line-height: 1.5; background: #f5f6f8; border: 0.4pt solid #e0e4e8;
+    border-radius: 2pt; padding: 5pt 6pt; margin: 0 0 5pt;
+  }
+  .demo .to { color: #b8332e; }
+
+  .stats { display: flex; gap: 5pt; margin: 0 0 5pt; }
+  .stat { flex: 1; border: 0.5pt solid #e0e4e8; border-radius: 2pt;
+          padding: 4pt 3pt; text-align: center; }
+  .stat .v { font-size: 13pt; font-weight: 700; color: #b8332e;
+             letter-spacing: -0.4pt; display: block; line-height: 1.05; }
+  .stat .l { font-size: 6.4pt; color: #6b7480; text-transform: uppercase;
+             letter-spacing: 0.3pt; display: block; margin-top: 1.5pt; }
+
+  ol { margin: 0; padding-left: 12pt; }
+  ol li { margin-bottom: 3.5pt; }
+  ol li b { color: #16191d; }
+
+  .note {
+    background: #fdf6e6; border-left: 2pt solid #c98a12; border-radius: 2pt;
+    padding: 4.5pt 6pt; font-size: 7.7pt; color: #4a3d1d;
+  }
+  footer {
+    margin-top: 6pt; padding-top: 4pt; border-top: 0.5pt solid #d7dbe0;
+    font-size: 7pt; color: #7d858f; display: flex; justify-content: space-between;
+  }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 7.6pt; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Chat filter: accuracy defect</h1>
+  <div class="sub">
+    <span><b>Ragnarok: Rebirth Global</b> &nbsp;·&nbsp; reported by a player</span>
+    <span>2026-09-10</span>
+  </div>
+</header>
+
+<div class="lede">
+  The filter matches <b>raw substrings</b>, so ordinary words containing a blocked
+  fragment are censored — <b>cucumber</b> is blocked because of three letters inside
+  it — while the same design lets deliberate evasion straight through.
+  It is simultaneously too aggressive and too weak, and both symptoms have one cause.
+</div>
+
+<div class="cols">
+
+  <section>
+    <h2>Verified live, in game</h2>
+    <table>
+      <tr><th>Typed</th><th>Result</th><th>Why</th></tr>
+      <tr><td class="mono">cucumber</td><td class="bad">blocked</td><td class="dim">3-letter fragment</td></tr>
+      <tr><td class="mono">Heisenberg</td><td class="bad">blocked</td><td class="dim">fragment</td></tr>
+      <tr><td class="mono">thank</td><td class="bad">was blocked</td><td class="dim">since fixed</td></tr>
+      <tr><td class="mono">okkk</td><td class="bad">blocked</td><td class="dim">contains <span class="mono">kkk</span></td></tr>
+      <tr><td class="mono">okay</td><td class="good">fine</td><td class="dim">control</td></tr>
+    </table>
+    <p style="margin-top:4pt"><code>okkk</code> blocking while <code>okay</code> passes
+    proves matching is <b>substring-based</b>, not word-based. These came up in ordinary
+    conversation, not by hunting for edge cases.</p>
+  </section>
+
+  <section>
+    <h2>What that costs, at scale</h2>
+    <p class="dim" style="margin-bottom:4pt">The filter list shipped in the client, run
+    against the game's own English item and skill names:</p>
+    <div class="demo">
+      Freezing <span class="to">→ ****zing</span><br>
+      Immunity Control <span class="to">→ i**unity control</span><br>
+      Savage Card <span class="to">→ **vage card</span><br>
+      Card Skills <span class="to">→ card ski**s</span><br>
+      Downpour <span class="to">→ downpo**</span> &nbsp; Ignite <span class="to">→ igni**</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="v">46.1%</span><span class="l">item &amp; skill names</span></div>
+      <div class="stat"><span class="v">69.0%</span><span class="l">all localized strings</span></div>
+      <div class="stat"><span class="v">37.1%</span><span class="l">english dictionary</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Worse outside English</h2>
+    <table>
+      <tr><th>Locale</th><th class="n">Own names flagged</th></tr>
+      <tr><td><b>Portuguese</b></td><td class="n bad">52.1%</td></tr>
+      <tr><td>Indonesian</td><td class="n bad">48.0%</td></tr>
+      <tr><td>English</td><td class="n bad">46.1%</td></tr>
+      <tr><td>Thai</td><td class="n">30.0%</td></tr>
+      <tr><td>Vietnamese</td><td class="n">9.7%</td></tr>
+      <tr><td>Chinese (Trad)</td><td class="n">9.7%</td></tr>
+      <tr><td>Chinese (Simp)</td><td class="n">8.4%</td></tr>
+      <tr><td>Korean</td><td class="n">0.0%</td></tr>
+    </table>
+    <p style="margin-top:4pt">The list damages the newer markets roughly
+    <b>five times more</b> than its home market. Portuguese, a launch market, is worst hit.</p>
+  </section>
+
+  <section>
+    <h2>Root cause</h2>
+    <p>The list is <b>95,660 entries, 93.4% Chinese</b> — market-compliance material
+    (political terms, regional gambling domains, precursor chemicals), appropriate for the
+    market it was written for. Rebirth launched in China in Dec 2025 and globally in Jul 2026;
+    the list travelled with the build.</p>
+    <p><b>11,872 entries are two characters long; 497 are a single character.</b> As
+    substrings they sit inside thousands of ordinary words: <code>te</code> in <i>ignite</i>,
+    <code>ll</code> in <i>skills</i>, <code>ur</code> in <i>curse</i>, <code>日</code> in
+    <i>日光</i>. Chinese suffers the identical defect — <code>日</code> fires 438 times
+    inside the game's own Chinese names — so a fix helps that build too.</p>
+  </section>
+
+  <section>
+    <h2>Not a request to filter less</h2>
+    <p>Against ten common obfuscation strategies the list catches <b>22.9%</b>. Spaced-out
+    text, full-width characters and homoglyphs pass untouched. Of 25 common English
+    profanity terms tested, <b>6</b> are present at all.</p>
+    <p>So it blocks <code>cucumber</code> and passes <code>f u c k</code>. Fixing this makes
+    the filter <b>more accurate in both directions</b>, not more permissive.</p>
+  </section>
+
+  <section>
+    <h2>What would fix it</h2>
+    <ol>
+      <li><b>Run the self-test.</b> ~40 lines, no dependencies, nothing to adopt. Enforces one
+      invariant: <i>no string we authored may be flagged by our own filter</i>. Has a ratchet,
+      so it goes into CI today.</li>
+      <li><b>Rank your own entries by damage.</b> False positives are extremely concentrated —
+      on the copy measured, <b>20 entries caused 89%</b> of them, and only 191 of 5,695 needed
+      any change. Emits a CSV with per-entry blast radius and a recommended action:
+      <i>scope to locale</i> (deletes nothing), <i>whole-word only</i>, or <i>delete</i>.</li>
+      <li><b>Fix the matching.</b> Word boundaries plus a rescue allowlist. Same vocabulary,
+      no new words: dictionary false positives <b>37.1% → 0.0%</b>; with a lexicon generated
+      from your own localization, own-content false positives <b>46.1% → 0.0%</b> while
+      obfuscation recall rises <b>22.9% → 84.3%</b>.</li>
+    </ol>
+    <table style="margin-top:5pt">
+      <tr><th>Input</th><th>Today</th><th>With the fix</th></tr>
+      <tr><td class="mono">cucumber</td><td class="bad">blocked</td><td class="good">allowed</td></tr>
+      <tr><td class="mono">Heisenberg</td><td class="bad">blocked</td><td class="good">allowed</td></tr>
+      <tr><td class="mono">okkk</td><td>blocked</td><td>still blocked</td></tr>
+      <tr><td class="mono">kkk</td><td>blocked</td><td>still blocked</td></tr>
+      <tr><td class="mono">f u c k</td><td class="bad">passes</td><td class="good">caught</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Two things worth knowing</h2>
+    <p><b>Nothing here needs a client update.</b> The filter check is already a server round
+    trip — the client sends candidate text and receives a masked string back. All of the above
+    changes only the server side of that call. No client build, no store review.</p>
+    <p><b>59.6% of the list cannot affect any outcome</b>, because a shorter entry already
+    matches inside each of those 57,051 entries. Substring matching has collapsed a
+    95,660-entry list into the behaviour of its shortest ~38,000. Word-boundary matching does
+    not weaken the list — it restores the other 57,051 to usefulness.</p>
+  </section>
+
+  <section>
+    <div class="note">
+      <b>One caveat, stated plainly.</b> The list analysed is the copy shipped in the client,
+      and it does not fully match what the server enforces: <code>cucumber</code> is blocked
+      live, yet the responsible fragment is absent from the client copy. <b>So please don't
+      action any specific row we name</b> — run the tools against your own list. The class of
+      defect is proven by the live observations above and holds regardless; only the exact
+      rows are yours to generate.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span>Tools, engine, spec, full method and caveats — all reproducible, MIT, no dependencies.
+  Nothing proprietary is redistributed.</span>
+  <span>51 tests · 25 conformance vectors</span>
+</footer>
+
+</div>
+</body>
+</html>
