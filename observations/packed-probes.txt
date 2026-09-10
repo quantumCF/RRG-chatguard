@@ -1,0 +1,38 @@
+# 150 candidates packed into 15 messages
+# filler='qzjvx' pad=2 max_len=80
+# Type each PROBE line in guild chat. Copy EXACTLY what appears
+# (including any *** masking) into the replies file, one per line,
+# in the same order. A refused message: write REFUSED.
+#
+MAP	0	av	bt	cf	cn	cv	dd	df	fg	fq	fw	gd
+MAP	1	gf	gm	gs	gv	hd	hf	hg	jb	jg	jj	jk
+MAP	2	ka	kk	lj	ll	md	ml	mm	pd	pw	qq	rr
+MAP	3	sa	sb	sd	sf	sg	sm	sw	te	tm	tt	ty
+MAP	4	ui	ur	vv	wg	xa	xi	yf	yh	zf	awp	bci
+MAP	5	cao	ccp	cia	cnd	cnm	cpc	cxh	cxk	ddd	doi
+MAP	6	dpp	dxd	fku	flg	fuc	fuk	fvv	gay	gcd	gdp
+MAP	7	ghb	ghs	gmd	gta	gwg	hwb	iii	imo	inf	jjj
+MAP	8	jpg	kao	kik	kkb	kkk	kkp	kmt	kpp	lkq	lll
+MAP	9	lsd	lsp	lxb	mmm	mmp	ncn	net	ngo	nmd	nnd
+MAP	10	nnn	npc	ntr	ooo	org	pcp	png	ppp	rbq	rfa
+MAP	11	rki	roc	rrr	sex	the	tmd	tnt	ttt	uuu	voa
+MAP	12	vpn	vvv	www	xdd	xjp	xtl	xxs	yyy	zzz	cum
+MAP	13	ass	tit	anal	rape	porn	cock	dick	fck	sht
+MAP	14	shit	hell	damn	hoe	fag	nig
+#
+# ---- type these ----
+qzavjv qzbtjv qzcfjv qzcnjv qzcvjv qzddjv qzdfjv qzfgjv qzfqjv qzfwjv qzgdjv
+qzgfjv qzgmjv qzgsjv qzgvjv qzhdjv qzhfjv qzhgjv qzjbjv qzjgjv qzjjjv qzjkjv
+qzkajv qzkkjv qzljjv qzlljv qzmdjv qzmljv qzmmjv qzpdjv qzpwjv qzqqjv qzrrjv
+qzsajv qzsbjv qzsdjv qzsfjv qzsgjv qzsmjv qzswjv qztejv qztmjv qzttjv qztyjv
+qzuijv qzurjv qzvvjv qzwgjv qzxajv qzxijv qzyfjv qzyhjv qzzfjv qzawpjv qzbcijv
+qzcaojv qzccpjv qzciajv qzcndjv qzcnmjv qzcpcjv qzcxhjv qzcxkjv qzdddjv qzdoijv
+qzdppjv qzdxdjv qzfkujv qzflgjv qzfucjv qzfukjv qzfvvjv qzgayjv qzgcdjv qzgdpjv
+qzghbjv qzghsjv qzgmdjv qzgtajv qzgwgjv qzhwbjv qziiijv qzimojv qzinfjv qzjjjjv
+qzjpgjv qzkaojv qzkikjv qzkkbjv qzkkkjv qzkkpjv qzkmtjv qzkppjv qzlkqjv qzllljv
+qzlsdjv qzlspjv qzlxbjv qzmmmjv qzmmpjv qzncnjv qznetjv qzngojv qznmdjv qznndjv
+qznnnjv qznpcjv qzntrjv qzooojv qzorgjv qzpcpjv qzpngjv qzpppjv qzrbqjv qzrfajv
+qzrkijv qzrocjv qzrrrjv qzsexjv qzthejv qztmdjv qztntjv qztttjv qzuuujv qzvoajv
+qzvpnjv qzvvvjv qzwwwjv qzxddjv qzxjpjv qzxtljv qzxxsjv qzyyyjv qzzzzjv qzcumjv
+qzassjv qztitjv qzanaljv qzrapejv qzpornjv qzcockjv qzdickjv qzfckjv qzshtjv
+qzshitjv qzhelljv qzdamnjv qzhoejv qzfagjv qznigjv
