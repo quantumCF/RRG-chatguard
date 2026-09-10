@@ -1,0 +1,310 @@
+# Removed by the safety screen. word <TAB> rule <TAB> detail
+agapornis	slur-containment	porn
+almpornk	slur-containment	porn
+anal	vulgar-derivation	anal
+anales	vulgar-derivation	anal+es
+anus	vulgar-derivation	anus
+arse	vulgar-derivation	arse
+arses	vulgar-derivation	arse+s
+ass	vulgar-derivation	ass
+assa	vulgar-derivation	ass+a
+assary	vulgar-derivation	ass+ary
+assate	vulgar-derivation	ass+ate
+assation	vulgar-derivation	ass+ation
+asshead	vulgar-derivation	ass+head
+assing	vulgar-derivation	ass+ing
+assish	vulgar-derivation	ass+ish
+assishly	vulgar-derivation	ass+ishly
+assishness	vulgar-derivation	ass+ishness
+assist	vulgar-derivation	ass+ist
+asslike	vulgar-derivation	ass+like
+asso	vulgar-derivation	ass+o
+bastardism	vulgar-derivation	bastard+ism
+bastardo	vulgar-derivation	bastard+o
+beaner	slur-containment	beaner
+beanery	slur-containment	beaner
+bestial	vulgar-derivation	bestial
+bestialism	vulgar-derivation	bestial+ism
+bestialist	vulgar-derivation	bestial+ist
+bhangi	slur-containment	bhangi
+bollock	vulgar-derivation	bollock
+boob	vulgar-derivation	boob
+boober	vulgar-derivation	boob+er
+boobery	vulgar-derivation	boob+ery
+booby	vulgar-derivation	boob+y
+brainfag	reviewed:borderline	Outside my primary lens but noting it: an obsolete term for mental exhaustion ('
+bugger	vulgar-derivation	bugger
+buggery	vulgar-derivation	bugger+y
+cawnporne	slur-containment	porn
+chamar	vulgar-derivation	chamar
+chelsin'nkmpornk	slur-containment	porn
+chink	vulgar-derivation	chink
+chinker	vulgar-derivation	chink+er
+chinking	vulgar-derivation	chink+ing
+chinks	vulgar-derivation	chink+s
+chinky	vulgar-derivation	chinky
+clit	vulgar-derivation	clit
+clites	vulgar-derivation	clit+es
+clitoris	reviewed:borderline	Clinical genital anatomy, but in a teen game's public chat it has no legitimate 
+clitter	vulgar-derivation	clit+ter
+cockmaster	vulgar-derivation	cock+master
+coon	vulgar-derivation	coon
+cooner	vulgar-derivation	coon+er
+coones	vulgar-derivation	coon+es
+coons	vulgar-derivation	coon+s
+coony	vulgar-derivation	coon+y
+coverslut	vulgar-derivation	cover+slut
+crackbrain	reviewed:borderline	Not a bystander - the word itself is a pejorative for a mentally ill person, so 
+craghead	slur-containment	raghead
+cum	vulgar-derivation	cum
+cuma	vulgar-derivation	cum+a
+cumer	vulgar-derivation	cum+er
+cuming	vulgar-derivation	cum+ing
+dago	vulgar-derivation	dago
+damnation	vulgar-derivation	damn+ation
+damnous	vulgar-derivation	damn+ous
+decock	vulgar-derivation	de+cock
+decumary	vulgar-derivation	de+cum+ary
+dickard	vulgar-derivation	dick+ard
+dicko	vulgar-derivation	dick+o
+dickson	vulgar-derivation	dick+son
+dotard	reviewed:borderline	Dictionary word but functions purely as an insult mocking senility/cognitive dec
+epornitic	slur-containment	porn
+epornitically	slur-containment	porn
+fag	vulgar-derivation	fag
+faga	vulgar-derivation	fag+a
+fager	vulgar-derivation	fag+er
+fago	vulgar-derivation	fag+o
+fagot	vulgar-derivation	fagot
+fagoter	vulgar-derivation	fagot+er
+fagoting	vulgar-derivation	fagot+ing
+fagoty	vulgar-derivation	fagot+y
+farta	vulgar-derivation	fart+a
+felch	vulgar-derivation	felch
+felcher	vulgar-derivation	felch+er
+ganja	reviewed:should-remove	Drug-culture lens hit: primary street/vernacular name for cannabis, not a botani
+gobbledygook	slur-containment	gook
+gook	slur-containment	gook
+gookin	slur-containment	gook
+gookins	slur-containment	gook
+gyppo	vulgar-derivation	gyppo
+gypsy	vulgar-derivation	gypsy
+gypsydom	vulgar-derivation	gypsy+dom
+gypsyhead	vulgar-derivation	gypsy+head
+gypsyhood	vulgar-derivation	gypsy+hood
+gypsyish	vulgar-derivation	gypsy+ish
+gypsyism	vulgar-derivation	gypsy+ism
+gypsylike	vulgar-derivation	gypsy+like
+heroin	reviewed:borderline	Hard-drug name (distinct from the fine 'heroine'); a teen-rated chat probably sh
+heroinism	reviewed:borderline	Heroin-addiction term; same drug-reference concern, obscure enough that allowlis
+heroinize	reviewed:borderline	Means to dose with heroin; no benign chat use, so the allowlist gains nothing an
+hitlerism	vulgar-derivation	hitler+ism
+hitlerite	reviewed:should-remove	Nazi-adherent label used as praise/self-identification; needs context review rat
+hoe	vulgar-derivation	hoe
+hoeful	vulgar-derivation	hoe+ful
+hoeing	vulgar-derivation	hoe+ing
+hoes	vulgar-derivation	hoe+s
+hoey	vulgar-derivation	hoe+y
+hooker	vulgar-derivation	hooker
+hookera	vulgar-derivation	hooker+a
+hookers	vulgar-derivation	hooker+s
+horny	vulgar-derivation	horny
+hornyhead	vulgar-derivation	horny+head
+ikike	slur-containment	kike
+incest	vulgar-derivation	incest
+injun	vulgar-derivation	injun
+jackass	vulgar-derivation	jack+ass
+jackassery	vulgar-derivation	jack+ass+ery
+jackassism	vulgar-derivation	jack+ass+ism
+jackassness	vulgar-derivation	jack+ass+ness
+jihad	reviewed:borderline	Legitimate religious term, but unconditional allowance also greenlights terroris
+kike	slur-containment	kike
+kikel	slur-containment	kike
+kikendall	slur-containment	kike
+kiker	slur-containment	kike
+klan	vulgar-derivation	klan
+klanism	vulgar-derivation	klan+ism
+klansman	reviewed:should-remove	Denotes a KKK member specifically - self-identification/recruitment term, not a 
+klanswoman	reviewed:should-remove	Same as klansman: names KKK membership, no non-extremist sense.
+klingsporn	slur-containment	porn
+kraut	vulgar-derivation	kraut
+krauter	vulgar-derivation	kraut+er
+krautter	vulgar-derivation	kraut+ter
+lewd	reviewed:borderline	Standard dictionary word, but 'lewd/lewds' is active teen-chat sexual-solicitati
+molest	vulgar-derivation	molest
+molestation	vulgar-derivation	molest+ation
+molester	vulgar-derivation	molest+er
+molestful	vulgar-derivation	molest+ful
+naziism	vulgar-derivation	nazi+ism
+necrophile	slur-containment	necrophil
+necrophilia	slur-containment	necrophil
+necrophilic	slur-containment	necrophil
+necrophilism	slur-containment	necrophil
+necrophilistic	slur-containment	necrophil
+necrophilous	slur-containment	necrophil
+necrophily	slur-containment	necrophil
+niggard	slur-containment	nigga
+niggardize	slur-containment	nigga
+niggardliness	slur-containment	nigga
+niggardling	slur-containment	nigga
+niggardly	slur-containment	nigga
+niggardness	slur-containment	nigga
+nigger	slur-containment	nigger
+niggerdom	slur-containment	nigger
+niggerfish	slur-containment	nigger
+niggergoose	slur-containment	nigger
+niggerhead	slur-containment	nigger
+niggerish	slur-containment	nigger
+niggerism	slur-containment	nigger
+niggerling	slur-containment	nigger
+niggertoe	slur-containment	nigger
+niggerweed	slur-containment	nigger
+niggery	slur-containment	nigger
+nigre	slur-containment	nigre
+nigrelli	slur-containment	nigre
+nigrescence	slur-containment	nigre
+nigrescent	slur-containment	nigre
+nigresceous	slur-containment	nigre
+nigrescite	slur-containment	nigre
+orgasm	vulgar-derivation	orgasm
+overdamn	vulgar-derivation	over+damn
+overfag	vulgar-derivation	over+fag
+overfagged	reviewed:borderline	Same archaic verb inflected; obsolete word carrying a slur substring with no off
+overprick	vulgar-derivation	over+prick
+pedophilia	slur-containment	pedophil
+pedophilic	slur-containment	pedophil
+penis	vulgar-derivation	penis
+penister	vulgar-derivation	penis+ter
+philopornist	slur-containment	porn
+pickaninny	slur-containment	pickaninny
+pissabed	reviewed:borderline	Archaic dialect name for the dandelion, but reads in chat as "piss a bed" and ha
+pissant	vulgar-derivation	piss+ant
+pokunt	reviewed:borderline	Obscure loanword whose spelling matches the common filter-evasion respelling of 
+porn	slur-containment	porn
+pornerastic	slur-containment	porn
+pornocracy	slur-containment	porn
+pornocrat	slur-containment	porn
+pornograph	slur-containment	porn
+pornographer	slur-containment	porn
+pornographic	slur-containment	porn
+pornographically	slur-containment	porn
+pornographist	slur-containment	porn
+pornography	slur-containment	porn
+pornological	slur-containment	porn
+prickant	vulgar-derivation	prick+ant
+prickless	vulgar-derivation	prick+less
+prostitute	vulgar-derivation	prostitute
+puss	vulgar-derivation	puss
+pusser	vulgar-derivation	puss+er
+pusslike	vulgar-derivation	puss+like
+pussy	vulgar-derivation	pussy
+rapeful	vulgar-derivation	rape+ful
+raper	vulgar-derivation	raper
+raping	vulgar-derivation	raping
+reassist	vulgar-derivation	re+ass+ist
+recock	vulgar-derivation	re+cock
+redamnation	vulgar-derivation	re+damn+ation
+redick	vulgar-derivation	re+dick
+redskin	slur-containment	redskin
+rehoe	vulgar-derivation	re+hoe
+retardant	vulgar-derivation	retard+ant
+retardate	vulgar-derivation	retard+ate
+retardation	vulgar-derivation	retard+ation
+sambo	vulgar-derivation	sambo
+samboy	vulgar-derivation	sambo+y
+semporna	slur-containment	porn
+shangalla	reviewed:should-remove	Exonym (Shanqella/Shankella) used in the Horn of Africa as a racial slur for dar
+shita	vulgar-derivation	shit+a
+simporna	slur-containment	porn
+sluthood	vulgar-derivation	slut+hood
+sluttery	reviewed:should-remove	Transparent "slut" derivative used to characterize a person; not an innocent bys
+sluttikin	reviewed:borderline	Obscure diminutive of "slut" applied to a person; no legitimate modern use to pr
+sluttish	reviewed:should-remove	Direct "slut" derivative; despite the dictionary sense "untidy", live use in tee
+sluttishly	reviewed:should-remove	Adverbial form of the same slut-derived personal insult; same harassment vector,
+sluttishness	reviewed:should-remove	Noun form of the same slut-derived personal insult; permanently uncensorable if 
+smut	vulgar-derivation	smut
+smuts	vulgar-derivation	smut+s
+smutter	vulgar-derivation	smut+ter
+smutty	vulgar-derivation	smut+ty
+snigger	slur-containment	nigger
+sniggerer	slur-containment	nigger
+sniggering	slur-containment	nigger
+sodom	vulgar-derivation	sodom
+sodoma	vulgar-derivation	sodom+a
+sodomist	vulgar-derivation	sodom+ist
+sodomy	vulgar-derivation	sodom+y
+spica	vulgar-derivation	spic+a
+spicant	vulgar-derivation	spic+ant
+spicate	vulgar-derivation	spic+ate
+spiced	vulgar-derivation	spic+ed
+spicer	vulgar-derivation	spic+er
+spicery	vulgar-derivation	spic+ery
+spices	vulgar-derivation	spic+es
+spicing	vulgar-derivation	spic+ing
+spick	vulgar-derivation	spick
+spicka	vulgar-derivation	spick+a
+spickard	vulgar-derivation	spick+ard
+spicker	vulgar-derivation	spick+er
+spicous	vulgar-derivation	spic+ous
+spicy	vulgar-derivation	spic+y
+sporn	slur-containment	porn
+squaw	vulgar-derivation	squaw
+squawdom	vulgar-derivation	squaw+dom
+squawtits	reviewed:must-remove	Compounds "squaw" (officially recognized derogatory term for Indigenous women) w
+squawweed	reviewed:borderline	Genuine plant common name, but built on the "squaw" slur; better handled context
+tarse	reviewed:borderline	Archaic English slang for penis alongside its anatomical tarsus sense; obscure e
+tit	vulgar-derivation	tit
+tita	vulgar-derivation	tit+a
+titer	vulgar-derivation	tit+er
+tities	vulgar-derivation	tit+ies
+titlike	vulgar-derivation	tit+like
+tito	vulgar-derivation	tit+o
+titter	vulgar-derivation	tit+ter
+tittie	vulgar-derivation	tittie
+titty	vulgar-derivation	titty
+transvestite	reviewed:should-remove	Dated clinical label now used mainly as a pejorative against trans people in gam
+transvestitism	reviewed:borderline	Same dated-pejorative stem as 'transvestite', though the -ism form is rarely use
+turd	vulgar-derivation	turd
+turda	vulgar-derivation	turd+a
+turdo	vulgar-derivation	turd+o
+unchinked	vulgar-derivation	un+chink+ed
+uncock	vulgar-derivation	un+cock
+uncocked	vulgar-derivation	un+cock+ed
+undamn	vulgar-derivation	un+damn
+unfagged	reviewed:should-remove	Slur string "fag" plus suffix; the legitimate British "fagged = tired" sense is 
+unfagoted	vulgar-derivation	un+fagot+ed
+ungypsylike	vulgar-derivation	un+gypsy+like
+unhorny	vulgar-derivation	un+horny
+unmolested	vulgar-derivation	un+molest+ed
+unmolesting	vulgar-derivation	un+molest+ing
+unniggard	slur-containment	nigga
+unniggardly	slur-containment	nigga
+unpricked	vulgar-derivation	un+prick+ed
+unprostitute	vulgar-derivation	un+prostitute
+unprostituted	reviewed:borderline	Same as unprostitute — archaic "undebased" sense is near-extinct, sexual reading
+unraped	reviewed:should-remove	Archaic word whose entire meaning is sexual violence; realistic chat use is taun
+unretarded	vulgar-derivation	un+retard+ed
+unsmutty	vulgar-derivation	un+smut+ty
+unspiced	vulgar-derivation	un+spic+ed
+unspicy	vulgar-derivation	un+spic+y
+vagina	vulgar-derivation	vagina
+vaginaless	vulgar-derivation	vagina+less
+vanskike	slur-containment	kike
+wank	vulgar-derivation	wank
+wankes	vulgar-derivation	wank+es
+wankier	vulgar-derivation	wank+ier
+wanko	vulgar-derivation	wank+o
+weed	reviewed:borderline	Ordinary plant noun, but also the default slang for cannabis; many teen-rated ti
+wetback	slur-containment	wetback
+whang	reviewed:borderline	Legitimate dialect verb (to beat / a leather thong) but also dated vulgar slang 
+whoredom	vulgar-derivation	whore+dom
+whorelike	vulgar-derivation	whore+like
+whoremaster	vulgar-derivation	whore+master
+whoremasterly	vulgar-derivation	whore+masterly
+whoremastery	vulgar-derivation	whore+mastery
+whoremonger	vulgar-derivation	whore+monger
+whoremonging	vulgar-derivation	whore+monging
+whoreship	vulgar-derivation	whore+ship
+whoreson	vulgar-derivation	whore+son
+wop	vulgar-derivation	wop
+wops	vulgar-derivation	wop+s
