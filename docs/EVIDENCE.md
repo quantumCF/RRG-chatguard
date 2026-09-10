@@ -1,5 +1,23 @@
 # Evidence
 
+> **CORRECTION — 2026-09-10**
+>
+> Figures in this document derived from the client's copy of the filter list are
+> **withdrawn**. Live behaviour shows the server does not enforce that list: `ka`,
+> `ll`, `ui`, `ur`, `te` and `the` are all present in the client copy, yet `okay`,
+> `skill`, `guild`, `your` and `they` are not blocked in game. Conversely `cum`
+> fires (`cucumber` is blocked) but is absent from the client copy.
+>
+> The client list is legacy data — nothing in the client loads it, and it stayed
+> byte-identical across a full content patch. Treating it as live was an error.
+>
+> **What still stands:** substring matching is proven directly (`okkk` blocked,
+> `okay` passes), the observed blocks are real (`cucumber`, `Heisenberg`,
+> `thank`), and every tool here takes the operator's own list as input and is
+> unaffected. **What is withdrawn:** all per-locale percentages, the
+> words-to-unblock counts, and the evasion-recall figure.
+
+
 Two independent bodies of evidence, deliberately kept apart because they have
 very different strengths:
 

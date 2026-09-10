@@ -2,147 +2,113 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Chat Filter Accuracy Audit</title>
+<title>Chat Filter Defect Report</title>
 <style>
   @page { size: Letter; margin: 0; }
   * { box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    margin: 0; padding: 11mm 14mm 7mm 14mm; width: 215.9mm; overflow: hidden;
-    font: 9.1pt/1.36 "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #1a1d21; background: #fff; -webkit-font-smoothing: antialiased;
+    margin: 0; padding: 12mm 16mm 7mm 16mm; width: 215.9mm; overflow: hidden;
+    font: 9.8pt/1.44 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #16191c; background: #fff; -webkit-font-smoothing: antialiased;
   }
-  h1 { font-size: 15.5pt; margin: 0 0 2pt; letter-spacing: -0.3pt; font-weight: 700; }
-  .sub { font-size: 8.6pt; color: #6d757e; padding-bottom: 8pt;
-         border-bottom: 1.6pt solid #1a1d21; margin-bottom: 11pt; }
+  h1 { font-size: 18pt; margin: 0 0 3pt; letter-spacing: -0.3pt; font-weight: 700; }
+  .sub { font-size: 9pt; color: #6d757e; padding-bottom: 8pt;
+         border-bottom: 1.6pt solid #16191c; margin-bottom: 13pt; }
 
-  .summary { font-size: 9.8pt; line-height: 1.36; margin: 0 0 10pt; }
-  .summary b { font-weight: 700; }
+  h2 { font-size: 8.2pt; text-transform: uppercase; letter-spacing: 1pt;
+       color: #8a929b; margin: 0 0 8pt; font-weight: 700; }
+  section { margin-bottom: 12pt; }
+  p { margin: 0 0 8pt; }
 
-  h2 { font-size: 7.8pt; text-transform: uppercase; letter-spacing: 0.9pt;
-       color: #8a929b; margin: 0 0 6pt; font-weight: 700; }
-  section { margin-bottom: 9.5pt; }
-  p { margin: 0 0 6pt; }
+  table.repro { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 9pt; }
+  table.repro td { padding: 4pt 0; border-top: 0.5pt solid #e9ecef; }
+  table.repro td:first-child { font-family: "SF Mono", Menlo, Consolas, monospace;
+                               width: 34%; }
+  table.repro td:nth-child(2) { width: 22%; font-weight: 700; }
+  .bad { color: #b0302a; }
+  .ok  { color: #1c7a44; }
+  .why { color: #6d757e; font-size: 9.4pt; }
 
-  .demo { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.8pt;
-          line-height: 1.5; background: #f6f7f9; border-radius: 3pt;
-          padding: 7pt 10pt; margin: 0 0 7pt; }
-  .demo .to { color: #b03028; }
+  .code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9.4pt;
+          line-height: 1.6; background: #f6f7f9; border-radius: 3pt;
+          padding: 10pt 13pt; margin: 0 0 9pt; }
+  .code .c { color: #6d757e; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
-  th { text-align: left; font-weight: 700; color: #8a929b; font-size: 7.4pt;
-       text-transform: uppercase; letter-spacing: 0.5pt; padding: 0 0 3pt; }
-  td { padding: 2.5pt 0; border-top: 0.5pt solid #eaedf0; }
-  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
-  .was { color: #b03028; font-weight: 700; }
-  .now { color: #1c7a44; font-weight: 700; }
-  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.6pt; }
+  .fix { border: 1.3pt solid #16191c; border-radius: 4pt; padding: 13pt 15pt;
+         margin-bottom: 14pt; }
+  .fix h2 { color: #16191c; }
+  .lead { font-size: 11pt; font-weight: 600; margin: 0 0 9pt; }
 
-  .box { border: 1.2pt solid #1a1d21; border-radius: 3pt; padding: 10pt 12pt; }
-  .box h2 { color: #1a1d21; }
-  .rule { font-size: 9.8pt; font-weight: 600; line-height: 1.35; margin: 0 0 8pt; }
+  .alt { border-left: 2.4pt solid #d5dae0; padding-left: 12pt; }
 
-  .two { display: flex; gap: 18pt; }
-  .two > div { flex: 1; }
-
-  ol { margin: 0; padding-left: 14pt; }
-  ol li { margin-bottom: 5pt; }
-
-  footer { margin-top: 3pt; padding-top: 7pt; border-top: 0.6pt solid #eaedf0;
-           font-size: 7.8pt; color: #6d757e; line-height: 1.45; }
+  footer { margin-top: 0; padding-top: 7pt; border-top: 0.6pt solid #e9ecef;
+           font-size: 8.6pt; color: #6d757e; line-height: 1.5; }
 </style>
 </head>
 <body>
 
-<h1>Chat Filter Accuracy Audit</h1>
-<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; independent analysis &nbsp;·&nbsp; 10 September 2026</div>
-
-<div class="summary">
-  The chat filter matches blocked entries as <b>raw substrings</b>. An entry therefore
-  fires inside any longer word that happens to contain it, so a large volume of ordinary
-  vocabulary is censored in normal conversation. The same design provides little
-  resistance to deliberate evasion. Both effects follow from one implementation choice.
-</div>
+<h1>Chat filter: blocked terms match inside ordinary words</h1>
+<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; player defect report &nbsp;·&nbsp; 10 September 2026</div>
 
 <section>
-  <h2>1. Finding — ordinary words are censored at scale</h2>
-  <p>Measured against the title's own English localization, using the filter word list
-  shipped in the client. Every string below was authored by the publisher, so each flag
-  is unambiguously a false positive.</p>
-  <div class="demo">
-    guild <span class="to">← blocked by "ui"</span> &nbsp;&nbsp; skill <span class="to">← "ll"</span>
-    &nbsp;&nbsp; your <span class="to">← "ur"</span> &nbsp;&nbsp; have <span class="to">← "av"</span><br>
-    all &nbsp;&nbsp; will &nbsp;&nbsp; water &nbsp;&nbsp; after &nbsp;&nbsp; attack &nbsp;&nbsp;
-    monster &nbsp;&nbsp; item &nbsp;&nbsp; team &nbsp;&nbsp; they &nbsp;&nbsp; Prontera<br>
-    Freezing <span class="to">→ ****zing</span> &nbsp;&nbsp; Savage Card <span class="to">→ **vage card</span>
+  <h2>Reproduce — 30 seconds in game</h2>
+  <table class="repro">
+    <tr><td>cucumber</td><td class="bad">blocked</td><td class="why">an ordinary word</td></tr>
+    <tr><td>Heisenberg</td><td class="bad">blocked</td><td class="why">an ordinary name</td></tr>
+    <tr><td>okkk</td><td class="bad">blocked</td><td class="why">contains a blocked term</td></tr>
+    <tr><td>okay</td><td class="ok">passes</td><td class="why">control</td></tr>
+  </table>
+  <p><b><code>okkk</code> being blocked while <code>okay</code> passes is the whole
+  diagnosis.</b> The filter is matching blocked terms as <b>substrings</b>, so a term fires
+  anywhere it appears — including in the middle of a longer, perfectly ordinary word.
+  <code>cucumber</code> is censored for three letters buried inside it.</p>
+  <p>A three-letter term sits inside hundreds of normal words. Players hit this constantly,
+  and editing the term list cannot fix it — the problem is <i>how</i> terms are matched, not
+  <i>which</i> terms are listed.</p>
+</section>
+
+<section class="fix">
+  <h2>Fix — one condition</h2>
+  <p class="lead">A blocked term shorter than 4 characters must match only as a whole
+  word, never inside a longer one.</p>
+  <div class="code">
+    <span class="c">// where a match is currently accepted:</span><br>
+    if (term.length &lt; MIN_SUBSTRING_LEN &amp;&amp; !isWholeWord(text, start, end))<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;continue;&nbsp;&nbsp;<span class="c">// short terms must stand alone</span><br><br>
+    <span class="c">// isWholeWord: chars immediately before/after the match are not alphanumeric</span>
   </div>
-  <p style="margin-bottom:7pt">Those are among the most frequent words in the title's own
-  localization — <b>guild</b> appears 7,586 times, <b>skill</b> 6,109, <b>all</b> 3,484.
-  <b>5,723 words that appear in the game's own text are censored by the game's own filter</b>,
-  and 161,084 across general English vocabulary, place names and surnames. Each is supplied
-  with the fragment responsible as evidence.</p>
-  <div class="two">
-    <div>
-      <table>
-        <tr><th>Locale</th><th class="n">Own item &amp; skill names flagged</th></tr>
-        <tr><td><b>Portuguese</b></td><td class="n was">52.1%</td></tr>
-        <tr><td>Indonesian</td><td class="n was">48.0%</td></tr>
-        <tr><td>English</td><td class="n was">46.1%</td></tr>
-        <tr><td>Thai</td><td class="n was">30.0%</td></tr>
-        <tr><td>Chinese</td><td class="n">8.4%</td></tr>
-      </table>
-    </div>
-    <div>
-      <p>Across all 81,303 localized English strings the rate is <b>69.0%</b>; against an
-      ordinary English dictionary, <b>37.1%</b>.</p>
-      <p>The list is <b>95,660 entries, 93.4% Chinese</b> — market-compliance material,
-      appropriate for the market it was written for. <b>30,262 entries are one to three
-      characters</b>, and as substrings these sit inside ordinary vocabulary.</p>
-    </div>
-  </div>
+  <p style="margin-bottom:0"><b>Nothing is removed from your list.</b> Every term keeps
+  working. Ship it as a config value defaulting to <code>1</code> (current behaviour), set
+  it to <code>4</code>, and revert by setting it back. It is server-side only — no client
+  build, no store review — and it covers words nobody has listed, including surnames and
+  place names.</p>
+</section>
+
+<section class="alt">
+  <h2>If changing the matcher is not an option</h2>
+  <p>An allowlist gives most of the benefit with no matcher change: if a blocked term is
+  found <b>strictly inside</b> a word on the allowlist, skip the block. A verified
+  473,532-word list of ordinary English vocabulary, place names and surnames is included
+  (<code>deploy/allowlist-en.txt</code>), along with a ~20-line reference check. It is
+  purely additive — it can only remove false positives, never block more.</p>
 </section>
 
 <section>
-  <h2>2. Finding — detection of disguised abuse is weak</h2>
-  <p>Across ten common obfuscation strategies the list detects <b>22.9%</b>. Spaced-out
-  text, full-width characters and homoglyph substitutions pass unmodified; of 25 common
-  English profanity terms tested, <b>6</b> appear in the list at all. Correcting the
-  matching improves accuracy in <b>both</b> directions — it is not a reduction in
-  moderation coverage.</p>
-</section>
-
-<section class="box">
-  <h2>Recommendations</h2>
-  <ol>
-    <li><b>Deploy the supplied allowlist.</b> A verified list of ordinary words that the
-    current list censors — each one drawn from a dictionary, gazetteer or census file,
-    with the responsible fragment recorded as evidence. Purely additive: it can only
-    remove false positives, never add blocking. No matcher changes required.</li>
-    <li><b>Apply a minimum fragment length.</b> One conditional: an entry shorter than
-    N characters matches only as a whole word. Nothing is deleted and no entry is
-    reviewed, and unlike a list it covers vocabulary that has never been enumerated —
-    surnames, place names, future slang.
-      <table style="margin-top:5pt">
-        <tr><th>Own names flagged</th><th class="n">current</th><th class="n">N=3</th><th class="n">N=4</th></tr>
-        <tr><td>English</td><td class="n was">46.1%</td><td class="n">7.6%</td><td class="n now">4.0%</td></tr>
-        <tr><td>Portuguese</td><td class="n was">52.1%</td><td class="n">8.2%</td><td class="n now">0.9%</td></tr>
-        <tr><td>Indonesian</td><td class="n was">48.0%</td><td class="n">6.2%</td><td class="n now">3.1%</td></tr>
-        <tr><td>Thai</td><td class="n was">30.0%</td><td class="n">4.3%</td><td class="n now">2.4%</td></tr>
-      </table>
-    </li>
-    <li><b>Add the supplied CI check.</b> ~40 lines, no dependencies, enforcing one
-    invariant: no string the publisher authored may be flagged by its own filter.</li>
-  </ol>
+  <h2>Confirm the fix worked</h2>
+  <p style="margin-bottom:0">Two included tools, no dependencies.
+  <code>selftest_filter.py</code> fails the build if any string you authored is flagged by
+  your own filter — worth putting in CI beside the localization export.
+  <code>lengthrule.py</code> reports the false-positive rate on your own content for each
+  setting of <code>MIN_SUBSTRING_LEN</code>, so the value can be chosen from your data.</p>
 </section>
 
 <footer>
-  <b>Scope and limitations.</b> Analysis used the filter word list shipped in the client
-  build, which does not exactly match the list enforced server-side and which changes over
-  time. The conclusions about matching behaviour are independently supported by observed
-  live behaviour, but specific entries named in the supporting material should be
-  re-derived against the production list before action; all tooling to do so is included
-  and every figure is reproducible. &nbsp;·&nbsp; No recommendation requires a client
-  update — the filter check is already a server round trip.
+  Based on behaviour observed in the live game. We could not determine which specific terms
+  your server enforces, so no list of individual entries is included and none should be
+  inferred; the recommendation depends only on the matching behaviour demonstrated above. A
+  probe procedure that identifies the responsible terms in about twenty in-game messages is
+  included if useful.
 </footer>
 
 </body>
