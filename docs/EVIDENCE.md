@@ -148,7 +148,40 @@ Globally, dropping just the **59 romanized entries of ≤2 characters**:
 Scoping the 433 single-Han-character entries takes cn 8.4% → 4.3% and
 tw 9.7% → 4.7%.
 
-### 2.4 Under-blocking
+### 2.4 The minimum-fragment-length rule
+
+The single highest-leverage change measured. An entry shorter than N characters
+matches only as a whole word; nothing is deleted and no entry is reviewed.
+
+Measured on each locale's own authored item and skill names:
+
+| locale | today | N=2 | N=3 | **N=4** | N=5 |
+|---|---|---|---|---|---|
+| English | 46.1% | 46.1% | 7.6% | **4.0%** | 3.0% |
+| Portuguese | 52.1% | 52.1% | 8.2% | **0.9%** | 0.5% |
+| Indonesian | 48.0% | 48.0% | 6.2% | **3.1%** | 2.2% |
+| Thai | 30.0% | 30.0% | 4.3% | **2.4%** | 1.9% |
+| Vietnamese | 9.7% | 9.7% | 3.4% | **2.5%** | 2.4% |
+| Korean | 0.0% | 0.0% | 0.0% | 0.0% | 0.0% |
+| Chinese (Simp) | 8.4% | 5.9% | 2.5% | **2.3%** | 2.1% |
+| Chinese (Trad) | 9.7% | 6.7% | 2.9% | **2.7%** | 2.6% |
+
+Two things are worth reading carefully.
+
+**N=2 changes almost nothing.** The 497 single-character entries barely matter
+for Latin scripts; the damage is done by the 11,872 two-character and 17,893
+three-character entries. The step from N=3 to N=4 is where the collapse happens.
+
+**It beats the allowlist on coverage, structurally.** An allowlist is an
+enumeration and proper nouns are an open set. `Heisenberg` appears in no
+public-domain dictionary, gazetteer or census file we could find, so a 473,841-word
+allowlist still does not rescue it. A length rule rescues every proper noun that
+will ever exist. This is why the report leads with the rule and treats the
+allowlist as the second option rather than the first.
+
+Reproduce with `tools/lengthrule.py`.
+
+### 2.5 Under-blocking
 
 Ten obfuscation strategies applied to known terms.
 
@@ -166,7 +199,7 @@ Ten obfuscation strategies applied to known terms.
 
 Of 25 common English profanity terms tested, **6** appear in the list at all.
 
-### 2.5 What the fix measures
+### 2.6 What the fix measures
 
 | corpus | n | substring | whole-word | chatguard | chatguard + domain lexicon |
 |---|---|---|---|---|---|
@@ -184,7 +217,7 @@ than the baseline, which flattered it for reasons unrelated to the engine. The
 5,695-term vocabulary, chatguard's matcher alone takes English-dictionary false
 positives from **37.1% to 0.0%**.
 
-### 2.6 Shadow run
+### 2.7 Shadow run
 
 `shadow.py` over 4,004 of the game's own names, incumbent authoritative:
 
