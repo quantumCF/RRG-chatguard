@@ -1,5 +1,5 @@
 # Terms confirmed blocked by the live filter (reference only).
-# count: 56
+# count: 78
 #
 anal
 anus
@@ -16,6 +16,7 @@ coon
 coons
 coony
 coprolagnia
+cu
 cum
 cumming
 cums
@@ -23,6 +24,7 @@ cumshot
 cumshots
 cunnilingus
 cunt
+decumary
 ejaculation
 fuck
 fucking
@@ -36,7 +38,22 @@ masturbation
 motherfucker
 neonazi
 nigga
+niggard
+niggardize
+niggardliness
+niggardling
+niggardness
 nigger
+niggerdom
+niggerfish
+niggergoose
+niggerhead
+niggerish
+niggerism
+niggerling
+niggertoe
+niggerweed
+niggery
 octopussy
 penis
 playboy
@@ -53,7 +70,12 @@ shit
 shita
 shitblimp
 shitty
+snigger
+sniggerer
+sniggering
 sucks
 twat
 ui
+unniggardly
 vagina
+vaginaless

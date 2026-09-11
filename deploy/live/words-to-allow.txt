@@ -1,105 +1,704 @@
 # ORDINARY WORDS CONFIRMED CENSORED BY THE LIVE FILTER
 #
-# Each word below was sent to the live server in a chat message
-# and refused. None is profanity. Adding these to an allow list
-# removes a false positive and cannot weaken moderation.
+# Every word was sent to the live server and refused. Each is a real
+# dictionary word and none is profanity. Adding these to an allow list
+# removes false positives and cannot weaken moderation.
 #
-# words: 97
+# Evasion-test strings, sub-4-letter probes and profanity have been
+# excluded, so this is the conservative subset.
 #
-accumulate	# blocked by 'cum'
-accumulation	# blocked by 'cum'
-accumulative	# blocked by 'cum'
-acumen	# blocked by 'cum'
-anticum	# blocked by 'cum'
-anusim	# blocked by 'anus'
-balanus	# blocked by 'anus'
-cacoon	# blocked by 'coon'
-caecum	# blocked by 'cum'
-cajanus	# blocked by 'anus'
-carcoon	# blocked by 'coon'
-circumvent	# blocked by 'cum'
-cockshy	# blocked by 'cocks'
+# words: 693
+#
+abdominovaginal
+accumbency
+accumbent
+accumber
+accumulable
+accumulate
+accumulation
+accumulativ
+accumulative
+accumulatively
+accumulativeness
+accumulator
+acrosarcum
+acumen
+acuminate
+acumination
+acuminose
+acuminous
+acuminulate
+alexipharmacum
+ambosexous
+ammoniacum
+angraecum
+antara
+antesignanus
+anthericum
+anticum
+antiejaculation
+antoninianus
+anusim
+anusvara
+argusianus
+aurichalcum
+aurignacian
+balanus
+barracoon
+becumber
+bereshith
+betwattled
+biacuminate
+blacksmith
+boysenberry
+brushite
+cacoon
+cacuminal
+cacuminate
+cacumination
+cacuminous
+caecum
+cajanus
+canalicular
+canaliculate
+canaliculated
+canaliculation
+canaliculi
+canaliculization
+capsicum
+carcoon
+catacumbal
+cathedraticum
+cervicovaginal
+chalcidicum
+chickenberry
+chinaberry
+chlorococcum
+chrysobalanus
+chrysophanus
+circular
+circumagitate
+circumagitation
+circumambages
+circumambagious
+circumambience
+circumambiency
+circumambient
+circumambulate
+circumambulator
+circumambulatory
+circumanal
+circumarticular
+circumaviate
+circumaviation
+circumaviator
+circumaxial
+circumaxile
+circumaxillary
+circumbasal
+circumbendibus
+circumboreal
+circumbuccal
+circumbulbar
+circumcallosal
+circumcellion
+circumcenter
+circumcentral
+circumcinct
+circumcincture
+circumcircle
+circumcise
+circumciser
+circumcision
+circumclude
+circumclusion
+circumcolumnar
+circumconic
+circumcorneal
+circumcrescence
+circumcrescent
+circumdenudation
+circumdiction
+circumduce
+circumduct
+circumduction
+circumesophagal
+circumesophageal
+circumference
+circumferential
+circumferentor
+circumflant
+circumflect
+circumflex
+circumflexion
+circumfluence
+circumfluent
+circumfluous
+circumforaneous
+circumfulgent
+circumfuse
+circumfusile
+circumfusion
+circumgenital
+circumgyrate
+circumgyration
+circumgyratory
+circumhorizontal
+circumincession
+circuminsession
+circuminsular
+circumintestinal
+circumjacence
+circumjacency
+circumjacent
+circumlental
+circumlitio
+circumlittoral
+circumlocute
+circumlocution
+circumlocutional
+circumlocutory
+circummeridian
+circummeridional
+circummigration
+circummundane
+circummure
+circumnatant
+circumnavigable
+circumnavigate
+circumnavigation
+circumnavigator
+circumnavigatory
+circumneutral
+circumnuclear
+circumnutate
+circumnutation
+circumnutatory
+circumocular
+circumoesophagal
+circumoral
+circumorbital
+circumpacific
+circumpallial
+circumpentagon
+circumplicate
+circumplication
+circumpolar
+circumpolygon
+circumpose
+circumposition
+circumradius
+circumrenal
+circumrotate
+circumrotation
+circumrotatory
+circumsail
+circumscissile
+circumscribable
+circumscribe
+circumscribed
+circumscriber
+circumscript
+circumscriptive
+circumscriptly
+circumsinous
+circumspangle
+circumspatial
+circumspect
+circumspection
+circumspective
+circumspectively
+circumspectly
+circumspectness
+circumspheral
+circumstanced
+circumstantiable
+circumstantial
+circumstantially
+circumstantiate
+circumtabular
+circumterraneous
+circumtonsillar
+circumtropical
+circumumbilical
+circumundulate
+circumundulation
+circumvallate
+circumvallation
+circumvascular
+circumvent
+circumvention
+circumventive
+circumventor
+circumviate
+circumvolant
+circumvolute
+circumvolution
+circumvolutory
+circumvolve
+circumzenithal
+circus
+clitorism
+cockscomb
+cockscombed
+cocksfoot
+cockshead
+cockshot
+cockshut
+cockshy
+cockshying
+cockspur
+cockstone
+cocksure
+cocksuredom
+cocksureism
+cocksurely
+cocksureness
+cocksurety
 cocoa
 cocoach
-cocoon	# blocked by 'coon'
-coecum	# blocked by 'cum'
-cooncan	# blocked by 'coon'
-coonily	# blocked by 'coon'
-coontie	# blocked by 'coon'
-cucumber	# blocked by 'cum'
-cucumis	# blocked by 'cum'
-cumacea	# blocked by 'cum'
-cumaean	# blocked by 'cum'
-cumar	# blocked by 'cum'
-cumay	# blocked by 'cum'
-cumbent	# blocked by 'cum'
-cumber	# blocked by 'cum'
-cumbha	# blocked by 'cum'
-cumbly	# blocked by 'cum'
-cumbre	# blocked by 'cum'
-cumbu	# blocked by 'cum'
-cumene	# blocked by 'cum'
-cumenyl	# blocked by 'cum'
-cumhal	# blocked by 'cum'
-cumic	# blocked by 'cum'
-cumidin	# blocked by 'cum'
-cumin	# blocked by 'cum'
-cuminal	# blocked by 'cum'
-cuminic	# blocked by 'cum'
-cuminol	# blocked by 'cum'
-cuminyl	# blocked by 'cum'
-cummer	# blocked by 'cum'
-cummin	# blocked by 'cum'
-cumol	# blocked by 'cum'
-cump	# blocked by 'cum'
-cumshaw	# blocked by 'cum'
-cumular	# blocked by 'cum'
-cumulate	# blocked by 'cum'
-cumulative	# blocked by 'cum'
-cumuli	# blocked by 'cum'
-cumulus	# blocked by 'cum'
-cumyl	# blocked by 'cum'
-curcuma	# blocked by 'cum'
-cushite	# blocked by 'shit'
-cyanus	# blocked by 'anus'
-decuman	# blocked by 'cum'
-dhanush	# blocked by 'anus'
-document	# blocked by 'cum'
-documentation	# blocked by 'cum'
-elanus	# blocked by 'anus'
-flocoon	# blocked by 'coon'
-ianus	# blocked by 'anus'
-incumbent	# blocked by 'cum'
-janus	# blocked by 'anus'
-jocum	# blocked by 'cum'
-jocuma	# blocked by 'cum'
-locum	# blocked by 'cum'
-lucanus	# blocked by 'anus'
-lucuma	# blocked by 'cum'
-lucumia	# blocked by 'cum'
-lucumo	# blocked by 'cum'
-manus	# blocked by 'anus'
-manuscript	# blocked by 'anus'
-modicum	# blocked by 'cum'
-orichalcum	# blocked by 'cum'
-poonga	# blocked by 'poon'
-raccoon	# blocked by 'coon'
-racoon	# blocked by 'coon'
-scoon	# blocked by 'coon'
-scummy	# blocked by 'cum'
-scunthorpe	# blocked by 'cunt'
-sexfid	# blocked by 'sex'
-sextan	# blocked by 'sex'
-succumb	# blocked by 'cum'
-talcum	# blocked by 'cum'
-tanala	# blocked by 'anal'
-tecum	# blocked by 'cum'
-tetanus	# blocked by 'anus'
-tucum	# blocked by 'cum'
-tucuma	# blocked by 'cum'
-tycoon	# blocked by 'coon'
-unicum	# blocked by 'cum'
-uranus	# blocked by 'anus'
-yercum	# blocked by 'cum'
-zincum	# blocked by 'cum'
-zoacum	# blocked by 'cum'
+cocoon
+cocoonery
+coecum
+colchicum
+cooncan
+coonily
+cooniness
+coonroot
+coonskin
+coontail
+coontie
+coriolanus
+cornberry
+crackerberry
+cranberry
+cucumaria
+cucumariidae
+cucumber
+cucumis
+cult
+cumacea
+cumacean
+cumaceous
+cumaean
+cumaldehyde
+cumanagoto
+cumaphyte
+cumaphytic
+cumaphytism
+cumar
+cumay
+cumbent
+cumber
+cumberer
+cumberlandite
+cumberless
+cumberment
+cumbersomely
+cumbersomeness
+cumberworld
+cumbha
+cumbly
+cumbraite
+cumbrance
+cumbre
+cumbrian
+cumbrous
+cumbrousness
+cumbu
+cumene
+cumengite
+cumenyl
+cumhal
+cumic
+cumidin
+cumidine
+cumin
+cuminal
+cuminic
+cuminoin
+cuminol
+cuminole
+cuminseed
+cuminyl
+cummer
+cummerbund
+cummin
+cummingtonite
+cumol
+cump
+cumshaw
+cumulant
+cumular
+cumulate
+cumulately
+cumulation
+cumulatist
+cumulative
+cumulatively
+cumulativeness
+cumuli
+cumuliform
+cumulite
+cumulophyric
+cumulose
+cumulous
+cumulus
+cumyl
+curcuma
+curcumin
+curious
+curlewberry
+current
+curse
+cursed
+cushite
+cushitic
+cute
+cutwater
+cyanus
+decuman
+decumana
+decumanus
+decumbence
+decumbency
+decumbently
+decumbiture
+dhanush
+diaconicum
+discumber
+discuss
+disencumberment
+disencumbrance
+disinvagination
+document
+documental
+documentalist
+documentarily
+documentary
+documentation
+documentize
+doronicum
+ecumenic
+ecumenical
+ecumenicalism
+ecumenicality
+ecumenically
+ecumenicity
+elanus
+elkoshite
+encumber
+encumberer
+encumberingly
+encumberment
+encumbrance
+encumbrancer
+endostracum
+escudo
+evaginable
+evaginate
+evagination
+extravaginal
+fenberry
+firecracker
+flocoon
+fractocumulus
+fusicoccum
+girgashite
+guaiacum
+hainberry
+heartwater
+hemiganus
+hemipenis
+hypericum
+ianus
+ileocaecum
+incircumspect
+incircumspection
+incircumspectly
+incumbence
+incumbency
+incumbent
+incumbentess
+incumber
+incumberment
+incumbrancer
+indicia
+inferno
+infravaginal
+intercanalicular
+intervaginal
+intracanalicular
+intravaginal
+invaginable
+invaginate
+invagination
+irenicum
+ischiovaginal
+janus
+jocum
+jocuma
+kaneshite
+koreishite
+laconicum
+latericumbent
+levisticum
+ligusticum
+locum
+locust
+locustberry
+loganberry
+lucanus
+lucuma
+lucumia
+lucumo
+lucumony
+lutianus
+lutjanus
+mackintoshite
+manus
+manuscript
+manuscriptal
+manuscription
+manuscriptural
+manusina
+manustupration
+marshite
+masturbational
+megalopenis
+mesocaecum
+metabrushite
+meter
+micropenis
+misexecute
+misexecution
+modicum
+molluscum
+myrabalanus
+noncumulative
+nondocumentary
+nonoecumenic
+nonvaginal
+oecumenian
+oecumenic
+oecumenical
+oecumenicalism
+oecumenicity
+offscum
+orichalcum
+ostracum
+outwatch
+outwater
+ovatoacuminate
+overaccumulate
+overaccumulation
+overcircumspect
+overcumber
+palaeoniscum
+pandanus
+panegyricum
+panicum
+parabolanus
+parietovaginal
+pauciarticulate
+pauciarticulated
+pauldron
+pauliccian
+paulicianism
+pelecanus
+penistone
+perineovaginal
+periostracum
+perivaginal
+phascum
+phasianus
+pica
+picumninae
+picumnus
+pigeonberry
+placuntitis
+placuntoma
+polysaccum
+poonga
+posticum
+practicum
+preaccumulate
+preaccumulation
+predocumentary
+prejudicial
+presuperficially
+procumbent
+prosopotocia
+pseudocumene
+pseudocumenyl
+pseudocumidine
+pseudocumyl
+pseudotetanus
+puccoon
+pussycat
+pussyfoot
+pussyfooted
+pussyfooting
+pussyfootism
+pussytoe
+quincuncial
+quincuncially
+raccoon
+raccoonberry
+racoon
+rainbow
+raphanus
+reaccumulate
+reaccumulation
+rectovaginal
+recumbence
+recumbency
+recumbent
+recumbently
+rowanberry
+salmonberry
+scoon
+scoutwatch
+scumber
+scumble
+scumbling
+scumboard
+scumfish
+scumless
+scumlike
+scummed
+scummer
+scumming
+scummy
+scumproof
+semidocumentary
+semirecumbent
+serranus
+sexarticulate
+sexcuspidate
+sexfid
+sexitubercular
+sexlocular
+sexological
+sexologist
+sexology
+sextan
+sextantal
+sextubercular
+sextuberculate
+shitepoke
+shither
+shittah
+shittim
+shittimwood
+sicilicum
+siganus
+silvanus
+spoonbill
+stealth
+subacuminate
+subvaginal
+succumb
+succumbence
+succumbency
+succumbent
+succumber
+suckstone
+sunbeam
+sunberry
+superaccumulate
+superincumbence
+superincumbency
+superincumbent
+superincumbently
+supravaginal
+sweetwater
+tabacum
+tabanus
+talcum
+talipomanus
+tanala
+taraxacum
+tecum
+tendovaginal
+tetanus
+thanks
+totanus
+toxicum
+triticum
+tubovaginal
+tucum
+tucuma
+tucuman
+twatchel
+twatterlight
+twattle
+twattler
+twattling
+twinberry
+tycoon
+tycoonate
+typicum
+ultimate
+unaccumulable
+unaccumulate
+unaccumulated
+unaccumulation
+unbeneficial
+uncircumcised
+uncircumcision
+uncircumlocutory
+uncircumscribed
+uncircumscript
+uncircumspect
+uncircumspection
+uncircumspectly
+uncircumstanced
+uncircumstantial
+uncumber
+uncumbered
+uncumbrous
+understand
+undocumentary
+undocumented
+undocumentedness
+unencumber
+unencumbered
+unencumberedly
+unencumbering
+unicum
+unincumbered
+uninvaginated
+unlocked
+unoecumenic
+unoecumenical
+unrecumbent
+unsuccumbing
+uranus
+ureterovaginal
+urethrovaginal
+uterovaginal
+vacuum
+vaginal
+vaginalectomy
+vaginalitis
+vaginant
+vaginate
+vaginated
+varanus
+ventricumbent
+verbascum
+vesicovaginal
+viaticum
+vincetoxicum
+volcanus
+vulvovaginal
+washita
+whinberry
+winberry
+yercum
+yorkshire
+zimentwater
+zincum
+zoacum
+zygomaticum

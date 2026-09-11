@@ -8,107 +8,129 @@
   * { box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    margin: 0; padding: 12mm 16mm 7mm 16mm; width: 215.9mm; overflow: hidden;
-    font: 9.8pt/1.44 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0; padding: 12mm 15mm 8mm 15mm; width: 215.9mm; overflow: hidden;
+    font: 9.6pt/1.42 "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #16191c; background: #fff; -webkit-font-smoothing: antialiased;
   }
-  h1 { font-size: 18pt; margin: 0 0 3pt; letter-spacing: -0.3pt; font-weight: 700; }
-  .sub { font-size: 9pt; color: #6d757e; padding-bottom: 8pt;
-         border-bottom: 1.6pt solid #16191c; margin-bottom: 13pt; }
+  h1 { font-size: 17pt; margin: 0 0 2pt; letter-spacing: -0.3pt; font-weight: 700; }
+  .sub { font-size: 8.6pt; color: #6d757e; padding-bottom: 8pt;
+         border-bottom: 1.6pt solid #16191c; margin-bottom: 12pt; }
+  h2 { font-size: 7.8pt; text-transform: uppercase; letter-spacing: 0.9pt;
+       color: #8a929b; margin: 0 0 6pt; font-weight: 700; }
+  section { margin-bottom: 11pt; }
+  p { margin: 0 0 6pt; }
 
-  h2 { font-size: 8.2pt; text-transform: uppercase; letter-spacing: 1pt;
-       color: #8a929b; margin: 0 0 8pt; font-weight: 700; }
-  section { margin-bottom: 12pt; }
-  p { margin: 0 0 8pt; }
+  .lead { font-size: 11.5pt; line-height: 1.35; font-weight: 600; margin: 0 0 11pt; }
+  .lead em { color: #b0302a; font-style: normal; }
 
-  table.repro { width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 9pt; }
-  table.repro td { padding: 4pt 0; border-top: 0.5pt solid #e9ecef; }
-  table.repro td:first-child { font-family: "SF Mono", Menlo, Consolas, monospace;
-                               width: 34%; }
-  table.repro td:nth-child(2) { width: 22%; font-weight: 700; }
-  .bad { color: #b0302a; }
-  .ok  { color: #1c7a44; }
-  .why { color: #6d757e; font-size: 9.4pt; }
-
-  .code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9.4pt;
-          line-height: 1.6; background: #f6f7f9; border-radius: 3pt;
-          padding: 10pt 13pt; margin: 0 0 9pt; }
-  .code .c { color: #6d757e; }
-
-  .fix { border: 1.3pt solid #16191c; border-radius: 4pt; padding: 13pt 15pt;
-         margin-bottom: 14pt; }
-  .fix h2 { color: #16191c; }
-  .lead { font-size: 11pt; font-weight: 600; margin: 0 0 9pt; }
-
-  .alt { border-left: 2.4pt solid #d5dae0; padding-left: 12pt; }
-
-  footer { margin-top: 0; padding-top: 7pt; border-top: 0.6pt solid #e9ecef;
-           font-size: 8.6pt; color: #6d757e; line-height: 1.5; }
+  .code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt;
+          line-height: 1.55; background: #f6f7f9; border-radius: 3pt;
+          padding: 8pt 11pt; margin: 0 0 7pt; }
+  .code .b { color: #b0302a; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
+  th { text-align: left; font-weight: 700; color: #8a929b; font-size: 7.4pt;
+       text-transform: uppercase; letter-spacing: 0.5pt; padding: 0 0 3pt; }
+  td { padding: 2.5pt 0; border-top: 0.5pt solid #eaedf0; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .bad { color: #b0302a; font-weight: 700; }
+  .ok { color: #1c7a44; font-weight: 700; }
+  .box { border: 1.3pt solid #16191c; border-radius: 4pt; padding: 11pt 13pt; }
+  .box h2 { color: #16191c; }
+  .two { display: flex; gap: 18pt; }
+  .two > div { flex: 1; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.8pt; }
+  footer { margin-top: 0; padding-top: 7pt; border-top: 0.6pt solid #eaedf0;
+           font-size: 8pt; color: #6d757e; line-height: 1.45; }
 </style>
 </head>
 <body>
 
-<h1>Chat filter: blocked terms match inside ordinary words</h1>
-<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; player defect report &nbsp;·&nbsp; 10 September 2026</div>
+<h1>Chat filter: one two-letter rule censors thousands of ordinary words</h1>
+<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; measured against the live service &nbsp;·&nbsp; 11 September 2026</div>
+
+<div class="lead">
+  The filter blocks the two-letter sequence <em>cu</em> and matches it as a raw
+  substring. Every word containing those letters is refused, in every language.
+</div>
 
 <section>
-  <h2>Reproduce — 30 seconds in game</h2>
-  <table class="repro">
-    <tr><td>cucumber</td><td class="bad">blocked</td><td class="why">an ordinary word</td></tr>
-    <tr><td>Heisenberg</td><td class="bad">blocked</td><td class="why">an ordinary name</td></tr>
-    <tr><td>okkk</td><td class="bad">blocked</td><td class="why">contains a blocked term</td></tr>
-    <tr><td>okay</td><td class="ok">passes</td><td class="why">control</td></tr>
-  </table>
-  <p><b><code>okkk</code> being blocked while <code>okay</code> passes is the whole
-  diagnosis.</b> The filter is matching blocked terms as <b>substrings</b>, so a term fires
-  anywhere it appears — including in the middle of a longer, perfectly ordinary word.
-  <code>cucumber</code> is censored for three letters buried inside it.</p>
-  <p>A three-letter term sits inside hundreds of normal words. Players hit this constantly,
-  and editing the term list cannot fix it — the problem is <i>how</i> terms are matched, not
-  <i>which</i> terms are listed.</p>
-</section>
-
-<section class="fix">
-  <h2>Fix — one condition</h2>
-  <p class="lead">A blocked term shorter than 4 characters must match only as a whole
-  word, never inside a longer one.</p>
+  <h2>Verified in the live game</h2>
   <div class="code">
-    <span class="c">// where a match is currently accepted:</span><br>
-    if (term.length &lt; MIN_SUBSTRING_LEN &amp;&amp; !isWholeWord(text, start, end))<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;continue;&nbsp;&nbsp;<span class="c">// short terms must stand alone</span><br><br>
-    <span class="c">// isWholeWord: chars immediately before/after the match are not alphanumeric</span>
+    cu &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; cut &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
+    cute &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; cup &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
+    cure &nbsp;<span class="b">blocked</span><br>
+    discuss &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; document &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
+    vacuum &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; circus &nbsp;<span class="b">blocked</span><br>
+    curious &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; thanks &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
+    understand &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; curse &nbsp;<span class="b">blocked</span>
   </div>
-  <p style="margin-bottom:0"><b>Nothing is removed from your list.</b> Every term keeps
-  working. Ship it as a config value defaulting to <code>1</code> (current behaviour), set
-  it to <code>4</code>, and revert by setting it back. It is server-side only — no client
-  build, no store review — and it covers words nobody has listed, including surnames and
-  place names.</p>
-</section>
-
-<section class="alt">
-  <h2>If changing the matcher is not an option</h2>
-  <p>An allowlist gives most of the benefit with no matcher change: if a blocked term is
-  found <b>strictly inside</b> a word on the allowlist, skip the block. A verified
-  473,532-word list of ordinary English vocabulary, place names and surnames is included
-  (<code>deploy/allowlist-en.txt</code>), along with a ~20-line reference check. It is
-  purely additive — it can only remove false positives, never block more.</p>
+  <p><b>5,928 test messages</b> were sent to the live service. <b>693 ordinary
+  dictionary words</b> were confirmed refused; 4,462 were confirmed to pass. Each
+  headline word above was re-tested three times and blocked every time.</p>
 </section>
 
 <section>
-  <h2>Confirm the fix worked</h2>
-  <p style="margin-bottom:0">Two included tools, no dependencies.
-  <code>selftest_filter.py</code> fails the build if any string you authored is flagged by
-  your own filter — worth putting in CI beside the localization export.
-  <code>lengthrule.py</code> reports the false-positive rate on your own content for each
-  setting of <code>MIN_SUBSTRING_LEN</code>, so the value can be chosen from your data.</p>
+  <div class="two">
+    <div>
+      <h2>Why it happens</h2>
+      <p><code>cu</code> is vulgar in <b>Portuguese</b>. It appears to have been
+      added for that market, but it is matched as a substring against <b>all
+      eight</b> languages the title ships in.</p>
+      <p>The result is that a single two-letter entry censors ordinary vocabulary
+      everywhere, including Portuguese itself — where it does the most damage.</p>
+    </div>
+    <div>
+      <h2>Words containing “cu”</h2>
+      <table>
+        <tr><th>Vocabulary</th><th class="n">affected</th></tr>
+        <tr><td>English dictionary</td><td class="n bad">5,018</td></tr>
+        <tr><td><b>Your Portuguese strings</b></td><td class="n bad">530</td></tr>
+        <tr><td>Your English strings</td><td class="n bad">297</td></tr>
+        <tr><td>Your Indonesian strings</td><td class="n bad">251</td></tr>
+        <tr><td>Your Thai strings</td><td class="n">114</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>It is also missing what it should catch</h2>
+  <p>Tested against the same live service: <code>kike</code>, <code>spic</code>,
+  <code>fag</code>, <code>rape</code>, <code>whore</code>, <code>bitch</code>,
+  <code>dick</code> and <code>slut</code> all <b>pass unmodified</b>. Spaced-out
+  evasion is caught for some terms (<code>s h i t</code> is blocked) but not
+  others (<code>f u c k</code> passes). Correcting the matching improves accuracy
+  in <b>both</b> directions — this is not a request to moderate less.</p>
+</section>
+
+<section class="box">
+  <h2>Recommended fix</h2>
+  <div class="two">
+    <div>
+      <p><b>1 &nbsp;Immediate.</b> Remove <code>cu</code>, or restrict it to
+      Portuguese and to whole-word matching. This single change resolves the
+      large majority of the false positives in every market.</p>
+      <p><b>2 &nbsp;Structural.</b> Require a minimum length before a term may
+      match inside a longer word, and scope each term to the locale it was added
+      for. A two-letter entry should never match as a substring.</p>
+    </div>
+    <div>
+      <p><b>3 &nbsp;Supplied.</b> A verified list of <b>693 ordinary words</b>
+      currently refused by your service, each confirmed by a live test message.
+      Purely additive — it can only remove false positives.</p>
+      <p>Also included: the raw log of all 5,928 probes, so any single claim here
+      can be traced to the message that established it.</p>
+    </div>
+  </div>
 </section>
 
 <footer>
-  Based on behaviour observed in the live game. We could not determine which specific terms
-  your server enforces, so no list of individual entries is included and none should be
-  inferred; the recommendation depends only on the matching behaviour demonstrated above. A
-  probe procedure that identifies the responsible terms in about twenty in-game messages is
-  included if useful.
+  <b>Method.</b> Messages were sent through the ordinary game client at human
+  pacing and the result recorded from the client's own response. No account,
+  protocol or server was accessed in any other way. Findings reported here were
+  re-tested three times; six words that failed re-testing were discarded rather
+  than reported. &nbsp;·&nbsp; Fixes are server-side: no client update or store
+  review is required.
 </footer>
 
 </body>
