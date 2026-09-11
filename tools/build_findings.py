@@ -8,11 +8,31 @@ the live filter) and emits:
     findings.json          machine-readable summary
     words-to-allow.txt     ordinary words confirmed censored -- the deployable list
     blocked-terms.txt      terms confirmed blocked, for reference
-    FINDINGS.md            the human-readable report body
+    affected-words.txt     the full blast radius, DERIVED from a dictionary
 
-Every entry carries provenance: it is in the list because a message containing
-it was refused by the live server, and the probe that established it is in the
-log. Nothing here is inferred from a client-side word list.
+Every entry in words-to-allow.txt carries provenance: it is there because a
+message containing it was sent to the live server and refused, and the probe
+that established it is in the raw logs. Nothing in that file is inferred.
+
+affected-words.txt is different in kind and is labelled as such: it is what the
+confirmed rules imply for words that were never probed. Keeping the measured
+and the derived apart is the whole point -- an earlier draft of this report
+mixed them and had to be withdrawn.
+
+Three properties of the raw data drive the logic here:
+
+  "mismatch" is not a verdict. The harness checks by OCR that the text reached
+  the input box before clicking Send; when that fails it records "mismatch" and
+  stops, so no message was sent and the word was never tested. Treating it as a
+  pass would understate the finding, so those records are dropped and the word
+  is reported as untested unless some other probe settled it.
+
+  One observation is not a result. Detection is OCR-based and occasionally
+  wrong, so a verdict is a vote across independent passes, not the last record
+  written.
+
+  A blocked fragment can be two characters. Both confirmed root causes are, so
+  any minimum-length rule above 2 silently discards them.
 """
 
 from __future__ import annotations
@@ -21,10 +41,9 @@ import argparse
 import collections
 import json
 import os
+import re
 import sys
 
-# Words that are profanity themselves -- they belong on the blocked-terms list,
-# never on the allow list, regardless of how they were probed.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 try:
     from safety_screen import is_slur, is_vulgar_derivation
@@ -35,132 +54,221 @@ except Exception:
     def is_vulgar_derivation(w):
         return (False, "")
 
+CARRIERS = (("xx", "xx"), ("qz", "jv"), ("qz", "qz"), ("mm", "mm"),
+            ("qw", "qw"))
+
+
+def unwrap(w):
+    """Carrier probes (xxCUxx) tested a fragment in inert padding, not a word."""
+    for pre, suf in CARRIERS:
+        if w.startswith(pre) and w.endswith(suf) and len(w) > len(pre) + len(suf):
+            return w[len(pre):-len(suf)], True
+    return w, False
+
 
 def load(path):
     rows = []
+    if not os.path.exists(path):
+        return rows
     with open(path, encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
-            if line:
-                try:
-                    rows.append(json.loads(line))
-                except Exception:
-                    pass
+            if not line:
+                continue
+            try:
+                rows.append(json.loads(line))
+            except Exception:
+                pass
     return rows
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--results", required=True, action="append")
+    ap.add_argument("--results", required=True, action="append",
+                    help="probe log (JSONL); repeatable")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--dictionary", default="/usr/share/dict/web2")
     args = ap.parse_args()
 
     rows = []
     for p in args.results:
-        if os.path.exists(p):
-            rows.extend(load(p))
+        rows.extend(load(p))
     os.makedirs(args.out, exist_ok=True)
 
-    # A word's verdict is its last recorded verdict (later probes supersede).
-    # Terms probed during lexicon discovery ARE profanity by construction --
-    # they came from a profanity word list. They belong on blocked-terms, never
-    # on the allow list, no matter what the verdict was.
-    lexicon_terms = {r["text"].lower() for r in rows
-                     if r.get("phase") in ("stage1", "phase2")}
-
-    verdict = {}
+    # ---- collect every valid observation per string ----------------------
+    obs = collections.defaultdict(list)
+    untested = set()
+    lexicon_terms = set()
     for r in rows:
-        t = r.get("text", "").strip()
+        t = (r.get("text") or "").strip()
+        if not t or " " in t:          # multi-word calibration strings
+            continue
+        if r.get("phase") in ("stage1", "phase2"):
+            lexicon_terms.add(t.lower())
         res = r.get("result")
-        if not t or res not in ("blocked", "sent"):
-            continue
-        if " " in t:          # multi-word calibration strings, not vocabulary
-            continue
-        verdict[t.lower()] = res
+        if res in ("blocked", "sent"):
+            obs[t.lower()].append(res)
+        elif res == "mismatch":
+            untested.add(t.lower())
+    untested -= set(obs)
 
-    # Carrier probes (xxTERMxx / qzTERMjv) tested a fragment, not a word.
-    def unwrap(w):
-        for pre, suf in (("xx", "xx"), ("qz", "jv"), ("qz", "qz"),
-                         ("mm", "mm")):
-            if w.startswith(pre) and w.endswith(suf) and len(w) > len(pre) + len(suf):
-                return w[len(pre):-len(suf)], True
-        return w, False
+    # ---- a verdict is a vote, not the last record ------------------------
+    verdict, disputed = {}, {}
+    for w, v in obs.items():
+        nb, n = v.count("blocked"), len(v)
+        if nb == 0:
+            verdict[w] = "sent"
+        elif nb == n:
+            verdict[w] = "blocked"
+        elif nb * 2 > n:
+            verdict[w] = "blocked"
+            disputed[w] = f"{nb}/{n}"
+        else:
+            verdict[w] = "sent"
+            disputed[w] = f"{nb}/{n}"
 
-    blocked_terms, blocked_words, clean_words = set(), {}, set()
+    # ---- fragments: what the carrier probes established ------------------
+    blocked_terms = set()
     for w, res in verdict.items():
         core, was_carrier = unwrap(w)
+        if res == "blocked" and was_carrier:
+            blocked_terms.add(core)
+
+    # a bare short string that blocks on its own is also a fragment
+    for w, res in verdict.items():
+        if res == "blocked" and len(w) <= 3 and not unwrap(w)[1]:
+            blocked_terms.add(w)
+
+    # profanity that blocks is a correct block, and belongs on the reference
+    # list rather than the allow list
+    for w, res in verdict.items():
+        if res == "blocked" and (w in lexicon_terms or is_slur(w)[0]
+                                 or is_vulgar_derivation(w)[0]):
+            blocked_terms.add(w)
+
+    # ---- ordinary words the filter refused -------------------------------
+    ordinary, clean = [], set()
+    for w, res in verdict.items():
+        core, was_carrier = unwrap(w)
+        if was_carrier:
+            continue
         if res == "blocked":
-            if was_carrier:
-                blocked_terms.add(core)
-            elif w in lexicon_terms or is_slur(w)[0] or is_vulgar_derivation(w)[0]:
-                blocked_terms.add(w)
-            else:
-                blocked_words[w] = True
+            if not (w in lexicon_terms or is_slur(w)[0]
+                    or is_vulgar_derivation(w)[0]):
+                ordinary.append(w)
         else:
-            if not was_carrier:
-                clean_words.add(w)
+            clean.add(w)
+    ordinary.sort()
 
-    # Words that are themselves profanity are not "false positives".
-    ordinary = sorted(w for w in blocked_words
-                      if not (is_slur(w)[0] or is_vulgar_derivation(w)[0]))
-
-    # attribute each ordinary word to the fragment responsible
-    frags = sorted(blocked_terms | {w for w in verdict
-                                    if verdict[w] == "blocked"
-                                    and (is_slur(w)[0] or is_vulgar_derivation(w)[0])},
-                   key=len)
+    # ---- attribute each word to the shortest fragment that explains it ---
+    # Minimum length 2: both confirmed root causes are two characters, so the
+    # usual >=3 guard would drop every attribution that matters.
+    frags = sorted((f for f in blocked_terms if len(f) >= 2), key=len)
     attribution = {}
     for w in ordinary:
         for f in frags:
-            if 3 <= len(f) < len(w) and f in w:
+            if len(f) < len(w) and f in w:
                 attribution[w] = f
                 break
 
+    unexplained = [w for w in ordinary if w not in attribution]
+
+    # ---- derived blast radius (NOT measured -- labelled as such) ---------
+    rules = sorted({f for f in attribution.values()}, key=len)
+    derived = {}
+    if rules and os.path.exists(args.dictionary):
+        words = [l.strip().lower() for l in
+                 open(args.dictionary, encoding="utf-8", errors="ignore")]
+        words = [w for w in words if w.isalpha() and 3 <= len(w) <= 20]
+        for f in rules:
+            hit = [w for w in words if f in w
+                   and not (is_slur(w)[0] or is_vulgar_derivation(w)[0])]
+            derived[f] = hit
+
+    # ---------------------------------------------------------------- files
     with open(os.path.join(args.out, "words-to-allow.txt"), "w",
               encoding="utf-8") as fh:
-        fh.write("# ORDINARY WORDS CONFIRMED CENSORED BY THE LIVE FILTER\n#\n"
-                 "# Each word below was sent to the live server in a chat message\n"
-                 "# and refused. None is profanity. Adding these to an allow list\n"
-                 "# removes a false positive and cannot weaken moderation.\n#\n"
-                 f"# words: {len(ordinary)}\n#\n")
+        fh.write(
+            "# ORDINARY WORDS CONFIRMED CENSORED BY THE LIVE FILTER\n"
+            "#\n"
+            "# Every word below was sent to the live server inside a chat\n"
+            "# message and refused. None of them is profanity. Allowing them\n"
+            "# removes a false positive and cannot weaken moderation.\n"
+            "#\n"
+            "# The comment on each line names the substring that caused the\n"
+            "# block, established separately by probing that substring inside\n"
+            "# inert padding.\n"
+            "#\n"
+            f"# words: {len(ordinary)}\n"
+            "#\n")
         for w in ordinary:
             f = attribution.get(w)
-            fh.write(f"{w}\n" if not f else f"{w}\t# blocked by '{f}'\n")
+            note = f"\t# '{f}'" if f else ""
+            if w in disputed:
+                note += f"  [{disputed[w]} of passes]"
+            fh.write(f"{w}{note}\n")
 
     with open(os.path.join(args.out, "blocked-terms.txt"), "w",
               encoding="utf-8") as fh:
-        fh.write("# Terms confirmed blocked by the live filter (reference only).\n"
+        fh.write("# Substrings and terms confirmed blocked by the live filter.\n"
+                 "# Reference only -- this is not a list of things to change.\n"
                  f"# count: {len(blocked_terms)}\n#\n")
         for t in sorted(blocked_terms):
             fh.write(t + "\n")
 
+    if derived:
+        with open(os.path.join(args.out, "affected-words.txt"), "w",
+                  encoding="utf-8") as fh:
+            fh.write(
+                "# DERIVED, NOT MEASURED.\n"
+                "#\n"
+                "# These words were NOT probed. They are ordinary dictionary\n"
+                "# words that contain a substring the live filter was measured\n"
+                "# to block, so the same rule applies to them. This file is the\n"
+                "# scope of the problem; words-to-allow.txt is the evidence.\n"
+                "#\n")
+            for f in rules:
+                fh.write(f"#\n# --- contains '{f}': {len(derived[f]):,} words\n")
+                for w in derived[f]:
+                    fh.write(w + "\n")
+
     summary = {
-        "probes_total": len(rows),
-        "words_tested": len(verdict),
+        "probes_analysed": len(rows),
+        "strings_with_a_verdict": len(verdict),
+        "untested_mismatch_only": sorted(untested),
         "ordinary_words_censored": len(ordinary),
-        "clean_words_confirmed": len(clean_words),
-        "blocked_terms": sorted(blocked_terms),
         "ordinary_censored": ordinary,
+        "clean_words_confirmed": len(clean),
+        "blocked_terms": sorted(blocked_terms),
+        "rules": rules,
         "attribution": attribution,
+        "unexplained": unexplained,
+        "disputed": disputed,
+        "derived_counts": {f: len(v) for f, v in derived.items()},
     }
     with open(os.path.join(args.out, "findings.json"), "w", encoding="utf-8") as fh:
         json.dump(summary, fh, indent=1)
 
+    # ---------------------------------------------------------------- report
+    print(f"probes analysed          : {len(rows):,}")
+    print(f"strings with a verdict   : {len(verdict):,}")
+    print(f"never tested (mismatch)  : {len(untested):,}")
+    print(f"clean words confirmed    : {len(clean):,}")
+    print(f"ORDINARY WORDS CENSORED  : {len(ordinary):,}")
+    if disputed:
+        print(f"  not unanimous          : {len(disputed)}")
     by_frag = collections.Counter(attribution.values())
-    print(f"probes analysed        : {len(rows):,}")
-    print(f"distinct strings tested: {len(verdict):,}")
-    print(f"blocked terms          : {len(blocked_terms)}")
-    print(f"ORDINARY WORDS CENSORED: {len(ordinary)}")
-    print(f"clean words confirmed  : {len(clean_words)}")
-    if ordinary:
-        print("\ncensored ordinary words:")
-        print("  " + ", ".join(ordinary))
     if by_frag:
-        print("\nby responsible fragment:")
+        print("\nby responsible substring:")
         for f, n in by_frag.most_common():
-            ex = [w for w in ordinary if attribution.get(w) == f][:5]
-            print(f"  {f!r:12} {n:>3}   e.g. {', '.join(ex)}")
-    print(f"\nwrote {args.out}/words-to-allow.txt, blocked-terms.txt, findings.json")
+            ex = [w for w in ordinary if attribution.get(w) == f][:6]
+            d = f"{len(derived.get(f, [])):,}" if f in derived else "-"
+            print(f"  {f!r:8} {n:>4} measured  {d:>8} in dictionary   "
+                  f"e.g. {', '.join(ex)}")
+    if unexplained:
+        print(f"\nblocked but not explained by a known substring ({len(unexplained)}):")
+        print("  " + ", ".join(unexplained[:40]))
+    print(f"\nwrote {args.out}/")
     return 0
 
 

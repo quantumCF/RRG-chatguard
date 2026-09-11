@@ -172,7 +172,7 @@ the list protecting your content involves nobody's judgement but yours.
 
 ### 3 — Replace the matcher.
 
-`impl/python/chatguard.py`, ~650 lines, no dependencies, MIT. Word boundaries,
+`appendix/reference-engine/python/chatguard.py`, ~650 lines, no dependencies, MIT. Word boundaries,
 per-term match modes, rescue allowlist, Unicode/confusable/leet normalization,
 bounded fuzzy matching, severity tiers, per-surface policy, per-locale scoping.
 
@@ -181,7 +181,7 @@ With a domain lexicon generated from your own localization, false positives on
 your own content go **46.1% → 0.0%** while obfuscation recall rises
 **22.9% → 84.3%**.
 
-`impl/python/shadow.py` runs it beside your existing filter and returns **your**
+`appendix/reference-engine/python/shadow.py` runs it beside your existing filter and returns **your**
 filter's answer every time, recording only the disagreements. Flip authority when
 your own traffic says to; rollback is the same config value.
 

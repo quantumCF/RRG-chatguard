@@ -23,6 +23,11 @@
 {"id": "ev-leet", "text": "sh1t", "surface": "public", "action": "MASK"}
 {"id": "ev-fullwidth", "text": "ｆｕｃｋ", "surface": "public", "action": "MASK"}
 {"id": "ev-cyrillic", "text": "shіt", "surface": "public", "action": "MASK"}
+{"_comment": "--- one separator inside a long term is evasion; inside a short one it is coincidence ---"}
+{"id": "ev-split-long", "text": "bit ch", "surface": "public", "action": "MASK"}
+{"id": "ev-split-long2", "text": "bitc h", "surface": "public", "action": "MASK"}
+{"id": "fp-split-short", "text": "cun t", "surface": "public", "action": "ALLOW"}
+{"id": "fp-split-basshit", "text": "the bass hit hard", "surface": "public", "action": "ALLOW"}
 {"_comment": "--- surface policy: same text, different verdict by where it appears ---"}
 {"id": "pol-private", "text": "this is shit", "surface": "private", "action": "ALLOW"}
 {"id": "pol-public", "text": "this is shit", "surface": "public", "action": "MASK"}

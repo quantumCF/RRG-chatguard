@@ -75,7 +75,7 @@ channel and nothing else in the run is comparable.
 
 ## Recording results
 
-Append to `observations/live-2026-09-09.jsonl`, one per line:
+Append to `appendix/observations/live-2026-09-09.jsonl`, one per line:
 
 ```json
 {"text": "qzcumjv", "blocked": true}
@@ -85,8 +85,8 @@ Append to `observations/live-2026-09-09.jsonl`, one per line:
 Then:
 
 ```sh
-python3 tools/blackbox.py infer  --obs observations/live-2026-09-09.jsonl
-python3 tools/blackbox.py design --obs observations/live-2026-09-09.jsonl
+python3 tools/blackbox.py infer  --obs appendix/observations/live-2026-09-09.jsonl
+python3 tools/blackbox.py design --obs appendix/observations/live-2026-09-09.jsonl
 ```
 
 `infer` eliminates every fragment inconsistent with the results and reports the

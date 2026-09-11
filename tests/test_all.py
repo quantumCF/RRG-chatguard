@@ -19,7 +19,7 @@ import tempfile
 import unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "impl", "python"))
+sys.path.insert(0, os.path.join(ROOT, "appendix", "reference-engine", "python"))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from chatguard import (Action, ChatGuard, MatchMode, Normalized, Term, Tier,  # noqa
@@ -141,6 +141,23 @@ class TestMatching(unittest.TestCase):
     def test_evasion_does_not_create_false_positive(self):
         # "bass hit" must not fold into "shit"
         self.assertEqual(self.g.filter("bass hit").action, Action.ALLOW)
+
+    def test_evasion_single_split_in_long_term(self):
+        # One separator dropped into a long term is the common evasion, and
+        # spacing out every letter is the rare one. "bitch" is 5 letters, so
+        # a single break is treated as deliberate. The shared fixture has no
+        # term that long, so this builds its own.
+        g = ChatGuard([Term("bitch", Tier.STRONG, MatchMode.PREFIX)],
+                      ["bass", "hit"])
+        for t in ["bit ch", "bitc h", "b itch"]:
+            self.assertEqual(g.filter(t).action, Action.MASK, t)
+
+    def test_evasion_single_split_spares_short_terms(self):
+        # The same leniency at four letters would re-break "bass hit", so
+        # short terms keep the strict 1-2 character rule. This is the trade
+        # the length threshold exists to make.
+        self.assertEqual(self.g.filter("cun t").action, Action.ALLOW)
+        self.assertEqual(self.g.filter("the bass hit hard").action, Action.ALLOW)
 
     def test_natural_doubles_safe(self):
         for t in ["Baal the wall seller", "smaller", "shall"]:

@@ -355,6 +355,12 @@ class Verdict:
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _SEP_SPLIT_RE = re.compile("[" + re.escape("".join(_SEPARATORS)) + r"\s]+")
 
+# Shortest term for which a single mid-word separator counts as evasion rather
+# than coincidence. Five is the first length at which no innocent English word
+# pair was found to condense onto a term in the golden vectors; at four,
+# "bass hit" -> "shit" does exactly that.
+_SPLIT_EVASION_MIN_LEN = 5
+
 
 class ChatGuard:
     """
@@ -498,7 +504,8 @@ class ChatGuard:
         return Verdict(text, filtered, worst, hits, sorted(set(rescued)))
 
     @staticmethod
-    def _evasion_ok(text: str, start: int, end: int, term: str) -> bool:
+    def _evasion_ok(text: str, start: int, end: int, term: str,
+                    tier: "Tier" = None) -> bool:
         """
         True when the original span looks like deliberate obfuscation rather
         than an innocent substring.
@@ -507,6 +514,19 @@ class ChatGuard:
         Rejects  "bass hit" (the run "hit" is too long to be spaced-out
                  obfuscation) and "grape" (span equals the term, so pass A
                  already had its chance and correctly declined on boundaries).
+
+        The 1-2 character rule is what stops "bass hit" reaching "shit", and it
+        has to stay for short terms: with four letters there are too many
+        innocent word pairs that condense onto one. It is also why a single
+        space inside a long slur ("ni gger") used to slip through, which is a
+        far more common evasion than spacing out every letter.
+
+        Long terms do not carry that risk -- the collision has to reconstruct
+        six or more specific letters across a word break -- so one separator is
+        allowed there. The bar is length rather than tier because length is
+        what governs accidental collision; tier only says how bad a real hit
+        would be. Terms must still be long enough that "bass hit" (4) stays on
+        the conservative side.
         """
         span = text[start:end]
         if len(span) <= len(term):
@@ -517,7 +537,10 @@ class ChatGuard:
             return True
         # Spaced-out obfuscation writes 1-2 characters between separators.
         parts = re.split(_SEP_SPLIT_RE, span)
-        return all(len(p) <= 2 for p in parts)
+        if all(len(p) <= 2 for p in parts):
+            return True
+        # One break inside a long term: "ni gger", "nig ger", "fagg ot".
+        return len(term) >= _SPLIT_EVASION_MIN_LEN and len(parts) == 2
 
     @staticmethod
     def _shelter(shelters, o_start, o_end, term_text):

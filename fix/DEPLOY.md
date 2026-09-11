@@ -89,7 +89,7 @@ vocabulary your players type, and it involves nobody's judgement but yours:
 
 ```sh
 python3 ../tools/build_allowlist.py --out . \
-    --terms ../data/lexicon/en-terms.jsonl \
+    --terms ../appendix/lexicon-data/lexicon/en-terms.jsonl \
     --locale en:your_en_export.txt --locale pt:your_pt_export.txt \
     --cjk-locale cn:your_cn_export.txt
 ```
@@ -108,7 +108,7 @@ shelters instead, and `Rescue(phrases_path=...)` consumes them.
 
 ## Fix 3 — replace the matcher.
 
-`../impl/python/chatguard.py`, ~650 lines, no dependencies, MIT.
+`../appendix/reference-engine/python/chatguard.py`, ~650 lines, no dependencies, MIT.
 
 Word boundaries, per-term match modes, a rescue allowlist, Unicode/confusable/
 leet normalization, bounded fuzzy matching, severity tiers, per-surface policy
@@ -120,7 +120,7 @@ With a domain lexicon generated from your own localization, false positives on
 your own content go **46.1% → 0.0%** while obfuscation recall rises
 **22.9% → 84.3%**.
 
-Roll it out with `../impl/python/shadow.py`: it runs beside your existing filter
+Roll it out with `../appendix/reference-engine/python/shadow.py`: it runs beside your existing filter
 and returns **your** filter's answer every time, recording only where the two
 disagree. Flip authority when your own traffic says to. Rollback is the same
 config value.

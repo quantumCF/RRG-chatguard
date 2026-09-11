@@ -73,7 +73,7 @@ why it is last and separable.
 
 ## Rollout: how this ships without anyone taking a risk
 
-`impl/python/shadow.py` wraps your existing filter:
+`appendix/reference-engine/python/shadow.py` wraps your existing filter:
 
 ```python
 shadow = ShadowFilter(incumbent=your_existing_filter, guard=chatguard)
