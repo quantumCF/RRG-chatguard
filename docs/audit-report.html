@@ -98,10 +98,11 @@
   <h1>Chat Filter<br>Accuracy Audit</h1>
 
   <div class="lead">
-    The filter matches blocked terms as <em>unanchored substrings</em>, and the
-    term list is <em>predominantly Brazilian Portuguese</em>. Two-letter
-    Portuguese entries applied across all eight locales censor ordinary
-    vocabulary in every language the game ships in.
+    The filter searches for each banned word <em>anywhere in a message,
+    including inside longer words</em>, and the word list is <em>mostly
+    Brazilian Portuguese</em>. Its two-letter entries are applied to all eight
+    languages the game ships in, so the filter blocks ordinary words in every
+    one of them.
   </div>
 
   <div class="demo">
@@ -123,9 +124,9 @@
     </div>
   </div>
   <p class="sm muted" style="margin-bottom:22pt">
-    <code>cu</code> is Portuguese for anus; <code>ks</code> is a literal
-    two-character entry. Neither has a word-boundary condition, so both fire
-    inside any word that happens to contain them.</p>
+    <code>cu</code> is a rude word in Portuguese. <code>ks</code> is a
+    two-character entry. The filter has no rule about word boundaries, so it
+    blocks any message containing a word that holds those letters.</p>
 
   <div class="kpis">
     <div class="kpi"><span class="v">15,307</span><span class="l">messages sent</span></div>
@@ -153,30 +154,31 @@
 <!-- ===================== 2 · THE DEFECT ===================== -->
 <div class="page">
   <h2>01 · The defect</h2>
-  <h3>Blocked terms have no word boundary</h3>
-  <p>A term fires wherever its letters appear. This was isolated by probing the
-  sequence inside inert padding, so a refusal can only be attributed to the
-  sequence itself rather than to the word that revealed it.</p>
+  <h3>The filter matches inside longer words</h3>
+  <p>The filter blocks a message wherever the letters of a banned word appear.
+  We confirmed this by placing the letters inside a made-up word, so that a
+  block could only be caused by those letters and not by the ordinary word that
+  first revealed the problem.</p>
 
   <table class="d" style="margin-bottom:14pt">
-    <tr><th>Probe</th><th>Result</th><th>Probe</th><th>Result</th><th>Establishes</th></tr>
-    <tr><td class="mono">cu</td><td class="bad">refused</td><td class="mono">ks</td><td class="bad">refused</td><td>the sequence is on the list</td></tr>
-    <tr><td class="mono">xxcuxx</td><td class="bad">refused</td><td class="mono">xxksxx</td><td class="bad">refused</td><td>it fires inside an unrelated word</td></tr>
-    <tr><td class="mono">xxcxx</td><td class="ok">delivered</td><td class="mono">xxkxx</td><td class="ok">delivered</td><td>the first letter alone does not</td></tr>
-    <tr><td class="mono">xxuxx</td><td class="ok">delivered</td><td class="mono">xxsxx</td><td class="ok">delivered</td><td>the second letter alone does not</td></tr>
-    <tr><td class="mono">xxucxx</td><td class="ok">delivered</td><td class="mono">xxskxx</td><td class="ok">delivered</td><td>order matters — a literal sequence</td></tr>
+    <tr><th>We sent this</th><th>What happened</th><th>We sent this</th><th>What happened</th><th>What this shows</th></tr>
+    <tr><td class="mono">cu</td><td class="bad">blocked</td><td class="mono">ks</td><td class="bad">blocked</td><td>these letters are on the word list</td></tr>
+    <tr><td class="mono">xxcuxx</td><td class="bad">blocked</td><td class="mono">xxksxx</td><td class="bad">blocked</td><td>the filter blocks them inside another word</td></tr>
+    <tr><td class="mono">xxcxx</td><td class="ok">delivered</td><td class="mono">xxkxx</td><td class="ok">delivered</td><td>the first letter alone is allowed</td></tr>
+    <tr><td class="mono">xxuxx</td><td class="ok">delivered</td><td class="mono">xxsxx</td><td class="ok">delivered</td><td>the second letter alone is allowed</td></tr>
+    <tr><td class="mono">xxucxx</td><td class="ok">delivered</td><td class="mono">xxskxx</td><td class="ok">delivered</td><td>the same letters reversed are allowed</td></tr>
   </table>
 
   <div class="callout">
-    <p>Across the <strong>10,627 words the filter accepted, not one contains
-    <code>cu</code> or <code>ks</code></strong>. There are no exceptions in
-    either direction.</p>
+    <p>The filter delivered 10,627 words during this audit. <strong>None of
+    those 10,627 words contains <code>cu</code> or <code>ks</code>.</strong>
+    Every word we tested that contains those letters was blocked.</p>
   </div>
 
   <section>
-    <h3 style="margin-top:4pt">Shorter entries do exponentially more damage</h3>
-    <p class="sm muted">Ordinary English words affected, by rule. Because matching is unanchored,
-    an entry's blast radius grows as its length shrinks.</p>
+    <h3 style="margin-top:4pt">Short the filter blocks messages containing entries far more words</h3>
+    <p class="sm muted">Ordinary English words blocked, by entry. A short entry
+    appears by chance inside many more words than a long one does.</p>
     <div class="bars">
       <div class="bar"><span class="nm">cu</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">5,016</span><span class="ex">document, discuss, security</span></div>
       <div class="bar"><span class="nm">nb</span><span class="track"><span class="fill" style="width:19.1%"></span></span><span class="val">956</span><span class="ex">number, inbox, unbind</span></div>
@@ -243,7 +245,7 @@
   </section>
 
   <section>
-    <h3>Why it carries a support cost</h3>
+    <h3>Why this costs support time</h3>
     <table class="d">
       <tr><th>Property</th><th>Consequence</th></tr>
       <tr><td>Affects high-frequency vocabulary</td>
@@ -287,7 +289,7 @@
     <tr><td><strong>B</strong></td><td>Add the rescue shim</td><td>One call site</td>
         <td>Names and slang not in a dictionary</td><td class="n">1 day</td></tr>
     <tr><td><strong>C</strong></td><td>Minimum-length boundary rule</td><td>Matcher condition</td>
-        <td>Long entries still match as substrings</td><td class="n">1–2 days</td></tr>
+        <td>Long entries still match inside longer words</td><td class="n">1–2 days</td></tr>
     <tr><td><strong>D</strong></td><td>Replace the matcher</td><td>Component swap</td>
         <td>None of this class</td><td class="n">1–2 weeks</td></tr>
   </table>
@@ -312,9 +314,10 @@
     words.</strong> Entries of five characters or more are unchanged.</p>
   </div>
 
-  <p class="sm muted" style="margin-bottom:16pt">Under this rule <code>cu</code>
-  still refuses <code>cu</code> and stops refusing <code>document</code>;
-  <code>ks</code> still refuses <code>ks</code> and stops refusing
+  <p class="sm muted" style="margin-bottom:16pt">With this rule in place, the
+  filter still blocks a message that is only the word <code>cu</code>, and it
+  stops blocking <code>document</code>. The filter still blocks a message that
+  is only the word <code>ks</code>, and it stops blocking
   <code>thanks</code>.</p>
 
   <section>
@@ -424,7 +427,7 @@ rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
     </div>
   </div>
 
-<pre>python3 tests/test_all.py        <span class="c"># 53 tests</span>
+<pre>python3 tests/test_all.py        <span class="c"># 55 tests</span>
 python3 tools/conformance.py     <span class="c"># 29 language-agnostic vectors</span>
 python3 tools/check_numbers.py   <span class="c"># every figure here traces to the evidence</span>
 </pre>
@@ -436,7 +439,7 @@ python3 tools/check_numbers.py   <span class="c"># every figure here traces to t
 
   <table class="d">
     <tr><th>Control</th><th>Why</th></tr>
-    <tr><td>A substring is not reported until isolated in inert padding</td>
+    <tr><td>A sequence of letters is not reported until isolated in meaningless surrounding letters</td>
         <td>That <code>cucumber</code> is refused does not identify the responsible part</td></tr>
     <tr><td>Two independent refused observations required</td>
         <td>Measured per-probe error rate is 1.2% (6 spurious in 491), so one reading is not a result</td></tr>

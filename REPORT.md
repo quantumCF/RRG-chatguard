@@ -13,23 +13,23 @@ Independent measurement against the live service · 12 September 2026
 
 ## Summary
 
-The chat filter matches its blocked terms as **unanchored substrings**. A term
-is refused wherever its letters appear, including in the middle of unrelated
-words.
+The chat filter searches for each banned word **anywhere in a message,
+including inside longer words**. When the letters of a banned word appear in
+the middle of an ordinary word, the filter blocks the whole message.
 
-Separately, the term list is predominantly **Brazilian Portuguese**. Several
-entries are two to four characters long — `cu`, `pau`, `pica`, `vaca`, `anta`,
-`rola`, `japa` — which are ordinary vulgarities in Portuguese and ordinary
-letter sequences everywhere else.
+The word list is also mostly **Brazilian Portuguese**. Several entries are only
+two to four characters long. In Portuguese they are rude words. In other
+languages the same letters are an ordinary part of many words.
 
-The two together are the defect. Short Portuguese terms matched as substrings
-against all eight shipped locales censor common vocabulary in every language
-the game runs in.
+These two facts together cause the problem. The filter applies the short
+Portuguese entries to all eight languages the game ships in, and searches for
+them inside longer words. As a result it blocks common words in every one of
+those languages.
 
-**15,307 messages** were sent through the ordinary game client. **343 ordinary
-words were confirmed refused** and **10,627 were confirmed to pass**. The
-confirmed rules affect **8,414 ordinary English dictionary words**, 3.6% of the
-language.
+We sent **15,307 messages** through the normal game client. The filter blocked
+**343 ordinary words**, and delivered **10,627**. Applying the confirmed
+entries to an English dictionary gives **8,414 ordinary words** affected, which
+is 3.6% of that dictionary.
 
 Examples, each verified live: `thanks`, `attacks`, `tasks`, `books`, `works`,
 `weeks`, `banks`, `links`, `document`, `discuss`, `security`, `focus`,
@@ -37,7 +37,7 @@ Examples, each verified live: `thanks`, `attacks`, `tasks`, `books`, `works`,
 `parameter`, `diameter`, `campus`, `vacation`, `reputation`, `cucumber`,
 `circus`, `vacuum`.
 
-`thank` is delivered. `thanks` is refused.
+The filter delivers `thank`. The filter blocks `thanks`.
 
 ---
 
@@ -52,32 +52,32 @@ the measurement sees exactly what a player sees.
 Three properties of the measurement are worth stating because the conclusions
 depend on them.
 
-**A substring is only called blocked once it is isolated.** Observing that
-`cucumber` is refused does not establish which part is responsible. Every rule
-in this report was confirmed by sending the candidate substring inside inert
-padding — `xxcuxx` — and by confirming that neither neighbouring letter fires
-alone. A candidate that failed this test was dropped regardless of how
-suggestive the surrounding evidence looked.
+**We report a group of letters only after testing it on its own.** The filter
+blocks `cucumber`, but that alone does not show which part of the word caused
+it. For every entry in this report we sent the letters inside a made-up word,
+such as `xxcuxx`. We also sent each letter on its own. If a single letter was
+blocked as well, we dropped the candidate.
 
-**A single observation is not a result.** Detection is imperfect. Its error
-rate was measured directly rather than assumed: 250 words the sweep recorded as
-clean were re-probed twice, producing 6 spurious blocks in 491 observations, a
-per-probe false-positive rate of **1.2%**. Every word in the findings therefore
-requires at least two independent blocked observations, which reduces the
-chance of a spurious entry to roughly 0.015%.
+**One test is not a result.** Our own reading of the result is sometimes wrong.
+We measured how often: we re-tested 250 words that had looked fine, and got 6
+wrong readings out of 491 tests. That is an error rate of **1.2%** per test.
+For this reason, every word in this report was blocked in at least two separate
+tests. The chance that a word reached the list through two wrong readings is
+about 0.015%.
 
-**Words that were never actually sent are not counted as passing.** The harness
-verifies that text reached the input box before sending. When that check fails
-the message is not sent, and such a word is untested rather than clean. All but
-**15** of these were retried until they produced a real verdict.
+**A message that was never sent does not count as delivered.** Before sending,
+our tool checks that the text reached the input box. When that check failed, no
+message went out. We treated those words as untested, and retried them. Only
+**15** words were left unresolved.
 
 ---
 
 ## 2. Findings
 
-### 2.1 Matching is unanchored
+### 2.1 The filter matches inside longer words
 
-`cu` and `ks` were isolated completely:
+We tested `cu` and `ks` on their own. Each test message was built so that a
+block could only be caused by those letters:
 
 | probe | result | probe | result |
 |---|---|---|---|
@@ -87,13 +87,16 @@ the message is not sent, and such a word is untested rather than clean. All but
 | `xxuxx` | delivered | `xxsxx` | delivered |
 | `xxucxx` | delivered | `xxskxx` | delivered |
 
-Both sequences are refused bare and inside padding, at the start, middle and
-end of a carrier, under two unrelated paddings. Neither constituent letter is
-refused alone and neither reversed pair is refused. The filter is matching two
-literal characters anywhere in the message.
+The filter blocked both pairs of letters on their own, and blocked them again
+when we surrounded them with meaningless letters. It blocked them at the start,
+in the middle, and at the end of the surrounding word, using two different sets
+of surrounding letters. It delivered each single letter on its own, and
+delivered the same two letters in the opposite order. The filter is searching
+for these two characters anywhere in the message.
 
-Across **10,627 words the filter accepted, not one contains `cu` or `ks`.**
-There are no exceptions in either direction.
+The filter delivered 10,627 words during this audit. **None of those 10,627
+words contains `cu` or `ks`.** Every word we tested that contains those letters
+was blocked.
 
 ### 2.2 The term list is Portuguese
 
@@ -114,14 +117,14 @@ Tested under the same conditions and **delivered**:
 
 `bitch` · `rape` · `sex` · `slut` · `whore`
 
-This is reported because it bears on priority. The filter is not
+We report this because it affects which fix you choose first. The filter is not
 over-aggressive in general; it is aggressive about one language's vocabulary
 and largely absent for another's. Both halves are the same root cause — a term
 list that has not been reviewed against the locales it is applied to.
 
 ### 2.4 Confirmed rules and their reach
 
-Each rule below was isolated in padding and corroborated. "Measured" counts
+Each rule below was isolated in padding and confirmed. "Measured" counts
 words confirmed refused in testing; "dictionary" counts ordinary English words
 containing it that were therefore not all individually tested.
 
@@ -157,10 +160,10 @@ columns would double-count.
 | 5 characters | 2 | 745 |
 
 **7,675 of the 8,414 affected words — 91% — are reached by entries shorter
-than five characters.** This is the quantitative basis for the remediation
-recommended in Section 3: a length condition removes most of the defect
-without reviewing a single entry, because the damage is a property of how
-short the entries are rather than of which ones they are.
+than five characters.** This is the measured basis for the fix recommended in Section 3. A rule about
+entry length removes most of the problem, and nobody has to review the word
+list to apply it. The problem comes from how short the entries are, not from
+which entries they are.
 
 ### 2.6 Scope across locales
 
@@ -168,7 +171,7 @@ The measured refusal rate is comparable across every vocabulary tested:
 Indonesian 4.8%, Thai 3.0%, English 2.8%, Portuguese 2.8%, Vietnamese 2.2%. This is not an English-only problem. The game's own
 Portuguese and Indonesian interface text contains words its own filter refuses.
 
-These rates count distinct words, not probe records. Counting records inflates
+These percentages count each word once, not each test. Counting tests inflates
 them, because verification re-probes every refused word three further times and
 so multiplies the numerator while leaving the denominator alone.
 
@@ -185,8 +188,8 @@ requires no code change at all.
 the live service, each annotated with the rule responsible. If the filter
 already supports an exception list, this is a data change and nothing more.
 
-This is the smallest possible fix and the one with the least risk. It does not
-reduce what is blocked; it removes false positives only.
+Option 1 is the smallest fix and has the lowest risk. It does not reduce what
+the filter blocks. It only stops the filter blocking ordinary words.
 
 `findings/affected-words.txt` extends the same list to the full **8,414**
 dictionary words the confirmed rules reach. These were not individually tested,
@@ -200,24 +203,27 @@ characters inside longer words. A minimum-length rule fixes the majority of it:
 
 > Entries shorter than five characters match only as whole words.
 
-Under this rule `cu` still refuses `cu`, and stops refusing `document`,
-`discuss`, `security` and `circus`. `ks` still refuses `ks`, and stops refusing
-`thanks` and `books`. Entries of five characters and longer are unaffected, so
-`caralho` and `arrombado` continue to match exactly as they do now.
+With this rule in place, the filter still blocks a message that is only the
+word `cu`. It stops blocking `document`, `discuss`, `security` and `circus`.
+The filter still blocks a message that is only the word `ks`, and stops
+blocking `thanks` and `books`. Entries of five characters or more are not
+affected: they match exactly as they do now.
 
-This is the highest ratio of damage removed to change made.
+Option 2 removes the most problems for the least change.
 
 ### Option 3 — Replace the matcher
 
-`engine/` contains a drop-in matcher: per-term match modes
-(whole word, prefix, substring), a severity tier per term, allowlist rescue
-that resolves longest-match-wins, and normalisation that folds evasion
-(`f u c k`, `fuuuck`, `sh1t`, homoglyphs) without folding ordinary words. No
-dependencies, MIT licensed, and it sits at the same `check(text) -> bool` seam
-the current filter occupies.
+`engine/` contains a replacement matcher. Each entry can be set to match as a
+whole word, at the start of a word, or anywhere inside a word. Each entry has a
+severity level. An exception list protects ordinary words, and the longest
+match wins. The matcher also recognises disguised spellings such as `f u c k`,
+`fuuuck` and `sh1t`, and it does not affect ordinary words. It has no outside
+dependencies, is MIT licensed, and uses the same `check(text) -> bool` call
+that the current filter uses.
 
-It ships with 53 tests and 29 language-agnostic conformance vectors so a port
-to another language can be verified against the same expectations. Against the
+The engine ships with 55 tests and 29 conformance vectors. A team rewriting it
+in another programming language can check their version against the same
+expected results. Against the
 cases in this report it allows all ordinary words tested and catches the
 evasions.
 
@@ -228,7 +234,7 @@ report identifies as broken is the matching, not the words.
 
 ## 4. Limitations
 
-**Rule set is a lower bound.** Only substrings implicated by a tested word
+**Rule set is a lower bound.** Only sequences of letters implicated by a tested word
 could be isolated. Entries whose letters did not appear in the 11,868 strings
 tested would not have surfaced.
 
@@ -253,13 +259,13 @@ findings/words-to-allow.txt   343 ordinary words confirmed refused, with the
                               rule responsible for each
 findings/affected-words.txt   8,414 dictionary words the confirmed rules reach
                               (derived, not individually tested)
-findings/blocked-terms.txt    terms and substrings confirmed refused
+findings/blocked-terms.txt    terms and sequences of letters confirmed refused
 findings/findings.json        machine-readable summary
 findings/raw-logs/            all 15,307 probes, one JSON record each
 ```
 
-Every claim traces to a record in `findings/raw-logs/`. Each record carries the exact
-string sent, the verdict, and the timestamp.
+Every claim in this report comes from a record in `findings/raw-logs/`. Each
+record holds the exact text we sent, the result, and the time.
 
 To reproduce any single result, send the string in game and observe whether it
 appears in chat history. `thank` against `thanks` takes ten seconds and

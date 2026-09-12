@@ -48,35 +48,37 @@
 </head>
 <body>
 
-<h1>Chat filter accuracy: unanchored substring matching</h1>
+<h1>Chat filter blocks ordinary words</h1>
 <div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; independent measurement against the live service &nbsp;·&nbsp; 12 September 2026</div>
 
 <div class="lead">
-  The filter matches its blocked terms as <em>unanchored substrings</em>, and the
-  term list is predominantly <em>Brazilian Portuguese</em>. Short Portuguese
-  entries applied to all eight locales censor ordinary vocabulary in every
-  language the game ships in.
+  The filter searches for each banned word <em>anywhere in a message, including
+  inside longer words</em>, and the word list is <em>mostly Brazilian
+  Portuguese</em>. Its short entries are applied to all eight languages the game
+  ships in, so the filter blocks ordinary words in every one of them.
 </div>
 
 <section>
   <h2>The shortest demonstration</h2>
   <div class="code">
-    thank &nbsp;<span class="ok">delivered</span> &nbsp;&nbsp;&nbsp; thanks &nbsp;<span class="b">refused</span><br>
-    <span style="color:#6d757e">one letter apart; the plural creates the sequence</span> <code>ks</code>
+    a player types &nbsp;<b>thank</b>&nbsp; &rarr; &nbsp;<span class="ok">the message is delivered</span><br>
+    a player types &nbsp;<b>thanks</b> &rarr; &nbsp;<span class="b">the message is blocked</span><br>
+    <span style="color:#6d757e">adding one letter creates <code>ks</code>, which is on the word list</span>
   </div>
 </section>
 
 <section>
   <h2>The rule is two characters, matched anywhere</h2>
   <div class="code">
-    cu &nbsp;<span class="b">refused</span> &nbsp;&nbsp; xxcuxx &nbsp;<span class="b">refused</span> &nbsp;&nbsp;
+    cu &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; xxcuxx &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
     xxcxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxuxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxucxx &nbsp;<span class="ok">ok</span><br>
-    ks &nbsp;<span class="b">refused</span> &nbsp;&nbsp; xxksxx &nbsp;<span class="b">refused</span> &nbsp;&nbsp;
+    ks &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; xxksxx &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
     xxkxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxsxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxskxx &nbsp;<span class="ok">ok</span>
   </div>
-  <p>Refused bare and inside inert padding, at any position. Neither letter is
-  refused alone; neither reversed pair is refused. Across
-  <b>10,627 accepted words, none contains <code>cu</code> or <code>ks</code></b>.</p>
+  <p>The filter blocks these letters on their own, and again inside a made-up
+  word, at any position. It delivers each letter on its own, and delivers the
+  same two letters reversed. The filter delivered <b>10,627 words</b> during
+  this audit, and none of them contains <code>cu</code> or <code>ks</code>.</p>
 </section>
 
 <div class="two">
@@ -102,7 +104,7 @@
     bitch &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; rape &nbsp;<span class="ok">ok</span><br>
     sex &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; slut &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; whore &nbsp;<span class="ok">ok</span>
   </div>
-  <p>All 27 Portuguese terms tested are refused, including
+  <p>All 27 Portuguese terms tested are blocked, including
   <code>arrombado</code> and <code>otario</code>. The filter is not
   over-aggressive in general — it is aggressive about one language's vocabulary
   and largely absent for another's. One root cause: a term list never reviewed
@@ -113,17 +115,17 @@
 <section class="box">
   <h2>Three ways to fix it, in increasing effort</h2>
   <p><b>1 &nbsp;Allow the confirmed words.</b> <code>findings/words-to-allow.txt</code>
-  lists <b>343 ordinary words</b> confirmed refused, each annotated with the rule
+  lists <b>343 ordinary words</b> confirmed blocked, each annotated with the rule
   responsible. If the filter already supports an exception list, this is a data
   change and nothing else — it removes false positives only.</p>
   <p><b>2 &nbsp;Require a word boundary for short terms.</b> One rule —
   <i>entries shorter than five characters match only as whole words</i> —
-  removes most of the damage. <code>cu</code> still refuses <code>cu</code> and
-  stops refusing <code>document</code>. Entries of five or more characters are
-  untouched, so <code>caralho</code> matches exactly as it does today.</p>
+  removes most of the problem. The filter still blocks a message that is only
+  the word <code>cu</code>, and stops blocking <code>document</code>. Entries of
+  five characters or more are not affected.</p>
   <p><b>3 &nbsp;Replace the matcher.</b> <code>engine/</code> —
   per-term match modes, severity tiers, allowlist rescue, evasion folding. No
-  dependencies, MIT, 53 tests and 29 conformance vectors, at the same
+  dependencies, MIT, 55 tests and 29 conformance vectors, at the same
   <code>check(text)</code> seam as today's filter.</p>
 </section>
 
@@ -131,9 +133,9 @@
 <footer>
   <b>15,307 messages</b> sent through the ordinary game client into a private party
   channel; no client modification, no server access. <b>343 ordinary words confirmed
-  refused</b>, <b>10,627 confirmed delivered</b>. Every rule was isolated in inert
-  padding before being reported and every finding required two independent
-  observations; the measured per-probe error rate is 1.2%. Logs:
+  blocked</b>, <b>10,627 confirmed delivered</b>. Every entry was tested inside a
+  made-up word before being reported, and every finding needed two separate
+  tests. Our own measured error rate is 1.2% per test. Logs:
   <code>findings/raw-logs/</code>.
 </footer>
 

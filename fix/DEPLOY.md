@@ -4,22 +4,21 @@ Three fixes, smallest first. **Fix 1 is one line of code and needs no data.**
 They compose, but each works alone.
 
 Every figure here derives from the 16 rules confirmed against the live service
-in the audit. Earlier revisions of this file quoted per-locale percentages
-taken from a static read of the client's own word list; that analysis was
-withdrawn when live testing showed the client list is not the list the server
-enforces.
+in the audit. Earlier versions of this file gave percentages for each language. Those came
+from reading the word list inside the game client. We withdrew that analysis:
+live testing showed the client's list is not the list the server uses.
 
 ---
 
 ## Fix 1 — minimum fragment length. One line. No data. No list review.
 
 > An entry shorter than N characters matches only as a **whole word**,
-> not as a substring.
+> not as a sequence of letters.
 
 Nothing is deleted. Every entry keeps working. Short entries simply stop
 matching inside longer words.
 
-| threshold | entries still matching as substrings | ordinary English words still censored |
+| threshold | entries still matching inside longer words | ordinary English words still censored |
 |---|---|---|
 | today, no rule | 16 | 8,414 |
 | N = 3 | 13 | 2,100 |
@@ -28,7 +27,7 @@ matching inside longer words.
 | N = 6 | 0 | 0 |
 
 **N = 5 is the recommendation.** It leaves only two entries matching as
-substrings, and both are long enough that an accidental collision has to
+sequences of letters, and both are long enough that an accidental collision has to
 reconstruct five specific letters. N = 6 would remove the remainder, but it
 also stops every entry from matching inside a compound, which is a real loss
 against deliberate evasion.
@@ -55,7 +54,7 @@ Chinese build. N=5 additionally fixes `Freezing` (`free`, 4 letters).
 Why this is the first fix: it needs no list review, no new data, no judgement
 calls about individual entries, and it works on entries added tomorrow. The
 open-set problem — surnames, place names, new slang — is closed by a rule, not
-by enumeration.
+by listing.
 
 ---
 
@@ -128,10 +127,11 @@ leet normalization, bounded fuzzy matching, severity tiers, per-surface policy
 (a permanent character name is judged more strictly than a whisper), and
 per-locale scoping so one market's list stops being applied to another's players.
 
-Measured against this audit's own results: loaded with the 38 entries confirmed
-to be on the live filter, the engine censors **0 of the 343** ordinary words the
-live filter refuses, while still refusing **38 of 38** of those entries when
-they are typed as words. Same vocabulary, no new words, no entry removed.
+We measured this against the audit's own results. We loaded the engine with the
+38 entries we confirmed are on the live filter. It blocked **0 of the 343**
+ordinary words that the live filter blocks. It still blocked **all 38** entries
+when they were typed as words. Same word list, nothing added, nothing
+removed.
 
 `python3 engine/tests/test_all.py` reproduces that check.
 
@@ -170,4 +170,4 @@ currently true, then tightened.
 An allowlist cannot close an open set. `Heisenberg` is in no public-domain
 dictionary, gazetteer or census list, so Fix 2 alone does not rescue it — which
 is exactly why Fix 1 comes first: a length rule covers every proper noun that
-will ever exist, including the ones nobody has enumerated yet.
+will ever exist, including the ones nobody has listd yet.

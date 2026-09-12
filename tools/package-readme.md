@@ -1,6 +1,6 @@
 # Chat Filter Accuracy Audit — Ragnarok: Rebirth Global
 
-The filter matches blocked terms as **unanchored substrings**, and the term
+The filter matches blocked terms as **letters found anywhere inside a word**, and the term
 list is **predominantly Brazilian Portuguese**. Two-letter Portuguese entries
 applied across all eight locales censor ordinary vocabulary in every language
 the game ships in.
@@ -61,10 +61,10 @@ they are. Cost is one hash-set lookup.
 > Entries shorter than five characters match only as whole words.
 > Entries of five characters or more are unchanged.
 
-Short entries still match as whole words, so nothing stops being blocked when
-someone actually types it — and every entry of five characters or more behaves
-exactly as it does today. This removes 91% of the affected words without
-reviewing a single entry. Section 04 of the report has the language-agnostic
+Short entries still match as whole words. Nothing stops being blocked when a
+player actually types it. Entries of five characters or more work exactly as
+they do today. This removes 91% of the affected words, and nobody has to review
+the word list. Section 04 of the report has the language-agnostic
 implementation.
 
 ---
@@ -98,17 +98,17 @@ python3 conformance.py         # 29 language-agnostic vectors
 
 ## Before you adopt the code
 
-Everything you would deploy is Python standard library only — no third-party
-packages, no network access, no process execution, no dynamic evaluation, and
-one file write in a method you call with a path you supply. You do not have to
-take that on trust:
+Every file you would install uses only the Python standard library. The code
+makes no network connections. It starts no other programs. It does not run code
+from text. It writes one file, in a function you call yourself, using a path
+you choose. You do not have to take our word for it:
 
 ```sh
 python3 verify_safe.py
 ```
 
-It parses the AST of each shipped file and prints the dependency and capability
-surface. Total shipped code is 961 lines across three files.
+The command above reads each file you would install and prints what that code
+can do. In total you would install 961 lines of code, across three files.
 
 **Option A requires no code from this package at all** — it is a text file of
 343 words. If vendoring third-party code is slow to clear review, that path is

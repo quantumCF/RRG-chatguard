@@ -26,20 +26,20 @@ Two changes to the list you already have:
    written for. This is one field on a term and one condition at match time.
 
 2. **Drop or re-scope the short entries.** Two-character entries are the single
-   biggest source of false positives under substring matching: they appear
+   biggest source of false positives under matching inside longer words: they appear
    inside thousands of ordinary words. In the list we measured, 53 entries were
    1–2 characters, and the worst single one appeared inside 21,144 English
    dictionary words.
 
 Expected effect, measured on the real list and the real content: game-name
 false positives fall from **46.1% to roughly 2.5%** — that is the gap between
-substring matching on an unscoped list and whole-word matching, before any
+matching inside longer words on an unscoped list and whole-word matching, before any
 engine change at all.
 
 A third change costs nothing and is worth doing at the same time: under
-substring matching, **59.6% of the list cannot affect any outcome**, because a
+matching inside longer words, **59.6% of the list cannot affect any outcome**, because a
 shorter entry already matches inside each of those entries. Dropping all 57,051
-leaves behaviour bit-identical. That is worth sitting with — substring matching
+leaves behaviour bit-identical. That is worth sitting with — matching inside longer words
 has collapsed a 95,660-entry list into the behaviour of its shortest ~38,000
 entries. Moving to word-boundary matching does not weaken the list; it **restores
 the other 57,051 entries to usefulness**.
@@ -146,7 +146,7 @@ than only added or removed.
 **"Latency."**
 Aho–Corasick is O(message length) and independent of list size. The Python
 reference does ~97 µs per message against 5,695 terms — about 10,000
-messages/sec on one core, before any compiled port. Your current substring scan
+messages/sec on one core, before any compiled port. Your current sequence of letters scan
 is O(list × message): it gets measurably slower every time someone adds a word.
 chatguard does not.
 
@@ -179,7 +179,7 @@ actually contains.
 **"Players are exaggerating; the filter is mostly fine."**
 `cucumber` is blocked in the live game. So is `Heisenberg`. `thank` was.
 Separately, measured on the shipped list against the game's own English content:
-**46.1%** of item and skill name strings are flagged under substring matching,
+**46.1%** of item and skill name strings are flagged under matching inside longer words,
 and **69.0%** of all localized strings — rising to **52.1%** for Portuguese.
 `Freezing` becomes `****zing`. That is not a perception problem.
 

@@ -2,146 +2,199 @@
 
 Accuracy audit of the **Ragnarok: Rebirth Global** chat filter, and a fix.
 
-```
-thank      delivered
-thanks     refused     ← one letter apart
-```
+| The player types | What the filter finds inside it | What happens |
+|---|---|---|
+| `thank` | nothing from its word list | the message is delivered |
+| `thanks` | `ks`, an entry on its word list | **the message is blocked** |
 
-The filter matches blocked terms as **unanchored substrings**, so they fire
-inside unrelated words. `thanks`, `document`, `security`, `number`,
-`advantage`, `parameter`, `campus` and `vacation` are all refused by the live
-service.
+The filter searches for each banned word **anywhere in a message, including
+inside longer words**. Adding the letter `s` to `thank` creates the letters
+`ks`, so the filter blocks the whole message.
 
-**15,307** messages tested · **343** ordinary words confirmed censored ·
+The same thing happens to `document`, `security`, `number`, `advantage`,
+`parameter`, `campus` and `vacation`. The live service blocked all of them
+during this audit.
+
+**15,307** messages tested · **343** ordinary words confirmed blocked ·
 **8,414** ordinary English words affected
 
 **[→ Read the 6-page report](docs/chat-filter-audit-report.pdf)**  ·
 [one-pager](docs/chat-filter-defect-report.pdf) · [markdown](REPORT.md)
 
-> **Content notice** — this repository audits a profanity filter. The entries
-> named below are the short ones causing the false positives; the full term
-> inventory, which includes slurs, is in the report and in `findings/`.
+> **Content notice.** This repository audits a profanity filter. The entries
+> named below are the short ones that cause the false positives. The full list
+> of entries, which includes slurs, is in the report and in `findings/`.
 
 ---
 
 ## The fix
 
-> **Entries shorter than five characters match only as whole words.**
+> **Rule: if an entry is shorter than 5 characters, the filter should match it
+> only as a complete word, not inside a longer word.**
 
-`cu` still refuses `cu` and stops refusing `document`. Entries of five
-characters or more are untouched, so every substantial term behaves exactly as
-it does today.
+With this rule in place:
 
-<img src="docs/chart-impact.svg" alt="Ordinary English words still censored: 8,414 before the rule, 739 after" width="100%">
+- A player who types `cu` on its own is still blocked. Nothing is removed from
+  the word list.
+- A player who types `document` is no longer blocked.
+- Entries of 5 characters or more work exactly as they do today.
 
-| | Option | Effort |
+This one rule fixes 91% of the affected words.
+
+<img src="docs/chart-impact.svg" alt="Ordinary English words still blocked: 8,414 before the rule, 739 after" width="100%">
+
+### Four ways to fix it
+
+| | What you change | Effort |
 |---|---|---|
-| **A** | Ship [`findings/words-to-allow.txt`](findings/words-to-allow.txt) — 343 words, no code | Hours |
-| **B** | Add [`fix/rescue.py`](fix/rescue.py) at one call site | 1 day |
-| **C** | The length rule above | 1–2 days |
-| **D** | Replace the matcher with [`engine/`](engine/) | 1–2 weeks |
+| **A** | Add [`findings/words-to-allow.txt`](findings/words-to-allow.txt) to your exception list. 343 words, no code | Hours |
+| **B** | Add [`fix/rescue.py`](fix/rescue.py) at one place in your code | 1 day |
+| **C** | Add the 5-character rule above to your matcher | 1 to 2 days |
+| **D** | Replace your matcher with [`engine/`](engine/) | 1 to 2 weeks |
 
-None of these removes anything from the block list. They remove false
-positives only.
+**No option removes any word from your block list.** Each one only stops the
+filter from blocking ordinary words.
 
-**Option B**, in full:
+Option B is three lines, at the point where your code has already decided to
+block a message:
 
 ```python
 from rescue import Rescue
-rescue = Rescue("allowlist-en.txt")        # once, at startup
+rescue = Rescue("allowlist-en.txt")        # run once, when the server starts
 
 if rescue.is_rescued(text, match_start, match_end):
-    pass          # ordinary word — deliver it
+    pass          # this is an ordinary word, so deliver the message
 else:
-    block()       # unchanged behaviour
+    block()       # your existing behaviour, unchanged
 ```
 
 ---
 
 ## Why it happens
 
-`ks` is a blocked entry. Probed inside inert padding:
+`ks` is one of the banned entries. We tested it by putting those two letters
+inside a made-up word, so that a block could only be caused by the letters
+themselves:
 
-| probe | | probe | |
-|---|---|---|---|
-| `ks` | refused | `xxkxx` | delivered |
-| `xxksxx` | refused | `xxsxx` | delivered |
-| `qwksqw` | refused | `xxskxx` | delivered |
+| We sent this message | What happened | What this shows |
+|---|---|---|
+| `ks` | blocked | `ks` is on the word list |
+| `xxksxx` | blocked | the filter finds `ks` inside a longer word |
+| `qwksqw` | blocked | the same, with different surrounding letters |
+| `xxkxx` | delivered | the letter `k` on its own is fine |
+| `xxsxx` | delivered | the letter `s` on its own is fine |
+| `xxskxx` | delivered | the same two letters reversed are fine |
 
-Two literal characters, matched anywhere, with no word boundary — which is why
-the plural of `thank` is refused. The term list is predominantly Brazilian
-Portuguese, and its shortest entries are two characters long.
+Only the two letters `ks`, in that order, cause a block. The surrounding
+letters make no difference.
 
-<img src="docs/chart-reach.svg" alt="Ordinary English words censored by each blocked entry: cu 5,016; nb 956; meter 695; anta 419; ks 408; 11 others 920" width="100%">
+The word list is mostly Brazilian Portuguese, and its shortest entries are two
+letters long. Those two letters are a rude word in Portuguese, and an ordinary
+part of many words in English, Indonesian, Thai and Vietnamese.
 
-`cu` is Portuguese for anus. In English it is the middle of `document`.
+<img src="docs/chart-reach.svg" alt="Ordinary English words blocked by each entry: cu 5,016; nb 956; meter 695; anta 419; ks 408; 11 others 920" width="100%">
 
-<img src="docs/chart-locales.svg" alt="Share of each locale's vocabulary refused: Indonesian 4.8%, Thai 3.0%, English 2.8%, Portuguese 2.8%, Vietnamese 2.2%" width="100%">
+`cu` is a rude word in Portuguese. In English, the same two letters sit in the
+middle of `document`.
+
+<img src="docs/chart-locales.svg" alt="Share of each language's vocabulary blocked: Indonesian 4.8 percent, Thai 3.0, English 2.8, Portuguese 2.8, Vietnamese 2.2" width="100%">
 
 ---
 
-## Before you adopt the code
+## Checking the code before you use it
 
 ```sh
 python3 tools/verify_safe.py
 ```
 
-Parses the AST of every shipped file and reports what it can do. On this tree:
-**no third-party dependencies, no network, no process execution, no `eval`, no
-`pickle`** — Python standard library only, **961 lines** across three files.
-The one file write is `ShadowFilter.dump(path)`, which you call with a path you
-supply.
+The command above reads every file you would install, and reports what that
+code is able to do. On this repository it reports:
 
-**Option A needs no code from here at all** — it is a text file of 343 words.
+| check | result |
+|---|---|
+| outside libraries used | none. Python standard library only |
+| network access | none |
+| starts other programs | none |
+| runs code from text (`eval`) | none |
+| reads Python objects from files (`pickle`) | none |
+| writes files | one place only: `ShadowFilter.dump(path)`, which you call yourself, with a path you choose |
 
-MIT licensed. The term list is deliberately not shipped: the vocabulary is
-yours; what is defective is the matching.
+You would install **961 lines** of code in total:
+
+| file | lines | what it does |
+|---|---|---|
+| [`fix/rescue.py`](fix/rescue.py) | 138 | Option B. The whole fix. |
+| [`engine/chatguard.py`](engine/chatguard.py) | 676 | Option D. The replacement matcher. |
+| [`engine/shadow.py`](engine/shadow.py) | 147 | Runs a new filter next to your current one and compares the two answers. Your filter stays in charge. |
+
+**Option A installs no code at all.** It is a text file containing 343 words.
+
+Everything is MIT licensed. We do not ship a word list. Your word list is your
+own. The problem this audit found is in the matching, not in your words.
 
 ---
 
-## Repository
+## How to roll it out safely
+
+1. **Compare first.** `engine/shadow.py` runs the new filter next to your
+   current one and records where the two answers differ. Players see no
+   change, because your filter still decides.
+2. **Check each difference.** Every difference should be a message that your
+   filter blocks today, and the new filter would deliver. If any message goes
+   the other way, something is wired wrong: no option here adds blocking.
+3. **Turn it on.** Options A and B are separate. You can ship either one first.
+
+---
+
+## What is in this repository
 
 | | |
 |---|---|
-| [`findings/`](findings/) | the evidence — word lists, `findings.json`, all 15,307 probe records ⚠ contains profanity |
-| [`fix/`](fix/) | `rescue.py`, the 473,532-word allowlist, deploy notes |
-| [`engine/`](engine/) | optional replacement matcher, 53 tests, 29 conformance vectors |
-| [`tools/`](tools/) | everything used to produce and verify the above |
+| [`findings/`](findings/) | the evidence. Word lists, `findings.json`, and all 15,307 test records. ⚠ contains profanity |
+| [`fix/`](fix/) | `rescue.py`, the 473,532-word exception list, deployment notes |
+| [`engine/`](engine/) | optional replacement matcher, 55 tests, 29 conformance vectors |
+| [`tools/`](tools/) | the programs used to produce and check everything above |
 | [`docs/`](docs/) | PDFs, adoption notes, background research |
 
 ```sh
-python3 tools/verify_safe.py       # dependency and capability surface
-python3 engine/tests/test_all.py   # 53 tests
+python3 tools/verify_safe.py       # what the code is able to do
+python3 engine/tests/test_all.py   # 55 tests
 python3 tools/conformance.py       # 29 conformance vectors
-python3 tools/check_numbers.py     # every published figure traces to the evidence
+python3 tools/check_numbers.py     # every number in the documents matches the evidence
 ```
 
-To confirm the defect, send `thank` in game and then `thanks`. Ten seconds, and
-it needs nothing from this repository.
+You can confirm the problem yourself in ten seconds, using nothing from this
+repository: type `thank` in the game, then type `thanks`.
 
 <details>
-<summary><b>Method and limitations</b></summary>
+<summary><b>How the audit was done, and what it does not cover</b></summary>
 
 <br>
 
-Messages were sent through the retail client into a private party channel, one
-at a time, and read back from chat history. No client modification, no packet
-injection, no server or source access — the audit observes exactly what a
-player observes.
+We sent messages through the normal game client, into a private party channel,
+one message at a time. We then read the chat history to see whether each
+message was delivered or blocked. We did not modify the client. We did not send
+packets directly. We had no access to server code or configuration. The audit
+sees exactly what a player sees.
 
-- **A substring is not reported until isolated.** Every rule was confirmed
-  inside inert padding, with neither neighbouring letter firing alone.
-  Candidates that failed were dropped.
-- **One observation is not a result.** The detection error rate was measured,
-  not assumed: 6 spurious refusals in 491 observations, 1.2% per probe. Every
-  reported word required two independent refused observations.
-- **An unsent probe is not a passing probe.** All but 15 were retried to a real
-  verdict. A false-negative audit over 250 words returned zero misses.
+Three rules decided what went into this report.
 
-**Limitations.** The rule set is a lower bound — entries whose letters did not
-occur in the 11,868 strings tested would not have surfaced. The 8,414 figure is
-derived by projecting confirmed rules across a dictionary; the 343 measured
-words are kept in a separate file. Korean, Chinese and Japanese vocabularies
-were not swept. Findings describe the service on 11–12 September 2026.
+1. **We name an entry only after testing it on its own.** For each one, we put
+   the letters inside a made-up word. We also sent each letter separately. If a
+   single letter was blocked too, we dropped that candidate.
+2. **One test is not a result.** We measured how often our own detection was
+   wrong: 6 wrong readings out of 491, which is 1.2%. Every word in this report
+   was blocked in at least two separate tests.
+3. **A message that was never sent does not count as delivered.** Sometimes the
+   text did not reach the input box, so no message went out. We retried those
+   words. 15 stayed unresolved. We also re-tested 250 words that looked fine,
+   and found no blocked words that we had missed.
+
+**What this audit does not cover.** There may be more than the 16 entries we
+found. We can only find an entry if its letters appear in one of the 11,868
+strings we tested. The figure of 8,414 affected words is calculated, not
+measured: we applied the confirmed entries to a dictionary. The 343 measured
+words are kept in a separate file. We did not test Korean, Chinese or Japanese
+vocabulary. All results describe the service on 11 and 12 September 2026.
 
 </details>
