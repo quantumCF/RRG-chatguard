@@ -1,4 +1,4 @@
-# chatguard
+# rrg-chatguard
 
 **An accuracy audit of the Ragnarok: Rebirth Global chat filter, and a fix.**
 
