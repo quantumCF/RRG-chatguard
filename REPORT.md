@@ -26,7 +26,7 @@ The two together are the defect. Short Portuguese terms matched as substrings
 against all eight shipped locales censor common vocabulary in every language
 the game runs in.
 
-**15,307 messages** were sent through the ordinary game client. **342 ordinary
+**15,307 messages** were sent through the ordinary game client. **343 ordinary
 words were confirmed refused** and **10,627 were confirmed to pass**. The
 confirmed rules affect **8,414 ordinary English dictionary words**, 3.6% of the
 language.
@@ -164,10 +164,13 @@ short the entries are rather than of which ones they are.
 
 ### 2.6 Scope across locales
 
-The measured refusal rate was uniform across the vocabularies tested:
-Indonesian 5.2%, Vietnamese 3.6%, English 3.4%, Portuguese 3.2%, Thai 3.2%.
-This is not an English-only problem. The game's own Portuguese interface text
-contains words its own filter refuses.
+The measured refusal rate is comparable across every vocabulary tested:
+Indonesian 4.8%, Thai 3.0%, English 2.8%, Portuguese 2.8%, Vietnamese 2.2%. This is not an English-only problem. The game's own
+Portuguese and Indonesian interface text contains words its own filter refuses.
+
+These rates count distinct words, not probe records. Counting records inflates
+them, because verification re-probes every refused word three further times and
+so multiplies the numerator while leaving the denominator alone.
 
 ---
 
@@ -178,7 +181,7 @@ requires no code change at all.
 
 ### Option 1 — Allow the confirmed words
 
-`findings/words-to-allow.txt` lists **342 ordinary words** confirmed refused by
+`findings/words-to-allow.txt` lists **343 ordinary words** confirmed refused by
 the live service, each annotated with the rule responsible. If the filter
 already supports an exception list, this is a data change and nothing more.
 
@@ -232,7 +235,7 @@ tested would not have surfaced.
 **Dictionary counts are derived, not measured.** The 8,414 figure counts
 dictionary words containing a confirmed rule. Those specific words were not
 each sent to the server. They are labelled as derived wherever they appear, and
-the 342 measured words are kept in a separate file.
+the 343 measured words are kept in a separate file.
 
 **Point-in-time.** Everything here reflects the service as it behaved on 11–12
 September 2026. If the list is edited, these results describe the previous
@@ -246,7 +249,7 @@ vocabularies were not swept; conclusions about them would not be supported.
 ## 5. Evidence
 
 ```
-findings/words-to-allow.txt   342 ordinary words confirmed refused, with the
+findings/words-to-allow.txt   343 ordinary words confirmed refused, with the
                               rule responsible for each
 findings/affected-words.txt   8,414 dictionary words the confirmed rules reach
                               (derived, not individually tested)

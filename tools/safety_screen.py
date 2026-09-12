@@ -94,8 +94,25 @@ PREFIXES = ["", "un", "over", "under", "re", "de", "dis", "bull", "horse",
             "philo", "un", "in"]
 
 
+# Ordinary words that contain a slur root by coincidence. This screen matches
+# SLUR_ROOTS by containment, which is the same unanchored matching the audit
+# reports as the defect -- so it has the same failure mode, and needs the same
+# remedy. Kept deliberately short and explicit.
+#
+# "niggardly" and "unniggard" are NOT here. They are ordinary words meaning
+# stingy, and the live filter refuses them, but a great many moderation teams
+# choose to keep blocking them and recommending otherwise would pick a fight
+# that distracts from the finding. They stay flagged, which keeps them off the
+# allow list without asserting they should be censored.
+SLUR_COINCIDENCES = {
+    "gobbledygook", "gobbledegook",
+}
+
+
 def is_slur(word):
     w = word.lower()
+    if w in SLUR_COINCIDENCES:
+        return False, ""
     for root in SLUR_ROOTS:
         if root in w:
             return True, root

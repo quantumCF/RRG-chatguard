@@ -8,7 +8,7 @@
 # block, established separately by probing that substring inside
 # inert padding.
 #
-# words: 342
+# words: 343
 #
 accumulate	# 'cu'  [2/3 of passes]
 accumulation	# 'cu'
@@ -189,6 +189,7 @@ flocoon	# 'coon'
 focus	# 'cu'
 focused	# 'cu'
 focusing	# 'cu'
+gobbledygook
 guildcut	# 'cu'
 guildnoob
 guildworkshop	# 'ks'

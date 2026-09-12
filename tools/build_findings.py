@@ -143,41 +143,50 @@ def main():
             disputed[w] = f"{nb}/{n}"
 
     # ---- fragments: what the carrier probes established ------------------
-    blocked_terms = set()
+    #
+    # Built in one pass and filtered once at the end. Filtering between
+    # additions is what let "forksful" and "xxanusxx" survive: the minimality
+    # pass ran before the profanity pass added more entries, so anything added
+    # afterwards was never compared against them.
+    PADDING = set("xqw")
+    candidates = set()
+
     for w, res in verdict.items():
+        if res != "blocked":
+            continue
         core, was_carrier = unwrap(w)
-        if res == "blocked" and was_carrier:
-            blocked_terms.add(core)
+        if was_carrier:
+            candidates.add(core)              # the fragment, not the wrapper
+        elif len(w) <= 3:
+            candidates.add(w)                 # a short string blocking alone
+        elif w in lexicon_terms or is_slur(w)[0] or is_vulgar_derivation(w)[0]:
+            candidates.add(w)
 
-    # a bare short string that blocks on its own is also a fragment
-    for w, res in verdict.items():
-        if res == "blocked" and len(w) <= 3 and not unwrap(w)[1]:
-            blocked_terms.add(w)
+    def is_probe(t):
+        """A known fragment surrounded only by padding letters is a probe."""
+        for other in candidates:
+            if other != t and other in t:
+                if set(t.replace(other, "", 1)) <= PADDING:
+                    return True
+        return False
 
-    # profanity that blocks is a correct block, and belongs on the reference
-    # list rather than the allow list
-    for w, res in verdict.items():
-        if res == "blocked" and (w in lexicon_terms or is_slur(w)[0]
-                                 or is_vulgar_derivation(w)[0]):
-            blocked_terms.add(w)
+    def explained_by_shorter(t):
+        return any(o != t and o in t for o in candidates)
+
+    blocked_terms = {t for t in candidates
+                     if not is_probe(t) and not explained_by_shorter(t)}
 
     # ---- what counts as a word at all ------------------------------------
     #
     # A string only reaches the allow list if it is attested as real
-    # vocabulary: present in an English dictionary, or in the game's own
-    # shipped interface text.
+    # vocabulary: present in an English dictionary, in a usage-frequency list,
+    # or in the game's own shipped interface text.
     #
     # This exists because the control battery deliberately sends suspected
-    # TERMS -- "caralho", "buceta", "masturba", "openis" -- to find out which
-    # ones the filter holds. Those come back blocked, correctly, and without
-    # this gate they land in a file captioned "words that must never be
-    # censored". The safety screen does not catch them because it only knows
-    # English profanity, and the list here is Portuguese.
-    #
-    # Attestation is the right test rather than a tag or a second blocklist:
-    # profanity probed as a hypothesis is attested nowhere, while "cocoon",
-    # "manusia", "aksi" and "acumulado" are attested even though they are not
-    # English -- and those are exactly the findings worth keeping.
+    # TERMS to find out which ones the filter holds. Those come back blocked,
+    # correctly, and without this gate they land in a file captioned "words
+    # that must never be censored". The safety screen does not catch them all
+    # because it began as English-only and the list here is Portuguese.
     attested = set()
     if os.path.exists(args.dictionary):
         attested |= {l.strip().lower() for l in
@@ -192,10 +201,10 @@ def main():
         """Attested directly, or a regular inflection of something attested.
 
         The inflection step is not optional. Dictionaries hold base forms, so
-        without it "decks", "desks", "disks", "clicks", "networks" and
-        "trademarks" all read as unattested -- and those are the "ks" findings,
-        the ones the report most needs to show. A rule that discards its own
-        best evidence is worse than no rule.
+        without it "decks", "disks", "clicks" and "networks" all read as
+        unattested -- and those are the "ks" findings, the ones the report most
+        needs to show. A rule that discards its own best evidence is worse than
+        no rule.
 
         Two characters is never vocabulary here: "cu" and "ks" are the rules
         themselves and belong on the terms list, not among their victims.
@@ -237,8 +246,11 @@ def main():
             elif w in lexicon_terms or is_slur(w)[0] or is_vulgar_derivation(w)[0]:
                 pass                      # correctly blocked profanity
             elif attested and not is_vocabulary(w):
-                unattested.append(w)      # a probe, not a word
-                blocked_terms.add(w)
+                # Neither vocabulary nor an entry -- these are the control
+                # battery's own probe strings. Recorded separately; adding them
+                # to blocked_terms published "ksqwqw" and "forksful" in a file
+                # captioned "terms confirmed refused".
+                unattested.append(w)
             else:
                 ordinary.append(w)
         elif res == "sent":
@@ -341,8 +353,44 @@ def main():
         by_len.setdefault(len(f), set()).update(ws)
         if len(f) < 5:
             under5 |= set(ws)
+    # Refusal rate per locale vocabulary, from the sweep's own tags. Charts and
+    # prose both read this, so neither can drift from the other.
+    # Counted over DISTINCT words, not over probe records. Verification
+    # re-probes every blocked word three further times, so counting records
+    # multiplies the numerator and leaves the denominator alone -- Portuguese
+    # came out at 3.4% that way against a true 3.2%.
+    LOCALE = {"5-locale-in": "Indonesian", "5-locale-vn": "Vietnamese",
+              "5-locale-pt": "Portuguese", "5-locale-th": "Thai",
+              "3-common-english": "English"}
+    word_locale = {}
+    for r in rows:
+        name = LOCALE.get(r.get("tag"))
+        w = (r.get("text") or "").strip().lower()
+        if name and w:
+            word_locale.setdefault(w, name)
+    loc_tot, loc_blk = collections.Counter(), collections.Counter()
+    for w, name in word_locale.items():
+        v = verdict.get(w)
+        if v in ("blocked", "sent"):
+            loc_tot[name] += 1
+            if v == "blocked":
+                loc_blk[name] += 1
+    locales = {k: round(loc_blk[k] / loc_tot[k] * 100, 1)
+               for k in loc_tot if loc_tot[k]}
+
+    # What survives the recommended fix: entries of five characters or more,
+    # which keep matching as substrings. This is the "after" number.
+    remaining = union - under5
+
     summary = {
         "derived_union_count": len(union),
+        "locale_refusal_pct": locales,
+        "remaining_after_length_rule": len(remaining),
+        # what the reach chart's trailing bucket holds, so the figure in the
+        # chart and its alt text is checkable like every other
+        "derived_outside_top5": len(union) - sum(
+            sorted(( {f: len(v) for f, v in derived.items()} ).values(),
+                   reverse=True)[:5]),
         "derived_by_entry_length": {str(k): len(v) for k, v in sorted(by_len.items())},
         "derived_under_5_chars": len(under5),
         "rules_by_entry_length": {str(k): sum(1 for r in rules if len(r) == k)

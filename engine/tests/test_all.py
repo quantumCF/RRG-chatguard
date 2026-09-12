@@ -426,5 +426,38 @@ class TestToolsRun(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(d, "xx-phrases.txt")))
 
 
+class TestAgainstAuditFindings(unittest.TestCase):
+    """The engine's headline claim, checked against the audit's own evidence.
+
+    Loaded with the entries the live filter was confirmed to hold, the
+    replacement must censor none of the ordinary words the live filter refuses,
+    and must still refuse every one of those entries when typed as a word. If
+    either half stops being true the claim in fix/DEPLOY.md is wrong, and a
+    claim nobody re-checks is how the withdrawn figures survived as long as
+    they did.
+    """
+
+    def setUp(self):
+        path = os.path.join(ROOT, "findings", "findings.json")
+        if not os.path.exists(path):
+            self.skipTest("no findings.json")
+        self.f = json.load(open(path, encoding="utf-8"))
+        self.terms = [t for t in self.f["blocked_terms"] if t.isalpha()]
+        self.guard = ChatGuard(
+            [Term(t, Tier.STRONG, MatchMode.WORD) for t in self.terms],
+            [l.strip() for l in open(
+                os.path.join(ROOT, "engine", "lexicon", "lexicon",
+                             "en-allow.txt"), encoding="utf-8")
+             if l.strip() and not l.startswith("#")])
+
+    def test_no_confirmed_word_is_censored(self):
+        still = [w for w in self.f["ordinary_censored"] if self.guard.check(w)]
+        self.assertEqual(still, [], f"{len(still)} false positives remain")
+
+    def test_every_confirmed_term_still_blocks(self):
+        missed = [t for t in self.terms if not self.guard.check(t)]
+        self.assertEqual(missed, [], f"{len(missed)} terms no longer blocked")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

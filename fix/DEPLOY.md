@@ -3,8 +3,11 @@
 Three fixes, smallest first. **Fix 1 is one line of code and needs no data.**
 They compose, but each works alone.
 
-Measured against the game's own localized item and skill names — text the
-publisher itself authored, so every flag is unambiguously a false positive.
+Every figure here derives from the 16 rules confirmed against the live service
+in the audit. Earlier revisions of this file quoted per-locale percentages
+taken from a static read of the client's own word list; that analysis was
+withdrawn when live testing showed the client list is not the list the server
+enforces.
 
 ---
 
@@ -16,16 +19,24 @@ publisher itself authored, so every flag is unambiguously a false positive.
 Nothing is deleted. Every entry keeps working. Short entries simply stop
 matching inside longer words.
 
-| locale | today | N=3 | **N=4** | N=5 |
-|---|---|---|---|---|
-| English | 46.1% | 7.6% | **4.0%** | 3.0% |
-| Portuguese | 52.1% | 8.2% | **0.9%** | 0.5% |
-| Indonesian | 48.0% | 6.2% | **3.1%** | 2.2% |
-| Thai | 30.0% | 4.3% | **2.4%** | 1.9% |
-| Vietnamese | 9.7% | 3.4% | **2.5%** | 2.4% |
-| Chinese (Simp) | 8.4% | 2.5% | **2.3%** | 2.1% |
-| Chinese (Trad) | 9.7% | 2.9% | **2.7%** | 2.6% |
-| Korean | 0.0% | 0.0% | 0.0% | 0.0% |
+| threshold | entries still matching as substrings | ordinary English words still censored |
+|---|---|---|
+| today, no rule | 16 | 8,414 |
+| N = 3 | 13 | 2,100 |
+| N = 4 | 10 | 1,672 |
+| **N = 5** | **2** | **745** |
+| N = 6 | 0 | 0 |
+
+**N = 5 is the recommendation.** It leaves only two entries matching as
+substrings, and both are long enough that an accidental collision has to
+reconstruct five specific letters. N = 6 would remove the remainder, but it
+also stops every entry from matching inside a compound, which is a real loss
+against deliberate evasion.
+
+Computed by projecting the 16 confirmed rules across an English dictionary of
+235,357 ordinary words. The audit's own measurement of the live service is in
+`../REPORT.md`; these are the same rules applied to untested vocabulary, and
+are labelled derived for that reason.
 
 In your matcher, where you currently accept any hit:
 
@@ -117,10 +128,12 @@ leet normalization, bounded fuzzy matching, severity tiers, per-surface policy
 (a permanent character name is judged more strictly than a whisper), and
 per-locale scoping so one market's list stops being applied to another's players.
 
-Same vocabulary, no new words: English-dictionary false positives **37.1% → 0.0%**.
-With a domain lexicon generated from your own localization, false positives on
-your own content go **46.1% → 0.0%** while obfuscation recall rises
-**22.9% → 84.3%**.
+Measured against this audit's own results: loaded with the 38 entries confirmed
+to be on the live filter, the engine censors **0 of the 343** ordinary words the
+live filter refuses, while still refusing **38 of 38** of those entries when
+they are typed as words. Same vocabulary, no new words, no entry removed.
+
+`python3 engine/tests/test_all.py` reproduces that check.
 
 Roll it out with `../engine/shadow.py`: it runs beside your existing filter
 and returns **your** filter's answer every time, recording only where the two

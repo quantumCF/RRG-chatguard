@@ -14,7 +14,7 @@ thanks   refused      ← one letter apart
 > the files in `4-evidence/` quote profanity and slurs as evidence. This
 > summary and the integration instructions do not.
 
-**15,307 messages** sent through the retail client. **342 ordinary words
+**15,307 messages** sent through the retail client. **343 ordinary words
 confirmed censored**, **10,627 confirmed delivered**. The confirmed rules reach
 **8,414 ordinary English words**.
 
@@ -34,7 +34,7 @@ confirmed censored**, **10,627 confirmed delivered**. The confirmed rules reach
 ## Fastest path to a fix
 
 **If your filter already has an exception list** — ship
-`2-quick-fix/words-to-allow.txt`. It is 342 words, one per line, each annotated
+`2-quick-fix/words-to-allow.txt`. It is 343 words, one per line, each annotated
 with the rule that caused it. No code change. This removes false positives
 only; nothing is taken off the block list.
 
@@ -111,12 +111,12 @@ It parses the AST of each shipped file and prints the dependency and capability
 surface. Total shipped code is 961 lines across three files.
 
 **Option A requires no code from this package at all** — it is a text file of
-342 words. If vendoring third-party code is slow to clear review, that path is
+343 words. If vendoring third-party code is slow to clear review, that path is
 available immediately.
 
 ## Notes on the numbers
 
-- **342** is measured — each word was refused by the live service in at least
+- **343** is measured — each word was refused by the live service in at least
   two independent trials, against a measured 1.2% per-probe error rate.
 - **8,414** is derived — the confirmed rules projected across a dictionary.
   Those specific words were not each sent. The two are kept in separate files

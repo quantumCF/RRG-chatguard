@@ -12,7 +12,7 @@ inside unrelated words. `thanks`, `document`, `security`, `number`,
 `advantage`, `parameter`, `campus` and `vacation` are all refused by the live
 service.
 
-**15,307** messages tested · **342** ordinary words confirmed censored ·
+**15,307** messages tested · **343** ordinary words confirmed censored ·
 **8,414** ordinary English words affected
 
 **[→ Read the 6-page report](docs/chat-filter-audit-report.pdf)**  ·
@@ -28,13 +28,15 @@ service.
 
 > **Entries shorter than five characters match only as whole words.**
 
-That one condition removes **91%** of the affected words. `cu` still refuses
-`cu` and stops refusing `document`. Entries of five characters or more are
-untouched, so every substantial term behaves exactly as it does today.
+`cu` still refuses `cu` and stops refusing `document`. Entries of five
+characters or more are untouched, so every substantial term behaves exactly as
+it does today.
+
+<img src="docs/chart-impact.svg" alt="Ordinary English words still censored: 8,414 before the rule, 739 after" width="100%">
 
 | | Option | Effort |
 |---|---|---|
-| **A** | Ship [`findings/words-to-allow.txt`](findings/words-to-allow.txt) — 342 words, no code | Hours |
+| **A** | Ship [`findings/words-to-allow.txt`](findings/words-to-allow.txt) — 343 words, no code | Hours |
 | **B** | Add [`fix/rescue.py`](fix/rescue.py) at one call site | 1 day |
 | **C** | The length rule above | 1–2 days |
 | **D** | Replace the matcher with [`engine/`](engine/) | 1–2 weeks |
@@ -70,18 +72,11 @@ Two literal characters, matched anywhere, with no word boundary — which is why
 the plural of `thank` is refused. The term list is predominantly Brazilian
 Portuguese, and its shortest entries are two characters long.
 
-**The entries doing the damage:**
+<img src="docs/chart-reach.svg" alt="Ordinary English words censored by each blocked entry: cu 5,016; nb 956; meter 695; anta 419; ks 408; 11 others 920" width="100%">
 
-| entry | ordinary English words it censors | examples |
-|---|---|---|
-| `cu` | **5,016** | document, discuss, security, focus, circus |
-| `nb` | 956 | number, inbox, unbind |
-| `meter` | 695 | parameter, diameter, kilometer |
-| `anta` | 419 | advantage, santa, fantastic |
-| `ks` | 408 | thanks, tasks, books, works, weeks |
+`cu` is Portuguese for anus. In English it is the middle of `document`.
 
-Eleven further entries account for the remainder. `cu` is Portuguese for anus;
-in English it is the middle of `document`.
+<img src="docs/chart-locales.svg" alt="Share of each locale's vocabulary refused: Indonesian 4.8%, Thai 3.0%, English 2.8%, Portuguese 2.8%, Vietnamese 2.2%" width="100%">
 
 ---
 
@@ -97,7 +92,7 @@ Parses the AST of every shipped file and reports what it can do. On this tree:
 The one file write is `ShadowFilter.dump(path)`, which you call with a path you
 supply.
 
-**Option A needs no code from here at all** — it is a text file of 342 words.
+**Option A needs no code from here at all** — it is a text file of 343 words.
 
 MIT licensed. The term list is deliberately not shipped: the vocabulary is
 yours; what is defective is the matching.
@@ -145,7 +140,7 @@ player observes.
 
 **Limitations.** The rule set is a lower bound — entries whose letters did not
 occur in the 11,868 strings tested would not have surfaced. The 8,414 figure is
-derived by projecting confirmed rules across a dictionary; the 342 measured
+derived by projecting confirmed rules across a dictionary; the 343 measured
 words are kept in a separate file. Korean, Chinese and Japanese vocabularies
 were not swept. Findings describe the service on 11–12 September 2026.
 

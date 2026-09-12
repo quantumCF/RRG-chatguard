@@ -52,6 +52,11 @@ ALLOWED = {
     1297: "allowlist source: BSD propernames",
     222: "allowlist source: hand-written MMO vocabulary",
     2010: "US Census year for the surname source",
+    100: "width=\"100%\" on embedded charts, not a finding",
+    2100: "words still censored at threshold N=3 (tools/lengthrule.py)",
+    1672: "words still censored at threshold N=4",
+    745: "words still censored at threshold N=5",
+    235357: "ordinary English words in the reference dictionary",
 }
 
 
@@ -93,6 +98,8 @@ def evidence_numbers(path):
     add(f.get("clean_words_confirmed"))
     add(f.get("derived_union_count"))
     add(f.get("derived_under_5_chars"))
+    add(f.get("remaining_after_length_rule"))
+    add(f.get("derived_outside_top5"))
     for v in (f.get("derived_by_entry_length") or {}).values():
         add(v)
     for v in (f.get("rules_by_entry_length") or {}).values():
@@ -119,6 +126,15 @@ def main():
         print(f"no evidence at {ev_path} -- run build_findings.py first")
         return 2
     ok = evidence_numbers(ev_path) | code_line_counts()
+    ev = json.load(open(ev_path, encoding="utf-8"))
+    # Percentages were invisible to the integer scan, which is exactly how the
+    # per-locale rates stayed at their pre-verification values in three
+    # documents after the underlying measurement changed.
+    decimals = set(ev.get("locale_refusal_pct", {}).values()) | {
+        1.2,                                              # per-probe error rate
+        0.015,      # chance a word enters on two spurious observations
+        round(ev["derived_union_count"] / 235357 * 100, 1),  # share of English
+    }
 
     stale = []
     for rel in DOCS:
@@ -133,6 +149,11 @@ def main():
             text = re.sub(r"<style\b.*?</style>", "", text,
                           flags=re.S | re.I)
             text = re.sub(r"<[^>]+>", " ", text)
+        for m in re.finditer(r"\b\d+\.\d+%", text):
+            val = float(m.group(0).rstrip("%"))
+            if val not in decimals:
+                line = text[:m.start()].count("\n") + 1
+                stale.append((rel, line, m.group(0)))
         for m in re.finditer(r"\b\d{1,3}(?:,\d{3})+\b|\b\d+\b", text):
             raw = m.group(0)
             n = int(raw.replace(",", ""))

@@ -129,7 +129,7 @@
 
   <div class="kpis">
     <div class="kpi"><span class="v">15,307</span><span class="l">messages sent</span></div>
-    <div class="kpi"><span class="v">342</span><span class="l">words confirmed censored</span></div>
+    <div class="kpi"><span class="v">343</span><span class="l">words confirmed censored</span></div>
     <div class="kpi"><span class="v">8,414</span><span class="l">English words affected</span></div>
     <div class="kpi"><span class="v">16</span><span class="l">rules identified</span></div>
   </div>
@@ -220,11 +220,11 @@
   each shipped language. It is uniform — this is not an English-only problem.</p>
 
   <div class="bars" style="margin-bottom:12pt">
-    <div class="bar"><span class="nm" style="width:60pt">Indonesian</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">5.2%</span><span class="ex">aksi, manusia, perubahan</span></div>
-    <div class="bar"><span class="nm" style="width:60pt">Vietnamese</span><span class="track"><span class="fill" style="width:69%"></span></span><span class="val">3.6%</span><span class="ex">anh, thanh, linh, kho</span></div>
-    <div class="bar"><span class="nm" style="width:60pt">English</span><span class="track"><span class="fill" style="width:65%"></span></span><span class="val">3.4%</span><span class="ex">thanks, document, security</span></div>
-    <div class="bar"><span class="nm" style="width:60pt">Portuguese</span><span class="track"><span class="fill" style="width:62%"></span></span><span class="val">3.2%</span><span class="ex">acumulado, vermelho</span></div>
-    <div class="bar"><span class="nm" style="width:60pt">Thai</span><span class="track"><span class="fill" style="width:62%"></span></span><span class="val">3.2%</span><span class="ex">romanised interface tokens</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Indonesian</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">4.8%</span><span class="ex">aksi, manusia, perubahan</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Thai</span><span class="track"><span class="fill" style="width:62%"></span></span><span class="val">3.0%</span><span class="ex">romanised interface tokens</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">English</span><span class="track"><span class="fill" style="width:58%"></span></span><span class="val">2.8%</span><span class="ex">thanks, document, security</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Portuguese</span><span class="track"><span class="fill" style="width:58%"></span></span><span class="val">2.8%</span><span class="ex">acumulado, vermelho</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Vietnamese</span><span class="track"><span class="fill" style="width:46%"></span></span><span class="val">2.2%</span><span class="ex">anh, thanh, linh, kho</span></div>
   </div>
 
   <div class="callout warn">
@@ -261,7 +261,7 @@
     <h3>Confidence in these figures</h3>
     <table class="d">
       <tr><th>Figure</th><th>Basis</th></tr>
-      <tr><td><strong>342</strong> words confirmed censored</td>
+      <tr><td><strong>343</strong> words confirmed censored</td>
           <td>Measured. Each required two independent refused observations against a measured 1.2% per-probe error rate.</td></tr>
       <tr><td><strong>8,414</strong> English words affected</td>
           <td>Derived. Confirmed rules projected across a dictionary; these specific words were not each sent.</td></tr>
@@ -296,7 +296,7 @@
     <div>
       <h4>A · Allowlist <span class="sm muted">— no code change</span></h4>
       <p class="sm">If the filter already consults an exception list, this is a
-      data deployment. <code>words-to-allow.txt</code> holds the 342 confirmed
+      data deployment. <code>words-to-allow.txt</code> holds the 343 confirmed
       words, one per line, each annotated with the rule responsible.</p>
     </div>
     <div>
@@ -378,7 +378,7 @@ rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
   <h3>What ships in this package</h3>
   <table class="d">
     <tr><th>Path</th><th>Format</th><th class="n">Size</th><th>Use</th></tr>
-    <tr><td class="mono">findings/words-to-allow.txt</td><td>one word per line</td><td class="n">342</td><td>Option A payload</td></tr>
+    <tr><td class="mono">findings/words-to-allow.txt</td><td>one word per line</td><td class="n">343</td><td>Option A payload</td></tr>
     <tr><td class="mono">findings/affected-words.txt</td><td>one word per line, by rule</td><td class="n">8,414</td><td>Option A, broader set</td></tr>
     <tr><td class="mono">fix/allowlist-en.txt</td><td>one word per line</td><td class="n">473,532</td><td>Option B corpus</td></tr>
     <tr><td class="mono">fix/rescue.py</td><td>Python 3, no dependencies</td><td class="n">138 ln</td><td>Option B shim</td></tr>
@@ -447,7 +447,7 @@ python3 tools/check_numbers.py   <span class="c"># every figure here traces to t
   <table class="d">
     <tr><th>Limitation</th><th>Consequence</th></tr>
     <tr><td>Rule set is a lower bound</td><td>There may be further entries the tested vocabulary did not reveal</td></tr>
-    <tr><td>Dictionary counts are derived</td><td>8,414 is a projection; the 342 measured words are kept separately</td></tr>
+    <tr><td>Dictionary counts are derived</td><td>8,414 is a projection; the 343 measured words are kept separately</td></tr>
     <tr><td>Point-in-time</td><td>Describes the service on 11–12 September 2026; a list edit changes it</td></tr>
     <tr><td>Non-Latin locales under-covered</td><td>Korean, Chinese and Japanese were not swept; no conclusion is offered</td></tr>
   </table>
