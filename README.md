@@ -18,8 +18,9 @@ service.
 **[→ Read the 6-page report](docs/chat-filter-audit-report.pdf)**  ·
 [one-pager](docs/chat-filter-defect-report.pdf) · [markdown](REPORT.md)
 
-> **Content notice** — this repository audits a profanity filter. The report
-> and `findings/` quote slurs as evidence. This README does not.
+> **Content notice** — this repository audits a profanity filter. The entries
+> named below are the short ones causing the false positives; the full term
+> inventory, which includes slurs, is in the report and in `findings/`.
 
 ---
 
@@ -27,8 +28,9 @@ service.
 
 > **Entries shorter than five characters match only as whole words.**
 
-That one condition removes **91%** of the affected words. Short entries still
-match when typed as words; entries of five characters or more are untouched.
+That one condition removes **91%** of the affected words. `cu` still refuses
+`cu` and stops refusing `document`. Entries of five characters or more are
+untouched, so every substantial term behaves exactly as it does today.
 
 | | Option | Effort |
 |---|---|---|
@@ -68,14 +70,18 @@ Two literal characters, matched anywhere, with no word boundary — which is why
 the plural of `thank` is refused. The term list is predominantly Brazilian
 Portuguese, and its shortest entries are two characters long.
 
-**Short entries cause nearly all of it:**
+**The entries doing the damage:**
 
-| entry length | entries | words reached |
+| entry | ordinary English words it censors | examples |
 |---|---|---|
-| 2 characters | 3 | **6,355** |
-| 3 characters | 3 | 428 |
-| 4 characters | 8 | 928 |
-| 5 characters | 2 | 745 |
+| `cu` | **5,016** | document, discuss, security, focus, circus |
+| `nb` | 956 | number, inbox, unbind |
+| `meter` | 695 | parameter, diameter, kilometer |
+| `anta` | 419 | advantage, santa, fantastic |
+| `ks` | 408 | thanks, tasks, books, works, weeks |
+
+Eleven further entries account for the remainder. `cu` is Portuguese for anus;
+in English it is the middle of `document`.
 
 ---
 
