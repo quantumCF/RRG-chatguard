@@ -26,7 +26,7 @@ import re
 import sys
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "appendix", "reference-engine", "python"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 from chatguard import ChatGuard, MatchMode, Term, Tier  # noqa: E402
 
 
@@ -217,14 +217,14 @@ def main():
     # data/domain/ is empty in this repository on purpose: domain lexicons are
     # generated from YOUR localization with tools/build_lexicon.py, not shipped.
     # Anything found there is picked up automatically.
-    allow_paths = [os.path.join(root, "appendix/lexicon-data/lexicon/en-allow.txt")]
+    allow_paths = [os.path.join(root, "engine/lexicon/lexicon/en-allow.txt")]
     domain = os.path.join(root, "data/domain")
     if os.path.isdir(domain):
         allow_paths += [os.path.join(domain, f) for f in sorted(os.listdir(domain))
                         if f.endswith(".txt")]
 
     guard = ChatGuard(
-        load_terms_table(os.path.join(root, "appendix/lexicon-data/lexicon/en-terms.jsonl")),
+        load_terms_table(os.path.join(root, "engine/lexicon/lexicon/en-terms.jsonl")),
         load_allow(allow_paths),
     )
 

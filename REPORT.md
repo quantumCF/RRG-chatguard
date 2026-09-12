@@ -185,7 +185,7 @@ This is the highest ratio of damage removed to change made.
 
 ### Option 3 — Replace the matcher
 
-`appendix/reference-engine/` contains a drop-in matcher: per-term match modes
+`engine/` contains a drop-in matcher: per-term match modes
 (whole word, prefix, substring), a severity tier per term, allowlist rescue
 that resolves longest-match-wins, and normalisation that folds evasion
 (`f u c k`, `fuuuck`, `sh1t`, homoglyphs) without folding ordinary words. No
@@ -234,7 +234,7 @@ findings/findings.json        machine-readable summary
 findings/raw-logs/            all 15,307 probes, one JSON record each
 ```
 
-Every claim traces to a record in `raw-logs/`. Each record carries the exact
+Every claim traces to a record in `findings/raw-logs/`. Each record carries the exact
 string sent, the verdict, and the timestamp.
 
 To reproduce any single result, send the string in game and observe whether it

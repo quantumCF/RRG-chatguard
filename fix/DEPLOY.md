@@ -91,7 +91,7 @@ vocabulary your players type, and it involves nobody's judgement but yours:
 
 ```sh
 python3 ../tools/build_allowlist.py --out . \
-    --terms ../appendix/lexicon-data/lexicon/en-terms.jsonl \
+    --terms ../engine/lexicon/lexicon/en-terms.jsonl \
     --locale en:your_en_export.txt --locale pt:your_pt_export.txt \
     --cjk-locale cn:your_cn_export.txt
 ```
@@ -110,7 +110,7 @@ shelters instead, and `Rescue(phrases_path=...)` consumes them.
 
 ## Fix 3 — replace the matcher.
 
-`../appendix/reference-engine/python/chatguard.py`, ~650 lines, no dependencies, MIT.
+`../engine/chatguard.py`, ~650 lines, no dependencies, MIT.
 
 Word boundaries, per-term match modes, a rescue allowlist, Unicode/confusable/
 leet normalization, bounded fuzzy matching, severity tiers, per-surface policy
@@ -122,7 +122,7 @@ With a domain lexicon generated from your own localization, false positives on
 your own content go **46.1% → 0.0%** while obfuscation recall rises
 **22.9% → 84.3%**.
 
-Roll it out with `../appendix/reference-engine/python/shadow.py`: it runs beside your existing filter
+Roll it out with `../engine/shadow.py`: it runs beside your existing filter
 and returns **your** filter's answer every time, recording only where the two
 disagree. Flip authority when your own traffic says to. Rollback is the same
 config value.
@@ -147,7 +147,7 @@ python3 ../tools/testbattery.py generate --out battery --margin 0.05
 python3 ../tests/test_all.py
 ```
 
-`selftest_filter.py` enforces one invariant — *no string we authored may be
+`tools/selftest_filter.py` enforces one invariant — *no string we authored may be
 flagged by our own filter* — and belongs in CI next to the localization export.
 It has a `--max-failures` ratchet so it can be adopted today at whatever level is
 currently true, then tightened.

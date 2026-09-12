@@ -29,30 +29,30 @@ cp "$REPO/fix/rescue.py"                "$OUT/2-quick-fix/"
 cp "$REPO/fix/DEPLOY.md"                "$OUT/2-quick-fix/"
 
 # ---- 3 replacement matcher ----------------------------------------------
-cp -R "$REPO/appendix/reference-engine/python/." "$OUT/3-replacement-engine/"
-cp -R "$REPO/tests"    "$OUT/3-replacement-engine/tests"
-cp -R "$REPO/vectors"  "$OUT/3-replacement-engine/vectors"
+cp "$REPO/engine/chatguard.py" "$REPO/engine/shadow.py" "$OUT/3-replacement-engine/"
+cp -R "$REPO/engine/tests"   "$OUT/3-replacement-engine/tests"
+cp -R "$REPO/engine/vectors" "$OUT/3-replacement-engine/vectors"
 cp "$REPO/tools/conformance.py"     "$OUT/3-replacement-engine/"
 cp "$REPO/tools/safety_screen.py"   "$OUT/3-replacement-engine/"
 cp "$REPO/tools/blackbox.py"        "$OUT/3-replacement-engine/"
 cp "$REPO/tools/selftest_filter.py" "$OUT/3-replacement-engine/"
 cp "$REPO/tools/build_lexicon.py"   "$OUT/3-replacement-engine/"
-cp -R "$REPO/appendix/lexicon-data" "$OUT/3-replacement-engine/lexicon-data"
+cp -R "$REPO/engine/lexicon" "$OUT/3-replacement-engine/lexicon"
 find "$OUT" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null || true
 
-# The package flattens the repository's appendix/reference-engine/python and
-# tools/ into one directory, so the copied scripts' sys.path lines no longer
+# The package flattens the repository's engine/ and tools/ into one directory, so the copied scripts' sys.path lines no longer
 # describe where they live. Rewritten here rather than in the repo, because the
 # repo layout is correct for the repo -- a package whose own test suite cannot
 # run is not a deliverable.
 /usr/bin/sed -i '' \
-  -e 's|os.path.join(ROOT, "appendix", "reference-engine", "python")|ROOT|' \
+  -e 's|^ENGINE = .*|ENGINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))|' \
+  -e 's|^ROOT = os.path.dirname(ENGINE)|ROOT = ENGINE|' \
   -e 's|os.path.join(ROOT, "tools")|ROOT|' \
   -e 's|self._run("tools/|self._run("|g' \
   "$OUT/3-replacement-engine/tests/test_all.py"
 /usr/bin/sed -i '' \
-  -e 's|os.path.join(os.path.dirname(__file__), "..", "appendix", "reference-engine", "python")|os.path.dirname(os.path.abspath(__file__))|' \
-  -e 's|os.path.join(os.path.dirname(__file__), "..", "vectors", "golden.jsonl")|os.path.join(os.path.dirname(os.path.abspath(__file__)), "vectors", "golden.jsonl")|' \
+  -e 's|os.path.join(os.path.dirname(__file__), "..", "engine")|os.path.dirname(os.path.abspath(__file__))|' \
+  -e 's|os.path.join(os.path.dirname(__file__), "..", "engine", "vectors", "golden.jsonl")|os.path.join(os.path.dirname(os.path.abspath(__file__)), "vectors", "golden.jsonl")|' \
   "$OUT/3-replacement-engine/conformance.py"
 
 # ---- 4 evidence ----------------------------------------------------------
@@ -60,7 +60,7 @@ cp "$REPO/findings/findings.json"     "$OUT/4-evidence/"
 cp "$REPO/findings/blocked-terms.txt" "$OUT/4-evidence/"
 cp -R "$REPO/findings/raw-logs"       "$OUT/4-evidence/raw-logs"
 
-cp "$REPO/PACKAGE-README.md" "$OUT/READ-ME-FIRST.md"
+cp "$REPO/tools/package-readme.md" "$OUT/READ-ME-FIRST.md"
 
 cd "$HOME/Desktop" && rm -f Chat-Filter-Audit.zip
 zip -qr Chat-Filter-Audit.zip Chat-Filter-Audit -x '*.DS_Store'

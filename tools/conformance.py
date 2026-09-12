@@ -15,7 +15,7 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "appendix", "reference-engine", "python"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "engine"))
 from chatguard import ChatGuard, MatchMode, Term, Tier  # noqa: E402
 
 
@@ -37,7 +37,7 @@ FIXTURE_ALLOW = [
 
 
 def main() -> int:
-    path = os.path.join(os.path.dirname(__file__), "..", "vectors", "golden.jsonl")
+    path = os.path.join(os.path.dirname(__file__), "..", "engine", "vectors", "golden.jsonl")
     guard = ChatGuard(FIXTURE_TERMS, FIXTURE_ALLOW,
                       fuzzy_tiers=(Tier.SEVERE, Tier.ILLEGAL))
 

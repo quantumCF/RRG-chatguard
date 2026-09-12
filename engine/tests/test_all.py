@@ -18,8 +18,12 @@ import sys
 import tempfile
 import unittest
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(ROOT, "appendix", "reference-engine", "python"))
+# This file lives at <repo>/engine/tests/, so the engine is one level up and
+# the repository root is two. Walking up a fixed number of levels is what broke
+# when the tree was reorganised, so both anchors are named rather than counted.
+ENGINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(ENGINE)
+sys.path.insert(0, ENGINE)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 
 from chatguard import (Action, ChatGuard, MatchMode, Normalized, Term, Tier,  # noqa

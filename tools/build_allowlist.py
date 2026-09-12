@@ -25,7 +25,7 @@ everything rejected is written to a review file rather than silently dropped.
 
 Usage:
     build_allowlist.py --out data/allowlist/ \
-        --terms appendix/lexicon-data/lexicon/en-terms.jsonl \
+        --terms engine/lexicon/lexicon/en-terms.jsonl \
         [--locale en:en_langs.txt] [--locale pt:pt_langs.txt] [--cjk-locale cn:cn_langs.txt]
 """
 

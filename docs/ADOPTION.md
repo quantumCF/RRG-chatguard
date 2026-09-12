@@ -9,7 +9,7 @@ want them, not because Tier 1 is a trap that requires them later.
 
 One thing to establish first, because it changes what you should trust here: the
 word list shipped inside a game client is **not necessarily the list the server
-enforces**. In the case measured, it demonstrably was not — see `EVIDENCE.md` §3.
+enforces**. In the case measured, it demonstrably was not — see `REPORT.md` §3.
 So no specific row named in these documents should be actioned directly. Run
 `tools/remediate.py` against your own list and act on that. The tools take your
 data as input precisely so that this caveat does not matter.
@@ -54,7 +54,7 @@ Fixes the rest: word-boundary matching, the rescue allowlist, Unicode and leet
 normalization, per-surface policy. On identical vocabulary this takes
 English-dictionary false positives from **37.1% to 0.0%**.
 
-Roll it out through `shadow.py`, which is designed so the decision is made by
+Roll it out through `engine/shadow.py`, which is designed so the decision is made by
 your production traffic rather than by this document. See *Rollout* below.
 
 ---
@@ -73,7 +73,7 @@ why it is last and separable.
 
 ## Rollout: how this ships without anyone taking a risk
 
-`appendix/reference-engine/python/shadow.py` wraps your existing filter:
+`engine/shadow.py` wraps your existing filter:
 
 ```python
 shadow = ShadowFilter(incumbent=your_existing_filter, guard=chatguard)
@@ -115,8 +115,8 @@ single dependency-free file into your tree, under MIT, which you then own
 outright. There is no package to track and no upstream to trust.
 
 **"It's the wrong language for our stack."**
-The contract is `vectors/golden.jsonl` — 25 cases — not code. Any implementation
-that reproduces those vectors is conformant. `docs/SPEC.md` is written to be
+The contract is `engine/vectors/golden.jsonl` — 25 cases — not code. Any implementation
+that reproduces those vectors is conformant. `engine/SPEC.md` is written to be
 ported from. The algorithm is Aho–Corasick plus a hash-set lookup; it is a day
 of work in any language, and the vectors tell you when you are done.
 
@@ -134,7 +134,7 @@ which is already producing player-visible defects every day.
 **"How do we know it's actually better?"**
 Run `tools/audit.py` against your list and your corpora. It reports both failure
 directions, because reporting only false positives would be marketing. Every
-figure in `docs/EVIDENCE.md` was produced by that tool and is reproducible from
+figure in `REPORT.md` was produced by that tool and is reproducible from
 data you already have.
 
 **"Our moderation team needs to be able to retune it."**
