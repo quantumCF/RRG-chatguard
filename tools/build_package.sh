@@ -20,6 +20,7 @@ mkdir -p "$OUT"/{1-report,2-quick-fix,3-replacement-engine,4-evidence}
 cp "$REPO/docs/chat-filter-audit-report.pdf"   "$OUT/1-report/Chat-Filter-Audit-Report.pdf"
 cp "$REPO/docs/chat-filter-defect-report.pdf"  "$OUT/1-report/Summary-One-Page.pdf"
 cp "$REPO/REPORT.md"                           "$OUT/1-report/report.md"
+cp "$REPO/docs/SUGGESTIONS.md"                 "$OUT/1-report/suggestions-not-audit-findings.md"
 
 # ---- 2 quick fix: the data + the three-line shim -------------------------
 cp "$REPO/findings/words-to-allow.txt"  "$OUT/2-quick-fix/"

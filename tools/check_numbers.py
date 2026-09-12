@@ -26,7 +26,8 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS = ["REPORT.md", "docs/report-onepage.html", "docs/audit-report.html",
-        "README.md", "fix/DEPLOY.md", "tools/package-readme.md"]
+        "README.md", "fix/DEPLOY.md", "tools/package-readme.md",
+        "docs/SUGGESTIONS.md"]
 
 # Figures that are real but do not come from the probe evidence.
 ALLOWED = {

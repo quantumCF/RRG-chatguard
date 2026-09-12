@@ -33,7 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DOCS = ["README.md", "REPORT.md", "fix/DEPLOY.md", "tools/package-readme.md",
         "docs/audit-report.html", "docs/report-onepage.html",
-        "docs/ADOPTION.md"]
+        "docs/ADOPTION.md", "docs/SUGGESTIONS.md"]
 
 # An entry, a rule or a word cannot refuse, block, censor or allow. The filter
 # does. These read as shorthand to someone who wrote the system and as a

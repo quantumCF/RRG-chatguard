@@ -154,7 +154,7 @@ own. The problem this audit found is in the matching, not in your words.
 | [`fix/`](fix/) | `rescue.py`, the 473,532-word exception list, deployment notes |
 | [`engine/`](engine/) | optional replacement matcher, 55 tests, 29 conformance vectors |
 | [`tools/`](tools/) | the programs used to produce and check everything above |
-| [`docs/`](docs/) | PDFs, adoption notes, background research |
+| [`docs/`](docs/) | PDFs, adoption notes, background research, and [suggestions](docs/SUGGESTIONS.md) that are separate from the audit |
 
 ```sh
 python3 tools/verify_safe.py       # what the code is able to do
