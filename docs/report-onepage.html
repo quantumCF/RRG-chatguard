@@ -8,129 +8,132 @@
   * { box-sizing: border-box; }
   html { margin: 0; padding: 0; }
   body {
-    margin: 0; padding: 12mm 15mm 8mm 15mm; width: 215.9mm; overflow: hidden;
-    font: 9.6pt/1.42 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0; padding: 10mm 14mm 7mm 14mm; width: 215.9mm; overflow: hidden;
+    font: 9.0pt/1.34 "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #16191c; background: #fff; -webkit-font-smoothing: antialiased;
   }
-  h1 { font-size: 17pt; margin: 0 0 2pt; letter-spacing: -0.3pt; font-weight: 700; }
-  .sub { font-size: 8.6pt; color: #6d757e; padding-bottom: 8pt;
-         border-bottom: 1.6pt solid #16191c; margin-bottom: 12pt; }
+  h1 { font-size: 15.5pt; margin: 0 0 2pt; letter-spacing: -0.3pt; font-weight: 700; }
+  .sub { font-size: 8.2pt; color: #6d757e; padding-bottom: 6pt;
+         border-bottom: 1.6pt solid #16191c; margin-bottom: 10pt; }
   h2 { font-size: 7.8pt; text-transform: uppercase; letter-spacing: 0.9pt;
        color: #8a929b; margin: 0 0 6pt; font-weight: 700; }
-  section { margin-bottom: 11pt; }
-  p { margin: 0 0 6pt; }
+  section { margin-bottom: 8pt; }
+  p { margin: 0 0 5pt; }
 
-  .lead { font-size: 11.5pt; line-height: 1.35; font-weight: 600; margin: 0 0 11pt; }
+  .lead { font-size: 10.8pt; line-height: 1.32; font-weight: 600; margin: 0 0 9pt; }
   .lead em { color: #b0302a; font-style: normal; }
 
   .code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt;
           line-height: 1.55; background: #f6f7f9; border-radius: 3pt;
-          padding: 8pt 11pt; margin: 0 0 7pt; }
+          padding: 6pt 10pt; margin: 0 0 6pt; }
   .code .b { color: #b0302a; }
   table { width: 100%; border-collapse: collapse; font-size: 8.6pt; }
   th { text-align: left; font-weight: 700; color: #8a929b; font-size: 7.4pt;
        text-transform: uppercase; letter-spacing: 0.5pt; padding: 0 0 3pt; }
   td { padding: 2.5pt 0; border-top: 0.5pt solid #eaedf0; }
-  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums;
+               padding-right: 11pt; white-space: nowrap; width: 1%; }
+  table td:first-child, table th:first-child { width: 1%; white-space: nowrap;
+               padding-right: 8pt; }
   .bad { color: #b0302a; font-weight: 700; }
   .ok { color: #1c7a44; font-weight: 700; }
-  .box { border: 1.3pt solid #16191c; border-radius: 4pt; padding: 11pt 13pt; }
+  .box { border: 1.3pt solid #16191c; border-radius: 4pt; padding: 9pt 12pt; }
   .box h2 { color: #16191c; }
   .two { display: flex; gap: 18pt; }
   .two > div { flex: 1; }
   code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.8pt; }
-  footer { margin-top: 0; padding-top: 7pt; border-top: 0.6pt solid #eaedf0;
+  footer { margin-top: 0; padding-top: 6pt; border-top: 0.6pt solid #eaedf0;
            font-size: 8pt; color: #6d757e; line-height: 1.45; }
 </style>
 </head>
 <body>
 
-<h1>Chat filter: one two-letter rule censors thousands of ordinary words</h1>
-<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; measured against the live service &nbsp;·&nbsp; 11 September 2026</div>
+<h1>Chat filter accuracy: unanchored substring matching</h1>
+<div class="sub">Ragnarok: Rebirth Global &nbsp;·&nbsp; independent measurement against the live service &nbsp;·&nbsp; 12 September 2026</div>
 
 <div class="lead">
-  The filter blocks the two-letter sequence <em>cu</em> and matches it as a raw
-  substring. Every word containing those letters is refused, in every language.
+  The filter matches its blocked terms as <em>unanchored substrings</em>, and the
+  term list is predominantly <em>Brazilian Portuguese</em>. Short Portuguese
+  entries applied to all eight locales censor ordinary vocabulary in every
+  language the game ships in.
 </div>
 
 <section>
-  <h2>Verified in the live game</h2>
+  <h2>The shortest demonstration</h2>
   <div class="code">
-    cu &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; cut &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
-    cute &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; cup &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
-    cure &nbsp;<span class="b">blocked</span><br>
-    discuss &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; document &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
-    vacuum &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; circus &nbsp;<span class="b">blocked</span><br>
-    curious &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; thanks &nbsp;<span class="b">blocked</span> &nbsp;&nbsp;
-    understand &nbsp;<span class="b">blocked</span> &nbsp;&nbsp; curse &nbsp;<span class="b">blocked</span>
-  </div>
-  <p><b>5,928 test messages</b> were sent to the live service. <b>693 ordinary
-  dictionary words</b> were confirmed refused; 4,462 were confirmed to pass. Each
-  headline word above was re-tested three times and blocked every time.</p>
-</section>
-
-<section>
-  <div class="two">
-    <div>
-      <h2>Why it happens</h2>
-      <p><code>cu</code> is vulgar in <b>Portuguese</b>. It appears to have been
-      added for that market, but it is matched as a substring against <b>all
-      eight</b> languages the title ships in.</p>
-      <p>The result is that a single two-letter entry censors ordinary vocabulary
-      everywhere, including Portuguese itself — where it does the most damage.</p>
-    </div>
-    <div>
-      <h2>Words containing “cu”</h2>
-      <table>
-        <tr><th>Vocabulary</th><th class="n">affected</th></tr>
-        <tr><td>English dictionary</td><td class="n bad">5,018</td></tr>
-        <tr><td><b>Your Portuguese strings</b></td><td class="n bad">530</td></tr>
-        <tr><td>Your English strings</td><td class="n bad">297</td></tr>
-        <tr><td>Your Indonesian strings</td><td class="n bad">251</td></tr>
-        <tr><td>Your Thai strings</td><td class="n">114</td></tr>
-      </table>
-    </div>
+    thank &nbsp;<span class="ok">delivered</span> &nbsp;&nbsp;&nbsp; thanks &nbsp;<span class="b">refused</span><br>
+    <span style="color:#6d757e">one letter apart; the plural creates the sequence</span> <code>ks</code>
   </div>
 </section>
 
 <section>
-  <h2>It is also missing what it should catch</h2>
-  <p>Tested against the same live service: <code>kike</code>, <code>spic</code>,
-  <code>fag</code>, <code>rape</code>, <code>whore</code>, <code>bitch</code>,
-  <code>dick</code> and <code>slut</code> all <b>pass unmodified</b>. Spaced-out
-  evasion is caught for some terms (<code>s h i t</code> is blocked) but not
-  others (<code>f u c k</code> passes). Correcting the matching improves accuracy
-  in <b>both</b> directions — this is not a request to moderate less.</p>
+  <h2>The rule is two characters, matched anywhere</h2>
+  <div class="code">
+    cu &nbsp;<span class="b">refused</span> &nbsp;&nbsp; xxcuxx &nbsp;<span class="b">refused</span> &nbsp;&nbsp;
+    xxcxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxuxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxucxx &nbsp;<span class="ok">ok</span><br>
+    ks &nbsp;<span class="b">refused</span> &nbsp;&nbsp; xxksxx &nbsp;<span class="b">refused</span> &nbsp;&nbsp;
+    xxkxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxsxx &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; xxskxx &nbsp;<span class="ok">ok</span>
+  </div>
+  <p>Refused bare and inside inert padding, at any position. Neither letter is
+  refused alone; neither reversed pair is refused. Across
+  <b>10,627 accepted words, none contains <code>cu</code> or <code>ks</code></b>.</p>
 </section>
+
+<div class="two">
+<section style="flex:1.35">
+  <h2>Confirmed rules and ordinary words affected</h2>
+  <table>
+    <tr><th>rule</th><th class="n">words</th><th>ordinary words censored</th></tr>
+    <tr><td><code>cu</code></td><td class="n">5,016</td><td>document, discuss, security, focus, circus</td></tr>
+    <tr><td><code>nb</code></td><td class="n">956</td><td>number, inbox, unbind</td></tr>
+    <tr><td><code>meter</code></td><td class="n">695</td><td>parameter, diameter, kilometer</td></tr>
+    <tr><td><code>anta</code></td><td class="n">419</td><td>advantage, santa, fantastic</td></tr>
+    <tr><td><code>ks</code></td><td class="n">408</td><td>thanks, tasks, books, works, weeks</td></tr>
+    <tr><td><code>pus</code></td><td class="n">230</td><td>campus, octopus, push</td></tr>
+    <tr><td><code>pica</code></td><td class="n">227</td><td>typical, tropical</td></tr>
+    <tr><td><code>puta</code></td><td class="n">95</td><td>reputation, computation</td></tr>
+    <tr><td colspan="3" style="padding-top:5pt"><b>8,414 distinct ordinary English words</b>, 3.6% of the language</td></tr>
+  </table>
+</section>
+
+<section style="flex:1">
+  <h2>Delivered under the same test</h2>
+  <div class="code">
+    bitch &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; rape &nbsp;<span class="ok">ok</span><br>
+    sex &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; slut &nbsp;<span class="ok">ok</span> &nbsp;&nbsp; whore &nbsp;<span class="ok">ok</span>
+  </div>
+  <p>All 27 Portuguese terms tested are refused, including
+  <code>arrombado</code> and <code>otario</code>. The filter is not
+  over-aggressive in general — it is aggressive about one language's vocabulary
+  and largely absent for another's. One root cause: a term list never reviewed
+  against the locales it is applied to.</p>
+</section>
+</div>
 
 <section class="box">
-  <h2>Recommended fix</h2>
-  <div class="two">
-    <div>
-      <p><b>1 &nbsp;Immediate.</b> Remove <code>cu</code>, or restrict it to
-      Portuguese and to whole-word matching. This single change resolves the
-      large majority of the false positives in every market.</p>
-      <p><b>2 &nbsp;Structural.</b> Require a minimum length before a term may
-      match inside a longer word, and scope each term to the locale it was added
-      for. A two-letter entry should never match as a substring.</p>
-    </div>
-    <div>
-      <p><b>3 &nbsp;Supplied.</b> A verified list of <b>693 ordinary words</b>
-      currently refused by your service, each confirmed by a live test message.
-      Purely additive — it can only remove false positives.</p>
-      <p>Also included: the raw log of all 5,928 probes, so any single claim here
-      can be traced to the message that established it.</p>
-    </div>
-  </div>
+  <h2>Three ways to fix it, in increasing effort</h2>
+  <p><b>1 &nbsp;Allow the confirmed words.</b> <code>findings/words-to-allow.txt</code>
+  lists <b>342 ordinary words</b> confirmed refused, each annotated with the rule
+  responsible. If the filter already supports an exception list, this is a data
+  change and nothing else — it removes false positives only.</p>
+  <p><b>2 &nbsp;Require a word boundary for short terms.</b> One rule —
+  <i>entries shorter than five characters match only as whole words</i> —
+  removes most of the damage. <code>cu</code> still refuses <code>cu</code> and
+  stops refusing <code>document</code>. Entries of five or more characters are
+  untouched, so <code>caralho</code> matches exactly as it does today.</p>
+  <p><b>3 &nbsp;Replace the matcher.</b> <code>appendix/reference-engine/</code> —
+  per-term match modes, severity tiers, allowlist rescue, evasion folding. No
+  dependencies, MIT, 53 tests and 29 conformance vectors, at the same
+  <code>check(text)</code> seam as today's filter.</p>
 </section>
 
 <footer>
-  <b>Method.</b> Messages were sent through the ordinary game client at human
-  pacing and the result recorded from the client's own response. No account,
-  protocol or server was accessed in any other way. Findings reported here were
-  re-tested three times; six words that failed re-testing were discarded rather
-  than reported. &nbsp;·&nbsp; Fixes are server-side: no client update or store
-  review is required.
+  <b>15,307 messages</b> sent through the ordinary game client into a private party
+  channel; no client modification, no server access. <b>342 ordinary words confirmed
+  refused</b>, <b>10,627 confirmed delivered</b>. Every rule was isolated in inert
+  padding before being reported and every finding required two independent
+  observations; the measured per-probe error rate is 1.2%. Logs:
+  <code>findings/raw-logs/</code>.
 </footer>
 
 </body>

@@ -60,10 +60,21 @@ AMBIGUOUS_SLURS = [
 ]
 
 # Derivation test. Only the bare word and close derivations are removed.
-VULGAR_ROOTS = [
+# Portuguese. The measured term list is predominantly Brazilian Portuguese, and
+# a screen that only knows English will wave those through -- which it did:
+# "caralho", "buceta", "porra" and "masturba" reached a draft of the allow list
+# because nothing here recognised them.
+PT_ROOTS = [
+    "caralho", "buceta", "porra", "merda", "bosta", "piroca", "puta",
+    "cuzao", "arrombado", "babaca", "otario", "viado", "veado", "corno",
+    "foda", "fodase", "punheta", "vadia", "chupa", "xoxota",
+]
+
+VULGAR_ROOTS = PT_ROOTS + [
     "ass", "arse", "cum", "clit", "cock", "cunt", "dick", "fuck", "shit",
     "piss", "prick", "pussy", "puss", "slut", "twat", "whore", "hoe",
-    "tit", "titty", "tittie", "boob", "penis", "vagina", "anal", "anus",
+    "tit", "titty", "tittie", "boob", "penis", "vagina", "vaginal",
+    "masturb", "masturba", "anal", "anus",
     "rape", "raper", "raping", "rapist", "molest", "incest", "pedo",
     "smut", "horny", "orgasm", "cumshot", "blowjob", "handjob",
     "turd", "fart", "bollock", "wank", "bugger", "bastard", "damn",

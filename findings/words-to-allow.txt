@@ -8,110 +8,347 @@
 # block, established separately by probing that substring inside
 # inert padding.
 #
-# words: 105
+# words: 342
 #
-accumulate  [2/3 of passes]
-accumulation
-accumulative
-accuracy
-accurate
-acumen
-acumula
-acumulado
-acumular
-advantage
-agricultural
-agriculture
-aksi
+accumulate	# 'cu'  [2/3 of passes]
+accumulation	# 'cu'
+accumulative	# 'cu'
+accuracy	# 'cu'
+accurate	# 'cu'
+acumen	# 'cu'
+acumula	# 'cu'
+acumulado	# 'cu'
+acumular	# 'cu'
+advantage	# 'anta'
+agricultural	# 'cu'
+agriculture	# 'cu'
+aksi	# 'ks'
+anacleticum	# 'cu'
 animal
+animalistic
 animals
-anticum
-anubis
-anusim
-blacksmith
-cacoon
-cajanus
-circular
-circumvent
+anticum	# 'cu'
+anubis	# 'nub'
+anusim	# 'anus'
+arnberry	# 'nb'
+asks	# 'ks'
+atlanta	# 'anta'
+attacks	# 'ks'
+backs	# 'ks'
+banks	# 'ks'
+beracun	# 'cu'
+berinteraksi	# 'ks'
+blacksmith	# 'ks'
+blocks	# 'ks'
+bonbon	# 'nb'
+books	# 'ks'
+bookshelf	# 'ks'
+bookstore	# 'ks'
+breaks	# 'ks'
+cacoon	# 'coon'
+cajanus	# 'anus'
+calculate	# 'cu'
+calculated	# 'cu'
+calculator	# 'cu'
+campus	# 'pus'
+canaliculus	# 'cu'
+checks	# 'ks'
+china
+chinatown
+circuit	# 'cu'
+circular	# 'cu'
+circumambulation	# 'cu'
+circumantarctic	# 'cu'
+circumarctic	# 'cu'
+circumcone	# 'cu'
+circumscription	# 'cu'
+circumstance	# 'cu'
+circumstances	# 'cu'
+circumvent	# 'cu'
+circumventer	# 'cu'
+clicks	# 'ks'
+coco
 cocoa
-cocoon
-coonily
-cucumber
-cucumis
-cuidado
-cukup
-cult
-cumaean
-cumar
-cumay
-cumbent
-cumbre
-cumbu
-cumene
-cumenyl
-cumhal
-cumidin
-cumin
-cuminal
-cuminic
-cuminol
-cuminyl
-cummer
-cummin
-cump
-cumshaw
-cumular
-cumulate
-cumuli
-cumulus
-cumyl
-cup
-cura
-curcuma
-current
-curse
-cursed
-cushite	# 'shit'
-cut
-cyanus
-decuman
-dhanush
-document  [2/3 of passes]
-documentation
-elanus
-fantasma
-flocoon
-fuckkk
-ianus
+cocok
+coconut
+cocoon	# 'coon'
+collectionbutton	# 'nb'
+commonbutton	# 'nb'
+connecticut	# 'cu'
+consecutive	# 'cu'
+coonily	# 'coon'
+cracked	# 'crack'
+cracker	# 'crack'
+cua	# 'cu'
+cube	# 'cu'
+cucumber	# 'cu'
+cucumiform	# 'cu'
+cucumis	# 'cu'
+cud	# 'cu'
+cue	# 'cu'
+cuidado	# 'cu'
+cukup	# 'cu'
+culos	# 'cu'
+cult	# 'cu'
+cult's	# 'cu'
+cultist	# 'cu'
+cultists	# 'cu'
+cultivaterscore	# 'cu'
+culto	# 'cu'
+cultural	# 'cu'
+culture	# 'cu'
+cumaean	# 'cu'
+cumar	# 'cu'
+cumay	# 'cu'
+cumbent	# 'cu'
+cumbersome	# 'cu'
+cumbre	# 'cu'
+cumbrously	# 'cu'
+cumbu	# 'cu'
+cumene	# 'cu'
+cumenyl	# 'cu'
+cumflutter	# 'cu'
+cumhal	# 'cu'
+cumidin	# 'cu'
+cumin	# 'cu'
+cuminal	# 'cu'
+cuminic	# 'cu'
+cuminol	# 'cu'
+cuminyl	# 'cu'
+cummer	# 'cu'
+cummin	# 'cu'
+cump	# 'cu'
+cumshaw	# 'cu'
+cumular	# 'cu'
+cumulate	# 'cu'
+cumulatedes	# 'cu'
+cumulatename	# 'cu'
+cumuli	# 'cu'
+cumulus	# 'cu'
+cumyl	# 'cu'
+cung	# 'cu'
+cup	# 'cu'
+cupybara	# 'cu'
+cura	# 'cu'
+curcuma	# 'cu'
+currency	# 'cu'
+current	# 'cu'
+currently	# 'cu'
+curriculum	# 'cu'
+curse	# 'cu'
+cursed	# 'cu'
+curses	# 'cu'
+curto	# 'cu'
+cushite	# 'cu'
+custom	# 'cu'
+customer	# 'cu'
+customers	# 'cu'
+cut	# 'cu'
+cutting	# 'cu'
+cyanus	# 'anus'
+debilitate
+decks	# 'ks'
+decuman	# 'cu'
+decumaria	# 'cu'
+decumbent	# 'cu'
+desks	# 'ks'
+dhanush	# 'anus'
+diabolus
+diameter	# 'meter'
+difficult	# 'cu'
+discussed	# 'cu'
+discussion	# 'cu'
+discussions	# 'cu'
+disencumber	# 'cu'
+disks	# 'ks'
+document	# 'cu'  [2/3 of passes]
+documentation	# 'cu'
+documents	# 'cu'
+dracula	# 'cu'
+drinks	# 'ks'
+droga
+ducks	# 'ks'
+dungeonbranches	# 'nb'
+ebay
+einbroch	# 'nb'
+ekspedisi	# 'ks'
+elanus	# 'anus'
+encantamento	# 'anta'
+escurid	# 'cu'
+evacuate	# 'cu'
+execute	# 'cu'
+execution	# 'cu'
+executive	# 'cu'
+faculty	# 'cu'
+fantasma	# 'anta'
+fantastic	# 'anta'
+fantasy	# 'anta'
+firecracker	# 'crack'
+fireworks	# 'ks'
+flocoon	# 'coon'
+focus	# 'cu'
+focused	# 'cu'
+focusing	# 'cu'
+guildcut	# 'cu'
+guildnoob
+guildworkshop	# 'ks'
+hancur	# 'cu'
+ianus	# 'anus'
+inbox	# 'nb'
+incumbently	# 'cu'
+incumbrance	# 'cu'
 inferno
-janus
-jocuma
-ksatria
-locust
-lucanus
-lucuma
-lucumia
-lucumo
-manus
-manuscript
-manusia
-meter
-modicum
-orichalcum
-pica
+insecure	# 'cu'
+instantaneous	# 'anta'
+instruksi	# 'ks'
+itemunbinddes	# 'nb'
+itemunbindtips	# 'nb'
+jackson	# 'ks'
+janus	# 'anus'
+januslike	# 'anus'
+japan	# 'japa'  [6/7 of passes]
+japanese	# 'japa'
+jocuma	# 'cu'
+kerucut	# 'cu'
+kicks	# 'ks'
+kilometer	# 'meter'
+koleksi	# 'ks'
+ksatria	# 'ks'
+lantai	# 'anta'
+licks	# 'ks'
+lifesteal
+lingenberry	# 'nb'
+lingonberry	# 'nb'
+links	# 'ks'
+locks	# 'ks'
+locust	# 'cu'
+looks	# 'ks'
+looksmart	# 'ks'
+lucanus	# 'anus'
+lucuma	# 'cu'
+lucumia	# 'cu'
+lucumo	# 'cu'
+machinable
+maks	# 'ks'
+maksimal	# 'ks'
+manus	# 'anus'
+manuscript	# 'anus'
+manusia	# 'anus'
+marks	# 'ks'
+masks	# 'ks'
+melampaui	# 'pau'
+memicu	# 'cu'
+menghancurkan	# 'cu'
+messagepush	# 'pus'
+meters	# 'meter'
+modicum	# 'cu'
+molecular	# 'cu'
+monkeys
+motorola	# 'rola'
+muncul	# 'cu'
+networks	# 'ks'
+notebooks	# 'ks'
+notidanus	# 'anus'
+nubian	# 'nub'
+nutcracker	# 'crack'
+occupation	# 'cu'
+occur	# 'cu'
+occurred	# 'cu'
+occurs	# 'cu'
+octopus	# 'pus'
+oculofacial	# 'cu'
+orichalcum	# 'cu'
+packs	# 'ks'
+parameter	# 'meter'
+parameters	# 'meter'
+parks	# 'ks'
+particular	# 'cu'
+particularly	# 'cu'
+paul	# 'pau'
+pause	# 'pau'
+paused	# 'pau'
+peculiar	# 'cu'
+pencuri	# 'cu'
+pericanalicular	# 'cu'
+periksa	# 'ks'
+perubahan
+picks	# 'ks'
+piranha
+platanus	# 'anus'
 poonga
-raccoon
-racoon
-racun
-rainbow
-scoon
-scummy
+procurar	# 'cu'
+produksi	# 'ks'
+push	# 'pus'
+pussyfooter	# 'pus'
+quicksand	# 'ks'
+raccoon	# 'coon'
+racoon	# 'coon'
+racun	# 'cu'
+rainbow	# 'nb'
+raksasa	# 'ks'
+ranks	# 'ks'
+recupera	# 'cu'
+recuperar	# 'cu'
+refocus	# 'cu'
+rekenber	# 'nb'
+reputation	# 'puta'
+rescue	# 'cu'
+risks	# 'ks'
+rocks	# 'ks'
+safeguard
+santa	# 'anta'
+scoon	# 'coon'
+scummy	# 'cu'
+secure	# 'cu'
+secured	# 'cu'
+securities	# 'cu'
+security	# 'cu'
+sharks	# 'ks'
+snacks	# 'ks'
+snub	# 'nub'
+socks	# 'ks'
+speaks	# 'ks'
+stacks	# 'ks'
+steal
 stealth
-sunbeam
+sticks	# 'ks'
+stocks	# 'ks'
+sunbeam	# 'nb'
+sunburst	# 'nb'
 tanala
-tetanus
-thanks
-tycoon
+tantang	# 'anta'
+tantangan	# 'anta'
+tasks	# 'ks'
+tetanus	# 'anus'
+textbooks	# 'ks'
+thanks	# 'ks'
+thinks	# 'ks'
+topical	# 'pica'
+tracks	# 'ks'
+trademarks	# 'ks'
+trickster	# 'ks'
+tripsacum	# 'cu'
+tropical	# 'pica'
+trucks	# 'ks'
+tycoon	# 'coon'
+typical	# 'pica'
+typically	# 'pica'
 ultimate  [3/4 of passes]
-understand  [3/4 of passes]
-uranus  [2/3 of passes]
+unbind	# 'nb'
+unbox	# 'nb'
+unencumberedness	# 'cu'
+unlocks	# 'ks'
+unscummed	# 'cu'
+uranus	# 'anus'  [2/3 of passes]
+vacate	# 'vaca'
+vacation	# 'vaca'
+vacations	# 'vaca'
+vermelha
+vermelho
+walks	# 'ks'
+weeks	# 'ks'
+works	# 'ks'
+worksheet	# 'ks'
+workshop	# 'ks'
+workshops	# 'ks'
+worldcup	# 'cu'

@@ -50,7 +50,9 @@ by enumeration.
 
 ## Fix 2 — the allowlist. One file. ~20 lines of glue.
 
-`allowlist-en.txt` — **473,841 words that must never be censored.**
+`allowlist-en.txt` — **473,532 words that must never be censored.**
+
+Sources (counts approximate; the file itself is authoritative):
 
 | source | entries | license |
 |---|---|---|

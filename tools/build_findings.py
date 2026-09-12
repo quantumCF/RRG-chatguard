@@ -88,6 +88,8 @@ def main():
                     help="probe log (JSONL); repeatable")
     ap.add_argument("--out", required=True)
     ap.add_argument("--dictionary", default="/usr/share/dict/web2")
+    ap.add_argument("--attest", action="append", default=[],
+                    help="file of text attesting real vocabulary; repeatable")
     args = ap.parse_args()
 
     rows = []
@@ -159,15 +161,85 @@ def main():
                                  or is_vulgar_derivation(w)[0]):
             blocked_terms.add(w)
 
+    # ---- what counts as a word at all ------------------------------------
+    #
+    # A string only reaches the allow list if it is attested as real
+    # vocabulary: present in an English dictionary, or in the game's own
+    # shipped interface text.
+    #
+    # This exists because the control battery deliberately sends suspected
+    # TERMS -- "caralho", "buceta", "masturba", "openis" -- to find out which
+    # ones the filter holds. Those come back blocked, correctly, and without
+    # this gate they land in a file captioned "words that must never be
+    # censored". The safety screen does not catch them because it only knows
+    # English profanity, and the list here is Portuguese.
+    #
+    # Attestation is the right test rather than a tag or a second blocklist:
+    # profanity probed as a hypothesis is attested nowhere, while "cocoon",
+    # "manusia", "aksi" and "acumulado" are attested even though they are not
+    # English -- and those are exactly the findings worth keeping.
+    attested = set()
+    if os.path.exists(args.dictionary):
+        attested |= {l.strip().lower() for l in
+                     open(args.dictionary, encoding="utf-8", errors="ignore")}
+    word_re = re.compile(r"[a-z][a-z'\-]+")
+    for path in args.attest:
+        if os.path.exists(path):
+            attested |= set(word_re.findall(
+                open(path, encoding="utf-8", errors="replace").read().lower()))
+
+    def is_vocabulary(w):
+        """Attested directly, or a regular inflection of something attested.
+
+        The inflection step is not optional. Dictionaries hold base forms, so
+        without it "decks", "desks", "disks", "clicks", "networks" and
+        "trademarks" all read as unattested -- and those are the "ks" findings,
+        the ones the report most needs to show. A rule that discards its own
+        best evidence is worse than no rule.
+
+        Two characters is never vocabulary here: "cu" and "ks" are the rules
+        themselves and belong on the terms list, not among their victims.
+        """
+        if len(w) < 3:
+            return False
+        if w in attested:
+            return True
+        stems = []
+        if w.endswith("ies"):
+            stems.append(w[:-3] + "y")
+        if w.endswith("es"):
+            stems += [w[:-1], w[:-2]]
+        if w.endswith("s"):
+            stems.append(w[:-1])
+        if w.endswith("ed"):
+            stems += [w[:-1], w[:-2]]
+        if w.endswith("ing"):
+            stems += [w[:-3], w[:-3] + "e"]
+        return any(st in attested for st in stems if len(st) >= 3)
+
     # ---- ordinary words the filter refused -------------------------------
-    ordinary, clean = [], set()
+    ordinary, clean, unattested = [], set(), []
     for w, res in verdict.items():
         core, was_carrier = unwrap(w)
         if was_carrier:
             continue
         if res == "blocked":
-            if not (w in lexicon_terms or is_slur(w)[0]
-                    or is_vulgar_derivation(w)[0]):
+            # A string confirmed blocked in inert padding is a TERM, unless a
+            # shorter confirmed rule already explains it. That distinction is
+            # what separates "corno" from "cocoon": both block in padding, but
+            # cocoon only does so because it contains "coon", while corno
+            # contains no shorter rule and is therefore an entry in its own
+            # right. Without this, Portuguese insults land on a list captioned
+            # "words that must never be censored".
+            shorter = any(t != w and t in w for t in blocked_terms)
+            if w in blocked_terms and not shorter:
+                pass                      # a term, not a casualty of one
+            elif w in lexicon_terms or is_slur(w)[0] or is_vulgar_derivation(w)[0]:
+                pass                      # correctly blocked profanity
+            elif attested and not is_vocabulary(w):
+                unattested.append(w)      # a probe, not a word
+                blocked_terms.add(w)
+            else:
                 ordinary.append(w)
         elif res == "sent":
             clean.add(w)
@@ -245,7 +317,15 @@ def main():
                 for w in derived[f]:
                     fh.write(w + "\n")
 
+    # The union matters more than the per-rule counts: a word like "circus"
+    # matches more than one rule, so adding the columns up overstates the
+    # damage. This is the number of DISTINCT ordinary words affected.
+    union = set()
+    for f, ws in derived.items():
+        union |= set(ws)
+
     summary = {
+        "derived_union_count": len(union),
         "probes_analysed": len(rows),
         "strings_with_a_verdict": len(verdict),
         "untested_mismatch_only": sorted(untested),
@@ -257,6 +337,7 @@ def main():
         "attribution": attribution,
         "unexplained": unexplained,
         "disputed": disputed,
+        "blocked_but_not_attested_vocabulary": sorted(unattested),
         "unconfirmed_single_observation": sorted(unconfirmed),
         "derived_counts": {f: len(v) for f, v in derived.items()},
     }
@@ -271,6 +352,8 @@ def main():
     print(f"ORDINARY WORDS CENSORED  : {len(ordinary):,}")
     if disputed:
         print(f"  not unanimous          : {len(disputed)}")
+    if unattested:
+        print(f"  blocked, not vocabulary: {len(unattested)}  (excluded from the allow list)")
     if unconfirmed:
         print(f"  seen blocked once only : {len(unconfirmed)}  (excluded, need 2)")
     by_frag = collections.Counter(attribution.values())
@@ -284,6 +367,8 @@ def main():
     if unexplained:
         print(f"\nblocked but not explained by a known substring ({len(unexplained)}):")
         print("  " + ", ".join(unexplained[:40]))
+    if union:
+        print(f"\ndistinct ordinary dictionary words affected: {len(union):,}")
     print(f"\nwrote {args.out}/")
     return 0
 

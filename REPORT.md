@@ -1,201 +1,242 @@
-# Chat Filter Defect Report
+# Chat Filter Accuracy Report
 
 **Ragnarok: Rebirth Global**
-Independent analysis · measured against the live service · 11 September 2026
+Independent measurement against the live service · 12 September 2026
 
 ---
 
 ## Summary
 
-The chat filter blocks the two-letter sequence **`cu`** and matches it as a raw
-substring. Every word containing those two letters is refused, in every language
-the game ships in.
+The chat filter matches its blocked terms as **unanchored substrings**. A term
+is refused wherever its letters appear, including in the middle of unrelated
+words.
 
-This censors ordinary vocabulary at scale — `cut`, `cute`, `cup`, `cure`,
-`curious`, `circus`, `discuss`, `document`, `vacuum`, `security`, `culture`,
-`focus`, `difficult`, `accurate`, `curse`, `cursed`, `thanks`, `understand` —
-while leaving much of the abuse it exists to stop untouched.
+Separately, the term list is predominantly **Brazilian Portuguese**. Several
+entries are two to four characters long — `cu`, `pau`, `pica`, `vaca`, `anta`,
+`rola`, `japa` — which are ordinary vulgarities in Portuguese and ordinary
+letter sequences everywhere else.
 
-**5,928 test messages** were sent through the ordinary game client. **693
-ordinary dictionary words** were confirmed refused; **4,462** were confirmed to
-pass. Every finding below was reproduced in the live game.
+The two together are the defect. Short Portuguese terms matched as substrings
+against all eight shipped locales censor common vocabulary in every language
+the game runs in.
 
----
+**15,307 messages** were sent through the ordinary game client. **342 ordinary
+words were confirmed refused** and **10,627 were confirmed to pass**. The
+confirmed rules affect **8,414 ordinary English dictionary words**, 3.6% of the
+language.
 
-## 1. The defect
+Examples, each verified live: `thanks`, `attacks`, `tasks`, `books`, `works`,
+`weeks`, `banks`, `links`, `document`, `discuss`, `security`, `focus`,
+`culture`, `accurate`, `difficult`, `advantage`, `typical`, `tropical`,
+`parameter`, `diameter`, `campus`, `vacation`, `reputation`, `cucumber`,
+`circus`, `vacuum`.
 
-### 1.1 What was observed
-
-| typed in game | result |
-|---|---|
-| `cu` | **blocked** |
-| `cut` · `cute` · `cup` · `cure` | **blocked** |
-| `curious` · `circus` · `discuss` · `vacuum` | **blocked** |
-| `document` · `thanks` · `understand` · `curse` | **blocked** |
-| `xxcuxx` (nonsense padding around `cu`) | **blocked** |
-
-The final row is the decisive one. `xx` and `jv` are inert padding — no dictionary
-word, no term in any list. The only thing that can cause a block is the `cu` in
-the middle. That establishes both that `cu` is a blocked term and that it matches
-**inside** longer words rather than only as a whole word.
-
-### 1.2 Why `cu` is on the list
-
-`cu` is vulgar in **Portuguese**. The most likely explanation is that it was
-added for the Portuguese market, which is reasonable in isolation. The defect is
-not that the term exists — it is that a two-character term is matched as a
-substring, and against all locales rather than the one it was added for.
-
-### 1.3 Scale
-
-Words containing `cu`:
-
-| vocabulary | affected |
-|---|---|
-| English dictionary (web2, 235k words) | **5,018** |
-| **Your own Portuguese localization** | **530 distinct words** |
-| Your own English localization | 297 |
-| Your own Indonesian localization | 251 |
-| Your own Thai localization | 114 |
-| Your own Vietnamese localization | 50 |
-
-The market that suffers most is Portuguese — the same market the term was
-presumably added to protect.
+`thank` is delivered. `thanks` is refused.
 
 ---
 
-## 2. The filter also misses what it is for
+## 1. Method
 
-Tested against the same live service, all of the following **passed
-unmodified**:
+Messages were sent through the game client into a private party channel, one at
+a time, at human pace. Each message was read back from the chat history to
+determine whether the server accepted or refused it. No client modification, no
+packet injection, and no access to server code or configuration was involved;
+the measurement sees exactly what a player sees.
 
-```
-kike    spic    fag     rape    whore
-bitch   dick    slut    porn    tit     piss
-```
+Three properties of the measurement are worth stating because the conclusions
+depend on them.
 
-Evasion is handled inconsistently. Spaced-out text is caught for some terms and
-not others:
+**A substring is only called blocked once it is isolated.** Observing that
+`cucumber` is refused does not establish which part is responsible. Every rule
+in this report was confirmed by sending the candidate substring inside inert
+padding — `xxcuxx` — and by confirming that neither neighbouring letter fires
+alone. A candidate that failed this test was dropped regardless of how
+suggestive the surrounding evidence looked.
 
-| typed | result |
-|---|---|
-| `s h i t` · `s-h-i-t` · `SHIT` | blocked |
-| `c u n t` · `cuuunt` · `CUNT` | blocked |
-| `f u c k` · `ｆｕｃｋ` · `fuuuck` | **passed** |
+**A single observation is not a result.** Detection is imperfect. Its error
+rate was measured directly rather than assumed: 250 words the sweep recorded as
+clean were re-probed twice, producing 6 spurious blocks in 491 observations, a
+per-probe false-positive rate of **1.2%**. Every word in the findings therefore
+requires at least two independent blocked observations, which reduces the
+chance of a spurious entry to roughly 0.015%.
 
-There is also no stemming: `cocks`, `coons`, `cumming` and `cumshots` appear as
-separate entries. A stemmed list would not need them, and their presence is why
-short roots end up doing substring damage.
-
-**Correcting the matching improves accuracy in both directions.** This report is
-not a request to moderate less.
-
----
-
-## 3. Recommended fix
-
-### 3.1 Immediate — remove or scope `cu`
-
-Delete the `cu` entry, or restrict it to (a) the Portuguese locale and (b)
-whole-word matching. This single change resolves the large majority of the
-false positives measured here, in every market.
-
-### 3.2 Structural — two rules
-
-**Minimum length before substring matching.** A term shorter than a threshold
-should match only as a whole word, never inside a longer one:
-
-```
-if (term.length < MIN_SUBSTRING_LEN && !isWholeWord(text, start, end))
-    continue;
-```
-
-Ship it as a configuration value defaulting to today's behaviour, set it to 4,
-and revert by setting it back. A two-character term should never match as a
-substring in any language.
-
-**Locale scoping.** Each term should carry the locale it was added for. A
-Portuguese term should not be evaluated against English, Thai or Korean text.
-Nothing is deleted; terms simply stop applying where they were never intended.
-
-### 3.3 Supplied — the allow list
-
-`findings/words-to-allow.txt` contains **693 ordinary dictionary words**, each
-confirmed refused by your live service. Adding them to an allow list removes
-false positives and **cannot weaken moderation** — the change is purely
-additive.
-
-A reference implementation of the allow-list check (~20 lines, no dependencies)
-is in `fix/rescue.py`.
-
-### 3.4 Prevent recurrence
-
-`tools/selftest_filter.py` enforces one invariant: *no string the publisher
-authored may be flagged by the publisher's own filter.* It is ~40 lines with no
-dependencies and belongs in CI beside the localization export. Had it been
-running, `cu` would have been caught before release — 297 of your own English
-strings and 530 Portuguese ones trip it.
+**Words that were never actually sent are not counted as passing.** The harness
+verifies that text reached the input box before sending. When that check fails
+the message is not sent, and such a word is untested rather than clean. All but
+**15** of these were retried until they produced a real verdict.
 
 ---
 
-## 4. Method
+## 2. Findings
 
-Messages were typed into the ordinary game client at human pacing (1–3 seconds
-apart) and the outcome read from the client's own response: a blocked message
-produces the modal *"The speech is innappropriate. Please edit it before
-sending"* and never enters chat history. No account, protocol, server or binary
-was accessed in any other way.
+### 2.1 Matching is unanchored
 
-**Probe design.** Candidate terms were tested inside inert padding (`xxTERMxx`)
-so that a block can only be attributed to the term itself. Ordinary words were
-tested directly.
+`cu` and `ks` were isolated completely:
 
-**Detection.** Each probe carried a unique tag. A message was recorded as
-delivered if either the tag or the word appeared in chat history across repeated
-checks; a message recorded as blocked was automatically re-probed once before
-the verdict was kept.
+| probe | result | probe | result |
+|---|---|---|---|
+| `cu` | refused | `ks` | refused |
+| `xxcuxx` | refused | `xxksxx` | refused |
+| `xxcxx` | delivered | `xxkxx` | delivered |
+| `xxuxx` | delivered | `xxsxx` | delivered |
+| `xxucxx` | delivered | `xxskxx` | delivered |
 
-**Verification.** Every headline finding was re-tested three times. Of 36 items
-re-tested, 29 were confirmed and **6 were discarded** — `but`, `great`, `lord`,
-`war`, `military`, `sphinx` had been flagged by single probes and did not
-reproduce. Zero flaky results across 108 verification probes.
+Both sequences are refused bare and inside padding, at the start, middle and
+end of a carrier, under two unrelated paddings. Neither constituent letter is
+refused alone and neither reversed pair is refused. The filter is matching two
+literal characters anywhere in the message.
 
-**Volume.** 5,928 probes: 5,040 in a 14-hour unattended run, plus verification,
-evasion and targeted passes.
+Across **10,627 words the filter accepted, not one contains `cu` or `ks`.**
+There are no exceptions in either direction.
+
+### 2.2 The term list is Portuguese
+
+Twenty-seven Portuguese profanity terms were tested. All twenty-seven are
+refused, including uncommon ones:
+
+`puta` · `porra` · `caralho` · `buceta` · `merda` · `foda` · `viado` · `veado`
+· `corno` · `babaca` · `otario` · `piroca` · `bosta` · `cuzao` · `arrombado`
+
+The short entries driving most of the damage are the same language: `cu`
+(anus), `pau` / `pica` / `rola` (penis), `vaca` (a slur for a woman), `anta`
+(idiot), `japa` (an ethnic slur), `meter` (a sexual sense of "to insert"),
+`sexo` (sex).
+
+### 2.3 Common English profanity is not on the list
+
+Tested under the same conditions and **delivered**:
+
+`bitch` · `rape` · `sex` · `slut` · `whore`
+
+This is reported because it bears on priority. The filter is not
+over-aggressive in general; it is aggressive about one language's vocabulary
+and largely absent for another's. Both halves are the same root cause — a term
+list that has not been reviewed against the locales it is applied to.
+
+### 2.4 Confirmed rules and their reach
+
+Each rule below was isolated in padding and corroborated. "Measured" counts
+words confirmed refused in testing; "dictionary" counts ordinary English words
+containing it that were therefore not all individually tested.
+
+| rule | measured | English words affected | example ordinary words |
+|---|---|---|---|
+| `cu` | 160 | 5,016 | document, discuss, security, focus, accurate, circus |
+| `nb` | 17 | 956 | number, inbox, unbind, sunburst |
+| `meter` | 5 | 695 | parameter, diameter, kilometer |
+| `anta` | 11 | 419 | advantage, santa, atlanta, fantastic |
+| `ks` | 70 | 408 | thanks, attacks, tasks, books, works, weeks |
+| `pus` | 5 | 230 | campus, octopus, push |
+| `pica` | 4 | 227 | typical, tropical, topical |
+| `pau` | 4 | 134 | pause, paused, paul |
+| `puta` | 1 | 95 | reputation, computation, amputation |
+| `nub` | 3 | 65 | snub, anubis, nubian |
+| `crack` | 4 | 50 | cracked, firecracker, nutcracker |
+| `anus` | 16 | 47 | cyanus, dhanush, elanus |
+| `japa` | 2 | 28 | japan, japanese |
+| `vaca` | 3 | 21 | vacation, vacate |
+| `coon` | 8 | 20 | cocoon, raccoon, tycoon |
+
+Distinct ordinary words affected across all rules: **8,414**. This is the
+union, not the sum — `circus` matches more than one rule, and adding the
+columns would double-count.
+
+### 2.5 Scope across locales
+
+The measured refusal rate was uniform across the vocabularies tested:
+Indonesian 5.2%, Vietnamese 3.6%, English 3.4%, Portuguese 3.2%, Thai 3.2%.
+This is not an English-only problem. The game's own Portuguese interface text
+contains words its own filter refuses.
 
 ---
 
-## 5. Limitations
+## 3. Remediation
 
-1. **Coverage is a floor, not a total.** Roughly 5,300 of ~235,000 English words
-   were tested. The 693 confirmed words are those actually probed; 5,018 English
-   dictionary words contain `cu` and are expected to behave identically.
-2. **Fragment attribution is indicative.** Where a word contains more than one
-   blocked sequence, the responsible one was not always isolated individually.
-3. **The filter changes over time.** These results reflect the service on
-   10–11 September 2026. The included tools regenerate the analysis against your
-   configuration at any time.
-4. **Other locales are under-sampled.** Portuguese, Indonesian, Thai and
-   Vietnamese were sampled, not swept. Korean and both Chinese variants were not
-   tested at all.
+Three options, in increasing order of effort. They are independent; the first
+requires no code change at all.
+
+### Option 1 — Allow the confirmed words
+
+`findings/words-to-allow.txt` lists **342 ordinary words** confirmed refused by
+the live service, each annotated with the rule responsible. If the filter
+already supports an exception list, this is a data change and nothing more.
+
+This is the smallest possible fix and the one with the least risk. It does not
+reduce what is blocked; it removes false positives only.
+
+`findings/affected-words.txt` extends the same list to the full **8,414**
+dictionary words the confirmed rules reach. These were not individually tested,
+and the file says so at the top. Use it to judge scope, or as a broader
+starting set.
+
+### Option 2 — Require a word boundary for short terms
+
+The behaviour that causes the damage is matching entries of two to four
+characters inside longer words. A minimum-length rule fixes the majority of it:
+
+> Entries shorter than five characters match only as whole words.
+
+Under this rule `cu` still refuses `cu`, and stops refusing `document`,
+`discuss`, `security` and `circus`. `ks` still refuses `ks`, and stops refusing
+`thanks` and `books`. Entries of five characters and longer are unaffected, so
+`caralho` and `arrombado` continue to match exactly as they do now.
+
+This is the highest ratio of damage removed to change made.
+
+### Option 3 — Replace the matcher
+
+`appendix/reference-engine/` contains a drop-in matcher: per-term match modes
+(whole word, prefix, substring), a severity tier per term, allowlist rescue
+that resolves longest-match-wins, and normalisation that folds evasion
+(`f u c k`, `fuuuck`, `sh1t`, homoglyphs) without folding ordinary words. No
+dependencies, MIT licensed, and it sits at the same `check(text) -> bool` seam
+the current filter occupies.
+
+It ships with 53 tests and 29 language-agnostic conformance vectors so a port
+to another language can be verified against the same expectations. Against the
+cases in this report it allows all ordinary words tested and catches the
+evasions.
+
+The term list is deliberately not shipped. The vocabulary is yours; what this
+report identifies as broken is the matching, not the words.
 
 ---
 
-## 6. What is included
+## 4. Limitations
+
+**Rule set is a lower bound.** Only substrings implicated by a tested word
+could be isolated. Entries whose letters did not appear in the 11,868 strings
+tested would not have surfaced.
+
+**Dictionary counts are derived, not measured.** The 8,414 figure counts
+dictionary words containing a confirmed rule. Those specific words were not
+each sent to the server. They are labelled as derived wherever they appear, and
+the 342 measured words are kept in a separate file.
+
+**Point-in-time.** Everything here reflects the service as it behaved on 11–12
+September 2026. If the list is edited, these results describe the previous
+state.
+
+**Non-Latin locales are under-covered.** Korean, Chinese and Japanese
+vocabularies were not swept; conclusions about them would not be supported.
+
+---
+
+## 5. Evidence
 
 ```
-findings/words-to-allow.txt     693 ordinary words confirmed refused
-findings/blocked-terms.txt      terms confirmed blocked
-findings/findings.json          machine-readable summary
-findings/raw-logs/              every one of the 5,928 probes
-
-fix/DEPLOY.md                   how to apply each fix
-fix/rescue.py                   ~20-line allow-list check
-fix/allowlist-en.txt            optional broader allow list
-
-tools/                          reproduce any figure against your own config
-appendix/                       optional replacement matcher, background research
+findings/words-to-allow.txt   342 ordinary words confirmed refused, with the
+                              rule responsible for each
+findings/affected-words.txt   8,414 dictionary words the confirmed rules reach
+                              (derived, not individually tested)
+findings/blocked-terms.txt    terms and substrings confirmed refused
+findings/findings.json        machine-readable summary
+findings/raw-logs/            all 15,307 probes, one JSON record each
 ```
 
-Every number in this report can be traced to the probe that produced it in
-`findings/raw-logs/`.
+Every claim traces to a record in `raw-logs/`. Each record carries the exact
+string sent, the verdict, and the timestamp.
+
+To reproduce any single result, send the string in game and observe whether it
+appears in chat history. `thank` against `thanks` takes ten seconds and
+demonstrates the defect without any tooling.

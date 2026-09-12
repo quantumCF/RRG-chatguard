@@ -35,6 +35,22 @@ ALLOWED = {
     2: "length of the cu / ks rules",
     3: "verification passes",
     650: "approximate line count of the reference engine",
+    250: "words re-probed by the false-negative audit (findings/raw-logs/f1,f2)",
+    491: "observations in the false-negative audit (findings/raw-logs/f1,f2)",
+    53: "tests in the reference engine suite",
+    29: "conformance vectors",
+    27: "Portuguese terms tested in the control battery",
+    # Allowlist provenance. Not probe findings -- these describe the sources
+    # fix/allowlist-en.txt was built from. The total is verified against the
+    # file by the assertion below; the per-source counts are approximate and
+    # labelled as such in DEPLOY.md.
+    473532: "entries in fix/allowlist-en.txt (verified against the file)",
+    234246: "allowlist source: web2 dictionary",
+    91600: "allowlist source: GeoNames place names",
+    162253: "allowlist source: US Census surnames",
+    1297: "allowlist source: BSD propernames",
+    222: "allowlist source: hand-written MMO vocabulary",
+    2010: "US Census year for the surname source",
 }
 
 
@@ -53,6 +69,7 @@ def evidence_numbers(path):
     add(f.get("strings_with_a_verdict"))
     add(f.get("ordinary_words_censored"))
     add(f.get("clean_words_confirmed"))
+    add(f.get("derived_union_count"))
     add(len(f.get("blocked_terms", [])))
     add(len(f.get("untested_mismatch_only", [])))
     add(len(f.get("unexplained", [])))
