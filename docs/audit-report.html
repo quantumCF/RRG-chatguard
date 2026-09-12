@@ -91,7 +91,7 @@
 
 <!-- ===================== 1 · COVER + SUMMARY ===================== -->
 <div class="page">
-  <div style="font-size:8pt;letter-spacing:2pt;text-transform:uppercase;color:#949ca4;font-weight:700;margin-bottom:34mm">
+  <div style="font-size:8pt;letter-spacing:2pt;text-transform:uppercase;color:#949ca4;font-weight:700;margin-bottom:26mm">
     Technical Audit · Ragnarok: Rebirth Global
   </div>
 
@@ -112,15 +112,15 @@
     </div>
     <div class="chip fail">
       <div class="w">than<span class="hl">ks</span></div>
-      <div class="verdict">Refused</div>
+      <div class="verdict">Blocked</div>
     </div>
     <div class="chip fail">
       <div class="w">do<span class="hl">cu</span>ment</div>
-      <div class="verdict">Refused</div>
+      <div class="verdict">Blocked</div>
     </div>
     <div class="chip fail">
       <div class="w">se<span class="hl">cu</span>rity</div>
-      <div class="verdict">Refused</div>
+      <div class="verdict">Blocked</div>
     </div>
   </div>
   <p class="sm muted" style="margin-bottom:22pt">
@@ -135,17 +135,30 @@
     <div class="kpi"><span class="v">16</span><span class="l">rules identified</span></div>
   </div>
 
-  <div style="margin-top:14pt;border-left:2.5pt solid #c0392b;padding-left:10pt" class="sm">
+  <div style="margin-top:13pt;border-left:2.5pt solid #c0392b;padding-left:10pt" class="sm">
     <strong>Content notice.</strong> Establishing what the filter holds requires
     naming the terms it matches, so this report quotes profanity and slurs.
     They appear as evidence, not as commentary.
   </div>
 
-  <div style="margin-top:12pt" class="sm muted">
-    Black-box measurement against the live service, 11–12 September 2026. No
-    client modification, no packet injection, no server or source access — the
-    audit observes exactly what a player observes. All 15,307 probe records are
-    published with this report.
+  <div class="two" style="margin-top:13pt;gap:16pt;align-items:flex-start">
+    <div style="flex:1.45">
+      <div class="sm muted">
+        Measured against the live service on 11 and 12 September 2026. A system
+        drove the retail game client on a normal player account: it typed each
+        test word into a private Team channel, clicked send, then read the chat
+        history back to see whether the message appeared. It ran unattended for
+        33 hours, about one message every 8 seconds. It used a player account
+        and the retail client, nothing else, so it sees exactly what a player
+        sees. All 15,307 records are published with this report.
+      </div>
+    </div>
+    <div style="flex:0.62">
+      <img src="method-team-channel.png"
+           style="width:100%;border:0.5pt solid #e2e6ea;border-radius:3pt">
+      <div style="font-size:6.8pt;color:#949ca4;margin-top:3pt;line-height:1.3">
+        The audit running in the game's Team channel. Sender name blurred.</div>
+    </div>
   </div>
 
   <div class="foot"><span>Chat Filter Accuracy Audit</span><span>1 / 6</span></div>
