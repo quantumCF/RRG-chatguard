@@ -96,23 +96,22 @@ python3 conformance.py         # 29 language-agnostic vectors
 
 ---
 
-## Before you adopt the code
+## What you would be installing
 
-Every file you would install uses only the Python standard library. The code
-makes no network connections. It starts no other programs. It does not run code
-from text. It writes one file, in a function you call yourself, using a path
-you choose. You do not have to take our word for it:
+Three files, 961 lines in total. Python standard library only, no outside
+packages, MIT licensed.
 
-```sh
-python3 verify_safe.py
-```
+| file | lines | what it does |
+|---|---|---|
+| `2-quick-fix/rescue.py` | 138 | Option B. The whole fix. |
+| `3-replacement-engine/chatguard.py` | 676 | Option D. The replacement matcher. |
+| `3-replacement-engine/shadow.py` | 147 | Runs a new filter next to your current one and compares the two answers. Your filter stays in charge. |
 
-The command above reads each file you would install and prints what that code
-can do. In total you would install 961 lines of code, across three files.
+**Option A installs nothing at all.** It is a text file of 343 words, so it is
+available immediately even if adding outside code is slow to clear review.
 
-**Option A requires no code from this package at all** — it is a text file of
-343 words. If vendoring third-party code is slow to clear review, that path is
-available immediately.
+If your review process wants it, `python3 verify_safe.py` lists the imports and
+file operations in each of the three files.
 
 ## Notes on the numbers
 

@@ -112,25 +112,7 @@ middle of `document`.
 
 ---
 
-## Checking the code before you use it
-
-```sh
-python3 tools/verify_safe.py
-```
-
-The command above reads every file you would install, and reports what that
-code is able to do. On this repository it reports:
-
-| check | result |
-|---|---|
-| outside libraries used | none. Python standard library only |
-| network access | none |
-| starts other programs | none |
-| runs code from text (`eval`) | none |
-| reads Python objects from files (`pickle`) | none |
-| writes files | one place only: `ShadowFilter.dump(path)`, which you call yourself, with a path you choose |
-
-You would install **961 lines** of code in total:
+## What you would be installing
 
 | file | lines | what it does |
 |---|---|---|
@@ -138,10 +120,16 @@ You would install **961 lines** of code in total:
 | [`engine/chatguard.py`](engine/chatguard.py) | 676 | Option D. The replacement matcher. |
 | [`engine/shadow.py`](engine/shadow.py) | 147 | Runs a new filter next to your current one and compares the two answers. Your filter stays in charge. |
 
-**Option A installs no code at all.** It is a text file containing 343 words.
+961 lines in total. Python standard library only, no outside packages, MIT
+licensed.
 
-Everything is MIT licensed. We do not ship a word list. Your word list is your
-own. The problem this audit found is in the matching, not in your words.
+**Option A installs nothing at all.** It is a text file of 343 words.
+
+We do not ship a word list. Your word list stays your own. What this audit
+found is a problem in the matching, not in your words.
+
+If your review process wants it, `python3 tools/verify_safe.py` lists the
+imports and file operations in each of the three files.
 
 ---
 
