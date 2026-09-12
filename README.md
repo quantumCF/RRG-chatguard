@@ -21,6 +21,17 @@ during this audit.
 **[→ Read the 6-page report](docs/chat-filter-audit-report.pdf)**  ·
 [one-pager](docs/chat-filter-defect-report.pdf) · [markdown](REPORT.md)
 
+<img src="docs/method-team-channel.png" alt="The game's chat window with the Team channel selected, showing test words sent one per message" width="300" align="right">
+
+**How it was measured.** A system drove the normal game client on a live
+account. It typed each test word into a private Team channel, clicked send,
+then read the chat history back to see whether the message appeared. If it did
+not appear, the server blocked it. It ran on its own for 33 hours, about one
+message every 8 seconds. No client modification, no packet injection, no server
+access. The sender name is blurred in the screenshot.
+
+<br clear="all">
+
 > **Content notice.** This repository audits a profanity filter. The entries
 > named below are the short ones that cause the false positives. The full list
 > of entries, which includes slurs, is in the report and in `findings/`.
@@ -173,13 +184,8 @@ repository: type `thank` in the game, then type `thanks`.
 
 We sent messages through the normal game client, into a private party channel,
 one message at a time. We then read the chat history to see whether each
-message was delivered or blocked.
-
-<img src="docs/method-team-channel.png" alt="The game's chat window with the Team channel selected, showing test words sent one per message" width="330">
-
-*The audit running in the Team channel. Each test word was sent as its own
-message, then read back from the chat history. The words above were all
-delivered. The sender name is blurred.* We did not modify the client. We did not send
+message was delivered or blocked. The screenshot near the top of this page
+shows that running. We did not modify the client. We did not send
 packets directly. We had no access to server code or configuration. The audit
 sees exactly what a player sees.
 
