@@ -54,6 +54,7 @@ ALLOWED = {
     222: "allowlist source: hand-written MMO vocabulary",
     2010: "US Census year for the surname source",
     100: "width=\"100%\" on embedded charts, not a finding",
+    330: "pixel width of the embedded screenshot, not a finding",
     2100: "words still censored at threshold N=3 (tools/lengthrule.py)",
     1672: "words still censored at threshold N=4",
     745: "words still censored at threshold N=5",

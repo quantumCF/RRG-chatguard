@@ -173,7 +173,13 @@ repository: type `thank` in the game, then type `thanks`.
 
 We sent messages through the normal game client, into a private party channel,
 one message at a time. We then read the chat history to see whether each
-message was delivered or blocked. We did not modify the client. We did not send
+message was delivered or blocked.
+
+<img src="docs/method-team-channel.png" alt="The game's chat window with the Team channel selected, showing test words sent one per message" width="330">
+
+*The audit running in the Team channel. Each test word was sent as its own
+message, then read back from the chat history. The words above were all
+delivered. The sender name is blurred.* We did not modify the client. We did not send
 packets directly. We had no access to server code or configuration. The audit
 sees exactly what a player sees.
 

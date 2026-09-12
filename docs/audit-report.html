@@ -397,13 +397,13 @@ rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
   <h2>05 · Verification</h2>
   <h3>Confirm the defect in ten seconds</h3>
   <p>Send <code>thank</code> in game, then <code>thanks</code>. The first is
-  delivered, the second refused. This requires nothing from this package.</p>
+  delivered, and it blocks the second. This needs nothing from this package.</p>
 
   <div class="two" style="margin-bottom:6pt">
     <div>
       <h4>Must become deliverable</h4>
       <table class="d">
-        <tr><th>Input</th><th>Refused by</th></tr>
+        <tr><th>Input</th><th>Blocked by</th></tr>
         <tr><td class="mono">thanks</td><td class="mono">ks</td></tr>
         <tr><td class="mono">document</td><td class="mono">cu</td></tr>
         <tr><td class="mono">number</td><td class="mono">nb</td></tr>
@@ -413,7 +413,7 @@ rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
       </table>
     </div>
     <div>
-      <h4>Must stay refused</h4>
+      <h4>Must stay blocked</h4>
       <table class="d">
         <tr><th>Input</th><th>Note</th></tr>
         <tr><td class="mono">cu</td><td>the entry itself, as a word</td></tr>
@@ -434,16 +434,16 @@ python3 tools/check_numbers.py   <span class="c"># every figure here traces to t
 
   <h2 style="margin-top:14pt">06 · Method &amp; limitations</h2>
   <p>Messages were sent through the retail client into a private party channel,
-  one at a time, read back from chat history. Three controls govern what reached
-  this report:</p>
+  one at a time, and read back from chat history. Three controls govern what
+  reached this report:</p>
 
   <table class="d">
     <tr><th>Control</th><th>Why</th></tr>
-    <tr><td>A sequence of letters is not reported until isolated in meaningless surrounding letters</td>
-        <td>That <code>cucumber</code> is refused does not identify the responsible part</td></tr>
-    <tr><td>Two independent refused observations required</td>
+    <tr><td>We report a group of letters only after testing it inside a made-up word</td>
+        <td>The filter blocks <code>cucumber</code>, but that does not show which part caused it</td></tr>
+    <tr><td>Two separate tests must both show a block</td>
         <td>Measured per-probe error rate is 1.2% (6 spurious in 491), so one reading is not a result</td></tr>
-    <tr><td>An unsent probe counts as untested, not as passing</td>
+    <tr><td>A message that was never sent counts as untested, not delivered</td>
         <td>All but 15 were retried to a real verdict; a false-negative audit over 250 words returned zero misses</td></tr>
   </table>
 
