@@ -37,6 +37,7 @@ cp "$REPO/tools/safety_screen.py"   "$OUT/3-replacement-engine/"
 cp "$REPO/tools/blackbox.py"        "$OUT/3-replacement-engine/"
 cp "$REPO/tools/selftest_filter.py" "$OUT/3-replacement-engine/"
 cp "$REPO/tools/build_lexicon.py"   "$OUT/3-replacement-engine/"
+
 cp -R "$REPO/engine/lexicon" "$OUT/3-replacement-engine/lexicon"
 find "$OUT" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null || true
 
@@ -52,6 +53,19 @@ find "$OUT" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null || true
   "$OUT/3-replacement-engine/tests/test_all.py"
 /usr/bin/sed -i '' \
   -e 's|os.path.join(os.path.dirname(__file__), "..", "engine")|os.path.dirname(os.path.abspath(__file__))|' \
+  "$OUT/3-replacement-engine/conformance.py"
+# verify_safe.py sits at the package root so it can see BOTH shipped parts --
+# the quick-fix shim and the engine. Pointing it at one subfolder made it find
+# nothing and print PASS having read no code.
+cp "$REPO/tools/verify_safe.py" "$OUT/verify_safe.py"
+/usr/bin/sed -i '' \
+  -e 's|^ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))|ROOT = os.path.dirname(os.path.abspath(__file__))|' \
+  -e 's|"fix/rescue.py"|"2-quick-fix/rescue.py"|' \
+  -e 's|"engine/chatguard.py"|"3-replacement-engine/chatguard.py"|' \
+  -e 's|"engine/shadow.py"|"3-replacement-engine/shadow.py"|' \
+  -e 's|("engine/shadow.py", "dump")|("3-replacement-engine/shadow.py", "dump")|' \
+  "$OUT/verify_safe.py"
+/usr/bin/sed -i '' \
   -e 's|os.path.join(os.path.dirname(__file__), "..", "engine", "vectors", "golden.jsonl")|os.path.join(os.path.dirname(os.path.abspath(__file__)), "vectors", "golden.jsonl")|' \
   "$OUT/3-replacement-engine/conformance.py"
 

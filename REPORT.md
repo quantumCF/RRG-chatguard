@@ -5,6 +5,12 @@ Independent measurement against the live service · 12 September 2026
 
 ---
 
+> **Content notice.** This report audits a profanity filter. Establishing what
+> the filter does requires naming the terms it holds, so the sections below
+> quote profanity and slurs. They appear as evidence, not as commentary.
+
+---
+
 ## Summary
 
 The chat filter matches its blocked terms as **unanchored substrings**. A term
@@ -141,7 +147,22 @@ Distinct ordinary words affected across all rules: **8,414**. This is the
 union, not the sum — `circus` matches more than one rule, and adding the
 columns would double-count.
 
-### 2.5 Scope across locales
+### 2.5 Entry length, not entry count, drives the damage
+
+| entry length | entries | ordinary English words reached |
+|---|---|---|
+| 2 characters | 3 | 6,355 |
+| 3 characters | 3 | 428 |
+| 4 characters | 8 | 928 |
+| 5 characters | 2 | 745 |
+
+**7,675 of the 8,414 affected words — 91% — are reached by entries shorter
+than five characters.** This is the quantitative basis for the remediation
+recommended in Section 3: a length condition removes most of the defect
+without reviewing a single entry, because the damage is a property of how
+short the entries are rather than of which ones they are.
+
+### 2.6 Scope across locales
 
 The measured refusal rate was uniform across the vocabularies tested:
 Indonesian 5.2%, Vietnamese 3.6%, English 3.4%, Portuguese 3.2%, Thai 3.2%.

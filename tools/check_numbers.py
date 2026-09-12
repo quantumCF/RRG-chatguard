@@ -51,9 +51,29 @@ ALLOWED = {
     162253: "allowlist source: US Census surnames",
     1297: "allowlist source: BSD propernames",
     222: "allowlist source: hand-written MMO vocabulary",
-    138: "line count of fix/rescue.py (verified with wc -l)",
     2010: "US Census year for the surname source",
 }
+
+
+def code_line_counts():
+    """Line counts of the shipped files, read from the files themselves.
+
+    The README quotes these so a reviewer knows how much code they are taking
+    on. Deriving them here rather than listing them in ALLOWED means editing
+    the engine forces the figure in the README to be corrected too, which is
+    the whole point of this check -- a hard-coded exception would have let
+    138 drift to 141 silently, which it already did once.
+    """
+    nums = set()
+    total = 0
+    for rel in ("fix/rescue.py", "engine/chatguard.py", "engine/shadow.py"):
+        p = os.path.join(ROOT, rel)
+        if os.path.exists(p):
+            n = len(open(p, encoding="utf-8").read().splitlines())
+            nums.add(n)
+            total += n
+    nums.add(total)
+    return nums
 
 
 def evidence_numbers(path):
@@ -72,6 +92,11 @@ def evidence_numbers(path):
     add(f.get("ordinary_words_censored"))
     add(f.get("clean_words_confirmed"))
     add(f.get("derived_union_count"))
+    add(f.get("derived_under_5_chars"))
+    for v in (f.get("derived_by_entry_length") or {}).values():
+        add(v)
+    for v in (f.get("rules_by_entry_length") or {}).values():
+        add(v)
     add(len(f.get("blocked_terms", [])))
     add(len(f.get("untested_mismatch_only", [])))
     add(len(f.get("unexplained", [])))
@@ -93,7 +118,7 @@ def main():
     if not os.path.exists(ev_path):
         print(f"no evidence at {ev_path} -- run build_findings.py first")
         return 2
-    ok = evidence_numbers(ev_path)
+    ok = evidence_numbers(ev_path) | code_line_counts()
 
     stale = []
     for rel in DOCS:

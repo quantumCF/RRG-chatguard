@@ -333,8 +333,20 @@ def main():
     for f, ws in derived.items():
         union |= set(ws)
 
+    # Reach grouped by entry length. This is the number that justifies the
+    # recommended fix and, unlike the rule list, it can be quoted in public
+    # material without reproducing the slurs themselves.
+    by_len, under5 = {}, set()
+    for f, ws in derived.items():
+        by_len.setdefault(len(f), set()).update(ws)
+        if len(f) < 5:
+            under5 |= set(ws)
     summary = {
         "derived_union_count": len(union),
+        "derived_by_entry_length": {str(k): len(v) for k, v in sorted(by_len.items())},
+        "derived_under_5_chars": len(under5),
+        "rules_by_entry_length": {str(k): sum(1 for r in rules if len(r) == k)
+                                  for k in sorted(by_len)},
         "probes_analysed": len(rows),
         "strings_with_a_verdict": len(verdict),
         "untested_mismatch_only": sorted(untested),

@@ -7,8 +7,12 @@ the game ships in.
 
 ```
 thank    delivered
-thanks   refused      ← one letter apart; the plural creates "ks"
+thanks   refused      ← one letter apart
 ```
+
+> **Content notice.** This package audits a profanity filter. The report and
+> the files in `4-evidence/` quote profanity and slurs as evidence. This
+> summary and the integration instructions do not.
 
 **15,307 messages** sent through the retail client. **342 ordinary words
 confirmed censored**, **10,627 confirmed delivered**. The confirmed rules reach
@@ -57,9 +61,11 @@ they are. Cost is one hash-set lookup.
 > Entries shorter than five characters match only as whole words.
 > Entries of five characters or more are unchanged.
 
-`cu` still refuses `cu` and stops refusing `document`. `caralho` and
-`arrombado` behave exactly as they do today. Section 04 of the report has the
-language-agnostic implementation.
+Short entries still match as whole words, so nothing stops being blocked when
+someone actually types it — and every entry of five characters or more behaves
+exactly as it does today. This removes 91% of the affected words without
+reviewing a single entry. Section 04 of the report has the language-agnostic
+implementation.
 
 ---
 
@@ -75,12 +81,10 @@ by the live service:
 thanks   document   number   advantage   parameter   reputation
 ```
 
-And these must **stay refused** — no option here removes anything from the
-block list, so if any becomes deliverable the change was wired wrong:
-
-```
-cu   ks   puta   caralho   arrombado
-```
+And the filter's actual terms must **stay refused** — no option here removes
+anything from the block list, so if any becomes deliverable the change was
+wired wrong. Section 05 of the report lists them as explicit regression
+vectors.
 
 If you take the replacement engine:
 
@@ -91,6 +95,24 @@ python3 conformance.py         # 29 language-agnostic vectors
 ```
 
 ---
+
+## Before you adopt the code
+
+Everything you would deploy is Python standard library only — no third-party
+packages, no network access, no process execution, no dynamic evaluation, and
+one file write in a method you call with a path you supply. You do not have to
+take that on trust:
+
+```sh
+python3 verify_safe.py
+```
+
+It parses the AST of each shipped file and prints the dependency and capability
+surface. Total shipped code is 961 lines across three files.
+
+**Option A requires no code from this package at all** — it is a text file of
+342 words. If vendoring third-party code is slow to clear review, that path is
+available immediately.
 
 ## Notes on the numbers
 
