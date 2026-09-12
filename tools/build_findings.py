@@ -113,16 +113,29 @@ def main():
     untested -= set(obs)
 
     # ---- a verdict is a vote, not the last record ------------------------
-    verdict, disputed = {}, {}
+    #
+    # Inclusion needs TWO blocked observations, not one. Detection is OCR-based
+    # and the earliest logs were collected before it was hardened, so a single
+    # "blocked" is within the error rate of the instrument -- that is exactly
+    # how "av" and "the" got into a previous draft and had to be withdrawn.
+    # Corroboration is a property of the evidence rather than of which log a
+    # word came from, so it needs no judgement call about which runs to trust.
+    #
+    # Words blocked exactly once are not discarded, they are reported
+    # separately as unconfirmed. Understating is the safer failure here: a name
+    # on the allow list that should not be there weakens the ask.
+    verdict, disputed, unconfirmed = {}, {}, {}
     for w, v in obs.items():
         nb, n = v.count("blocked"), len(v)
         if nb == 0:
             verdict[w] = "sent"
-        elif nb == n:
-            verdict[w] = "blocked"
+        elif nb == 1 and n == 1:
+            verdict[w] = "unconfirmed"
+            unconfirmed[w] = "1/1"
         elif nb * 2 > n:
             verdict[w] = "blocked"
-            disputed[w] = f"{nb}/{n}"
+            if nb != n:
+                disputed[w] = f"{nb}/{n}"
         else:
             verdict[w] = "sent"
             disputed[w] = f"{nb}/{n}"
@@ -156,7 +169,7 @@ def main():
             if not (w in lexicon_terms or is_slur(w)[0]
                     or is_vulgar_derivation(w)[0]):
                 ordinary.append(w)
-        else:
+        elif res == "sent":
             clean.add(w)
     ordinary.sort()
 
@@ -244,6 +257,7 @@ def main():
         "attribution": attribution,
         "unexplained": unexplained,
         "disputed": disputed,
+        "unconfirmed_single_observation": sorted(unconfirmed),
         "derived_counts": {f: len(v) for f, v in derived.items()},
     }
     with open(os.path.join(args.out, "findings.json"), "w", encoding="utf-8") as fh:
@@ -257,6 +271,8 @@ def main():
     print(f"ORDINARY WORDS CENSORED  : {len(ordinary):,}")
     if disputed:
         print(f"  not unanimous          : {len(disputed)}")
+    if unconfirmed:
+        print(f"  seen blocked once only : {len(unconfirmed)}  (excluded, need 2)")
     by_frag = collections.Counter(attribution.values())
     if by_frag:
         print("\nby responsible substring:")

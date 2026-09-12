@@ -1,0 +1,26 @@
+# DERIVED, NOT MEASURED.
+#
+# These words were NOT probed. They are ordinary dictionary
+# words that contain a substring the live filter was measured
+# to block, so the same rule applies to them. This file is the
+# scope of the problem; words-to-allow.txt is the evidence.
+#
+#
+# --- contains 'shit': 17 words
+bereshith
+brushite
+cushite
+cushitic
+elkoshite
+girgashite
+kaneshite
+koreishite
+mackintoshite
+marshite
+metabrushite
+shitepoke
+shither
+shittah
+shittim
+shittimwood
+washita
