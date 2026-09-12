@@ -7,7 +7,7 @@ the game ships in.
 
 ```
 thank    delivered
-thanks   refused      ← one letter apart
+thanks   blocked      one letter apart
 ```
 
 > **Content notice.** This package audits a profanity filter. The report and
@@ -74,14 +74,14 @@ implementation.
 Confirm the defect in ten seconds, with nothing from this package: send
 `thank` in game, then `thanks`.
 
-After the fix, these must be **delivered** — every one was confirmed refused
+After the fix, these must be **delivered** — every one was confirmed blocked
 by the live service:
 
 ```
 thanks   document   number   advantage   parameter   reputation
 ```
 
-And the filter's actual terms must **stay refused** — no option here removes
+And the filter's actual terms must **stay blocked** — no option here removes
 anything from the block list, so if any becomes deliverable the change was
 wired wrong. Section 05 of the report lists them as explicit regression
 vectors.
@@ -115,7 +115,7 @@ file operations in each of the three files.
 
 ## Notes on the numbers
 
-- **343** is measured — each word was refused by the live service in at least
+- **343** is measured — each word was blocked by the live service in at least
   two independent trials, against a measured 1.2% per-probe error rate.
 - **8,414** is derived — the confirmed rules projected across a dictionary.
   Those specific words were not each sent. The two are kept in separate files

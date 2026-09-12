@@ -52,6 +52,8 @@ find "$OUT" -name __pycache__ -type d -exec rm -rf {} + 2>/dev/null || true
   -e 's|^ROOT = os.path.dirname(ENGINE)|ROOT = ENGINE|' \
   -e 's|os.path.join(ROOT, "tools")|ROOT|' \
   -e 's|self._run("tools/|self._run("|g' \
+  -e 's|os.path.join(ROOT, "findings", "findings.json")|os.path.join(ROOT, "..", "4-evidence", "findings.json")|' \
+  -e 's|os.path.join(ROOT, "engine", "lexicon", "lexicon",|os.path.join(ROOT, "lexicon", "lexicon",|' \
   "$OUT/3-replacement-engine/tests/test_all.py"
 /usr/bin/sed -i '' \
   -e 's|os.path.join(os.path.dirname(__file__), "..", "engine")|os.path.dirname(os.path.abspath(__file__))|' \

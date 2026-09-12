@@ -120,7 +120,7 @@ shelters instead, and `Rescue(phrases_path=...)` consumes them.
 
 ## Fix 3 — replace the matcher.
 
-`../engine/chatguard.py`, ~650 lines, no dependencies, MIT.
+`../engine/chatguard.py`, 676 lines, no dependencies, MIT.
 
 Word boundaries, per-term match modes, a rescue allowlist, Unicode/confusable/
 leet normalization, bounded fuzzy matching, severity tiers, per-surface policy

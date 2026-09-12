@@ -27,14 +27,14 @@ during this audit.
 account. It typed each test word into a private Team channel, clicked send,
 then read the chat history back to see whether the message appeared. If it did
 not appear, the server blocked it. It ran on its own for 33 hours, about one
-message every 8 seconds. No client modification, no packet injection, no server
-access. The sender name is blurred in the screenshot.
+message every 8 seconds. It used a normal player account and the retail client,
+nothing else. The sender name is blurred in the screenshot.
 
 <br clear="all">
 
 > **Content notice.** This repository audits a profanity filter. The entries
-> named below are the short ones that cause the false positives. The full list
-> of entries, which includes slurs, is in the report and in `findings/`.
+> named in this README are the short ones that cause the false positives. The
+> full list, which includes slurs, is in the report and in `findings/`.
 
 ---
 
@@ -156,7 +156,7 @@ imports and file operations in each of the three files.
 | [`docs/`](docs/) | PDFs, adoption notes, background research, and [suggestions](docs/SUGGESTIONS.md) that are separate from the audit |
 
 ```sh
-python3 tools/verify_safe.py       # what the code is able to do
+python3 tools/verify_safe.py       # imports and file operations, per file
 python3 engine/tests/test_all.py   # 55 tests
 python3 tools/conformance.py       # 29 conformance vectors
 python3 tools/check_numbers.py     # every number in the documents matches the evidence
@@ -170,12 +170,9 @@ repository: type `thank` in the game, then type `thanks`.
 
 <br>
 
-We sent messages through the normal game client, into a private party channel,
-one message at a time. We then read the chat history to see whether each
-message was delivered or blocked. The screenshot near the top of this page
-shows that running. We did not modify the client. We did not send
-packets directly. We had no access to server code or configuration. The audit
-sees exactly what a player sees.
+The audit sees exactly what a player sees. It used a normal player account and
+the retail client: no modified client, no packets sent directly, and no access
+to server code or configuration.
 
 Three rules decided what went into this report.
 

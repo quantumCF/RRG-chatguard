@@ -36,7 +36,6 @@ ALLOWED = {
     8: "number of shipped locales",
     2: "length of the cu / ks rules",
     3: "verification passes",
-    650: "approximate line count of the reference engine",
     250: "words re-probed by the false-negative audit (findings/raw-logs/f1,f2)",
     491: "observations in the false-negative audit (findings/raw-logs/f1,f2)",
     53: "tests in the reference engine suite",

@@ -176,7 +176,7 @@
   </div>
 
   <section>
-    <h3 style="margin-top:4pt">Short the filter blocks messages containing entries far more words</h3>
+    <h3 style="margin-top:4pt">Short entries affect far more words</h3>
     <p class="sm muted">Ordinary English words blocked, by entry. A short entry
     appears by chance inside many more words than a long one does.</p>
     <div class="bars">
@@ -189,7 +189,7 @@
       <div class="bar"><span class="nm">pica</span><span class="track"><span class="fill alt" style="width:4.5%"></span></span><span class="val">227</span><span class="ex">typical, tropical</span></div>
       <div class="bar"><span class="nm">puta</span><span class="track"><span class="fill alt" style="width:1.9%"></span></span><span class="val">95</span><span class="ex">reputation, computation</span></div>
     </div>
-    <p class="sm muted">Eight further rules account for the remainder.
+    <p class="sm muted">Eight further entries account for the remainder.
     <span style="display:inline-block;width:9pt;height:7pt;background:#14181c;border-radius:1pt;margin:0 2pt 0 6pt"></span>
     two-character entry
     <span style="display:inline-block;width:9pt;height:7pt;background:#b9c0c7;border-radius:1pt;margin:0 2pt 0 6pt"></span>
@@ -199,7 +199,7 @@
   <section>
     <h3>Coverage is uneven by language, not uniformly strict</h3>
     <p>Twenty-seven Portuguese profanity terms were tested and <strong>all
-    twenty-seven were refused</strong>, down to low-frequency items like
+    twenty-seven were blocked</strong>, down to low-frequency items like
     <code>arrombado</code> and <code>otario</code>. Tested identically:</p>
     <div class="demo" style="margin-bottom:6pt">
       <div class="chip pass"><div class="w" style="font-size:12pt">bitch</div><div class="verdict">Delivered</div></div>
@@ -218,7 +218,7 @@
 <div class="page">
   <h2>02 · Impact</h2>
   <h3>Every market, and the game's own interface text</h3>
-  <p>The refusal rate was measured separately against the common vocabulary of
+  <p>The block rate was measured separately against the common vocabulary of
   each shipped language. It is uniform — this is not an English-only problem.</p>
 
   <div class="bars" style="margin-bottom:12pt">
@@ -240,7 +240,7 @@
     <p>The message is not delivered and the sender sees a modal stating the
     speech is inappropriate. Nothing indicates which word caused it, and the
     offending sequence is not visible as a word — so the rule cannot be learned
-    and cannot be avoided. Repeated refusals of ordinary vocabulary read as the
+    and cannot be avoided. Repeated blocking of ordinary words read as the
     game being broken rather than as moderation.</p>
   </section>
 
@@ -249,7 +249,7 @@
     <table class="d">
       <tr><th>Property</th><th>Consequence</th></tr>
       <tr><td>Affects high-frequency vocabulary</td>
-          <td><code>thanks</code> is among the most common words in social game chat, and it is refused</td></tr>
+          <td><code>thanks</code> is among the most common words in social game chat, and the filter blocks it</td></tr>
       <tr><td>Silent and unattributable</td>
           <td>Players cannot infer the rule, so behaviour does not adapt</td></tr>
       <tr><td>Not individually actionable</td>
@@ -264,7 +264,7 @@
     <table class="d">
       <tr><th>Figure</th><th>Basis</th></tr>
       <tr><td><strong>343</strong> words confirmed censored</td>
-          <td>Measured. Each required two independent refused observations against a measured 1.2% per-probe error rate.</td></tr>
+          <td>Measured. Each required two separate tests showing a block against a measured 1.2% per-probe error rate.</td></tr>
       <tr><td><strong>8,414</strong> English words affected</td>
           <td>Derived. Confirmed rules projected across a dictionary; these specific words were not each sent.</td></tr>
       <tr><td><strong>16</strong> rules</td>
@@ -284,7 +284,7 @@
 
   <table class="d" style="margin-bottom:16pt">
     <tr><th>&nbsp;</th><th>Approach</th><th>Touches</th><th>Residual risk</th><th class="n">Effort</th></tr>
-    <tr><td><strong>A</strong></td><td>Ship the confirmed allowlist</td><td>Data only</td>
+    <tr><td><strong>A</strong></td><td>Ship the confirmed exception list</td><td>Data only</td>
         <td>Words outside the tested set</td><td class="n">Hours</td></tr>
     <tr><td><strong>B</strong></td><td>Add the rescue shim</td><td>One call site</td>
         <td>Names and slang not in a dictionary</td><td class="n">1 day</td></tr>
@@ -296,7 +296,7 @@
 
   <div class="two">
     <div>
-      <h4>A · Allowlist <span class="sm muted">— no code change</span></h4>
+      <h4>A · Exception list <span class="sm muted">— no code change</span></h4>
       <p class="sm">If the filter already consults an exception list, this is a
       data deployment. <code>words-to-allow.txt</code> holds the 343 confirmed
       words, one per line, each annotated with the rule responsible.</p>
@@ -326,8 +326,8 @@
       Evaluate the new decision alongside the current one and log where they
       differ, without changing what players see.</div></div>
     <div class="step"><span class="no">2</span><div><strong>Check the direction of every difference.</strong>
-      All differences must be messages previously refused that would now be
-      delivered. A message newly <em>refused</em> indicates a wiring error, not
+      All differences must be messages the filter blocks today that would now be
+      delivered. A message newly <em>blocked</em> indicates a wiring error, not
       a tuning question — none of these options adds blocking.</div></div>
     <div class="step"><span class="no">3</span><div><strong>Enable.</strong>
       A and B may ship independently and in either order.</div></div>
@@ -385,8 +385,8 @@ rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
     <tr><td class="mono">findings/affected-words.txt</td><td>one word per line, by rule</td><td class="n">8,414</td><td>Option A, broader set</td></tr>
     <tr><td class="mono">fix/allowlist-en.txt</td><td>one word per line</td><td class="n">473,532</td><td>Option B corpus</td></tr>
     <tr><td class="mono">fix/rescue.py</td><td>Python 3, no dependencies</td><td class="n">138 ln</td><td>Option B shim</td></tr>
-    <tr><td class="mono">engine/</td><td>Python 3, no dependencies</td><td class="n">~650 ln</td><td>Option D matcher</td></tr>
-    <tr><td class="mono">vectors/golden.jsonl</td><td>JSONL</td><td class="n">29</td><td>Conformance for any port</td></tr>
+    <tr><td class="mono">engine/chatguard.py</td><td>Python 3, no dependencies</td><td class="n">676 ln</td><td>Option D matcher</td></tr>
+    <tr><td class="mono">engine/vectors/golden.jsonl</td><td>JSONL</td><td class="n">29</td><td>Conformance for any port</td></tr>
   </table>
 
   <div class="foot"><span>Chat Filter Accuracy Audit</span><span>5 / 6</span></div>

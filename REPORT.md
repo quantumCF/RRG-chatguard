@@ -45,9 +45,9 @@ The filter delivers `thank`. The filter blocks `thanks`.
 
 Messages were sent through the game client into a private party channel, one at
 a time, at human pace. Each message was read back from the chat history to
-determine whether the server accepted or refused it. No client modification, no
-packet injection, and no access to server code or configuration was involved;
-the measurement sees exactly what a player sees.
+determine whether the server delivered or blocked it. The audit used a normal
+player account and the retail client, nothing else, so it sees exactly what a
+player sees.
 
 Three properties of the measurement are worth stating because the conclusions
 depend on them.
@@ -81,8 +81,8 @@ block could only be caused by those letters:
 
 | probe | result | probe | result |
 |---|---|---|---|
-| `cu` | refused | `ks` | refused |
-| `xxcuxx` | refused | `xxksxx` | refused |
+| `cu` | blocked | `ks` | blocked |
+| `xxcuxx` | blocked | `xxksxx` | blocked |
 | `xxcxx` | delivered | `xxkxx` | delivered |
 | `xxuxx` | delivered | `xxsxx` | delivered |
 | `xxucxx` | delivered | `xxskxx` | delivered |
@@ -101,7 +101,7 @@ was blocked.
 ### 2.2 The term list is Portuguese
 
 Twenty-seven Portuguese profanity terms were tested. All twenty-seven are
-refused, including uncommon ones:
+blocked, including uncommon ones:
 
 `puta` · `porra` · `caralho` · `buceta` · `merda` · `foda` · `viado` · `veado`
 · `corno` · `babaca` · `otario` · `piroca` · `bosta` · `cuzao` · `arrombado`
@@ -125,7 +125,7 @@ list that has not been reviewed against the locales it is applied to.
 ### 2.4 Confirmed rules and their reach
 
 Each rule below was isolated in padding and confirmed. "Measured" counts
-words confirmed refused in testing; "dictionary" counts ordinary English words
+words confirmed blocked in testing; "dictionary" counts ordinary English words
 containing it that were therefore not all individually tested.
 
 | rule | measured | English words affected | example ordinary words |
@@ -167,12 +167,12 @@ which entries they are.
 
 ### 2.6 Scope across locales
 
-The measured refusal rate is comparable across every vocabulary tested:
+The measured block rate is comparable across every vocabulary tested:
 Indonesian 4.8%, Thai 3.0%, English 2.8%, Portuguese 2.8%, Vietnamese 2.2%. This is not an English-only problem. The game's own
-Portuguese and Indonesian interface text contains words its own filter refuses.
+Portuguese and Indonesian interface text contains words its own filter blocks.
 
 These percentages count each word once, not each test. Counting tests inflates
-them, because verification re-probes every refused word three further times and
+them, because verification re-tests every blocked word three further times and
 so multiplies the numerator while leaving the denominator alone.
 
 ---
@@ -184,7 +184,7 @@ requires no code change at all.
 
 ### Option 1 — Allow the confirmed words
 
-`findings/words-to-allow.txt` lists **343 ordinary words** confirmed refused by
+`findings/words-to-allow.txt` lists **343 ordinary words** confirmed blocked by
 the live service, each annotated with the rule responsible. If the filter
 already supports an exception list, this is a data change and nothing more.
 
@@ -255,11 +255,11 @@ vocabularies were not swept; conclusions about them would not be supported.
 ## 5. Evidence
 
 ```
-findings/words-to-allow.txt   343 ordinary words confirmed refused, with the
+findings/words-to-allow.txt   343 ordinary words confirmed blocked, with the
                               rule responsible for each
 findings/affected-words.txt   8,414 dictionary words the confirmed rules reach
                               (derived, not individually tested)
-findings/blocked-terms.txt    terms and sequences of letters confirmed refused
+findings/blocked-terms.txt    terms and sequences of letters confirmed blocked
 findings/findings.json        machine-readable summary
 findings/raw-logs/            all 15,307 probes, one JSON record each
 ```
