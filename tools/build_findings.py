@@ -312,10 +312,19 @@ def main():
                 "# to block, so the same rule applies to them. This file is the\n"
                 "# scope of the problem; words-to-allow.txt is the evidence.\n"
                 "#\n")
-            for f in rules:
-                fh.write(f"#\n# --- contains '{f}': {len(derived[f]):,} words\n")
+            # One word per line, deduplicated, annotated with the shortest
+            # rule that reaches it. Grouping by rule instead would list
+            # "circus" under both "cu" and its other match, so the file's line
+            # count would exceed the distinct-word count quoted everywhere
+            # else -- the first thing an integrator would notice and the last
+            # thing that should need explaining.
+            first = {}
+            for f in sorted(rules, key=len):
                 for w in derived[f]:
-                    fh.write(w + "\n")
+                    first.setdefault(w, f)
+            fh.write(f"# words: {len(first)}\n#\n")
+            for w in sorted(first):
+                fh.write(f"{w}\t# '{first[w]}'\n")
 
     # The union matters more than the per-rule counts: a word like "circus"
     # matches more than one rule, so adding the columns up overstates the

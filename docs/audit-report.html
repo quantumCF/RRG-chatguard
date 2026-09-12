@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Chat Filter Accuracy Audit</title>
+<style>
+  @page { size: Letter; margin: 0; }
+  * { box-sizing: border-box; }
+  html { margin: 0; padding: 0; }
+  body {
+    margin: 0; padding: 0;
+    font: 10pt/1.52 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #14181c; background: #fff; -webkit-font-smoothing: antialiased;
+  }
+  .page { width: 215.9mm; height: 279.4mm; padding: 19mm 20mm 16mm 20mm;
+          position: relative; page-break-after: always; overflow: hidden; }
+  .page:last-child { page-break-after: auto; }
+  .foot { position: absolute; left: 20mm; right: 20mm; bottom: 10mm;
+          border-top: 0.5pt solid #e2e6ea; padding-top: 5pt;
+          font-size: 7.2pt; color: #949ca4; display: flex; justify-content: space-between; }
+
+  h1 { font-size: 31pt; line-height: 1.06; margin: 0 0 12pt; letter-spacing: -0.9pt; font-weight: 700; }
+  h2 { font-size: 8pt; text-transform: uppercase; letter-spacing: 1.7pt; color: #949ca4;
+       font-weight: 700; margin: 0 0 11pt; }
+  h3 { font-size: 12.5pt; margin: 0 0 6pt; font-weight: 700; letter-spacing: -0.2pt; }
+  h4 { font-size: 9.4pt; margin: 0 0 4pt; font-weight: 700; }
+  p { margin: 0 0 8pt; }
+  section { margin-bottom: 17pt; }
+  .lead { font-size: 13.5pt; line-height: 1.38; font-weight: 600; letter-spacing: -0.2pt;
+          margin: 0 0 14pt; }
+  .lead em { font-style: normal; color: #c0392b; }
+  .muted { color: #5d666e; }
+  .sm { font-size: 8.6pt; }
+
+  /* KPI strip */
+  .kpis { display: flex; border-top: 1.6pt solid #14181c; border-bottom: 0.5pt solid #e2e6ea; }
+  .kpi { flex: 1; padding: 11pt 0 10pt; }
+  .kpi .v { font-size: 21pt; font-weight: 700; letter-spacing: -0.8pt; display: block; line-height: 1; }
+  .kpi .l { font-size: 7.2pt; color: #5d666e; text-transform: uppercase;
+            letter-spacing: 0.7pt; font-weight: 600; margin-top: 4pt; display: block; }
+
+  /* word-level mechanism diagram */
+  .demo { display: flex; gap: 9pt; margin: 0 0 11pt; }
+  .chip { flex: 1; border: 1pt solid #e2e6ea; border-radius: 4pt; padding: 10pt 12pt; }
+  .chip .w { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 17pt;
+             letter-spacing: 0.5pt; margin-bottom: 5pt; }
+  .chip .verdict { font-size: 7.6pt; font-weight: 700; letter-spacing: 0.9pt; text-transform: uppercase; }
+  .hl { background: #fbe3e0; color: #c0392b; border-radius: 2pt; padding: 0 1pt; }
+  .pass { border-color: #cfe6da; } .pass .verdict { color: #1c7a44; }
+  .fail { border-color: #f0cdc8; } .fail .verdict { color: #c0392b; }
+
+  /* bar chart */
+  .bars { margin: 0 0 8pt; }
+  .bar { display: flex; align-items: center; gap: 8pt; margin-bottom: 5pt; }
+  .bar .nm { display: block; width: 42pt; flex: none; font-family: "SF Mono", Menlo, Consolas, monospace;
+             font-size: 8.6pt; text-align: right; }
+  .bar .track { flex: 1; height: 13pt; position: relative; display: block;
+                background: #f2f4f6; border-radius: 1.5pt; }
+  .bar .fill { display: block; height: 100%; background: #14181c;
+               border-radius: 1.5pt; }
+  .bar .fill.alt { background: #b9c0c7; }
+  .bar .val { display: block; width: 36pt; flex: none; font-size: 8.4pt; font-variant-numeric: tabular-nums;
+              color: #5d666e; }
+  .bar .ex { display: block; width: 128pt; flex: none; font-size: 8.2pt; color: #5d666e; }
+
+  table.d { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 0 0 9pt; }
+  table.d th { text-align: left; font-size: 7.2pt; text-transform: uppercase; letter-spacing: 0.7pt;
+               color: #5d666e; font-weight: 700; padding: 0 9pt 5pt 0; border-bottom: 1pt solid #14181c; }
+  table.d td { padding: 5.5pt 9pt 5.5pt 0; border-bottom: 0.5pt solid #eceff2; vertical-align: top; }
+  table.d td:last-child, table.d th:last-child { padding-right: 0; }
+  .n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.7pt; }
+  pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 8.3pt; line-height: 1.5;
+        background: #f7f8fa; border-radius: 3pt; padding: 9pt 11pt; margin: 0 0 9pt;
+        white-space: pre-wrap; }
+  pre .c { color: #8a939b; } pre .k { color: #c0392b; }
+  .bad { color: #c0392b; font-weight: 700; } .ok { color: #1c7a44; font-weight: 700; }
+
+  .callout { border-left: 2.5pt solid #14181c; padding: 2pt 0 2pt 12pt; margin: 0 0 11pt; }
+  .callout.warn { border-left-color: #c0392b; }
+  .tight table.d td { padding-top: 3.4pt; padding-bottom: 3.4pt; }
+  .tight pre { margin-bottom: 7pt; }
+  .two { display: flex; gap: 16pt; } .two > div { flex: 1; }
+  .step { display: flex; gap: 9pt; margin-bottom: 7pt; }
+  .step .no { width: 15pt; height: 15pt; border-radius: 50%; background: #14181c; color: #fff;
+              font-size: 8pt; font-weight: 700; text-align: center; line-height: 15pt; flex: none; }
+</style>
+</head>
+<body>
+
+<!-- ===================== 1 · COVER + SUMMARY ===================== -->
+<div class="page">
+  <div style="font-size:8pt;letter-spacing:2pt;text-transform:uppercase;color:#949ca4;font-weight:700;margin-bottom:34mm">
+    Technical Audit · Ragnarok: Rebirth Global
+  </div>
+
+  <h1>Chat Filter<br>Accuracy Audit</h1>
+
+  <div class="lead">
+    The filter matches blocked terms as <em>unanchored substrings</em>, and the
+    term list is <em>predominantly Brazilian Portuguese</em>. Two-letter
+    Portuguese entries applied across all eight locales censor ordinary
+    vocabulary in every language the game ships in.
+  </div>
+
+  <div class="demo">
+    <div class="chip pass">
+      <div class="w">thank</div>
+      <div class="verdict">Delivered</div>
+    </div>
+    <div class="chip fail">
+      <div class="w">than<span class="hl">ks</span></div>
+      <div class="verdict">Refused</div>
+    </div>
+    <div class="chip fail">
+      <div class="w">do<span class="hl">cu</span>ment</div>
+      <div class="verdict">Refused</div>
+    </div>
+    <div class="chip fail">
+      <div class="w">se<span class="hl">cu</span>rity</div>
+      <div class="verdict">Refused</div>
+    </div>
+  </div>
+  <p class="sm muted" style="margin-bottom:22pt">
+    <code>cu</code> is Portuguese for anus; <code>ks</code> is a literal
+    two-character entry. Neither has a word-boundary condition, so both fire
+    inside any word that happens to contain them.</p>
+
+  <div class="kpis">
+    <div class="kpi"><span class="v">15,307</span><span class="l">messages sent</span></div>
+    <div class="kpi"><span class="v">342</span><span class="l">words confirmed censored</span></div>
+    <div class="kpi"><span class="v">8,414</span><span class="l">English words affected</span></div>
+    <div class="kpi"><span class="v">16</span><span class="l">rules identified</span></div>
+  </div>
+
+  <div style="margin-top:20pt" class="sm muted">
+    Black-box measurement against the live service, 11–12 September 2026. No
+    client modification, no packet injection, no server or source access — the
+    audit observes exactly what a player observes. All 15,307 probe records are
+    published with this report.
+  </div>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit</span><span>1 / 6</span></div>
+</div>
+
+<!-- ===================== 2 · THE DEFECT ===================== -->
+<div class="page">
+  <h2>01 · The defect</h2>
+  <h3>Blocked terms have no word boundary</h3>
+  <p>A term fires wherever its letters appear. This was isolated by probing the
+  sequence inside inert padding, so a refusal can only be attributed to the
+  sequence itself rather than to the word that revealed it.</p>
+
+  <table class="d" style="margin-bottom:14pt">
+    <tr><th>Probe</th><th>Result</th><th>Probe</th><th>Result</th><th>Establishes</th></tr>
+    <tr><td class="mono">cu</td><td class="bad">refused</td><td class="mono">ks</td><td class="bad">refused</td><td>the sequence is on the list</td></tr>
+    <tr><td class="mono">xxcuxx</td><td class="bad">refused</td><td class="mono">xxksxx</td><td class="bad">refused</td><td>it fires inside an unrelated word</td></tr>
+    <tr><td class="mono">xxcxx</td><td class="ok">delivered</td><td class="mono">xxkxx</td><td class="ok">delivered</td><td>the first letter alone does not</td></tr>
+    <tr><td class="mono">xxuxx</td><td class="ok">delivered</td><td class="mono">xxsxx</td><td class="ok">delivered</td><td>the second letter alone does not</td></tr>
+    <tr><td class="mono">xxucxx</td><td class="ok">delivered</td><td class="mono">xxskxx</td><td class="ok">delivered</td><td>order matters — a literal sequence</td></tr>
+  </table>
+
+  <div class="callout">
+    <p>Across the <strong>10,627 words the filter accepted, not one contains
+    <code>cu</code> or <code>ks</code></strong>. There are no exceptions in
+    either direction.</p>
+  </div>
+
+  <section>
+    <h3 style="margin-top:4pt">Shorter entries do exponentially more damage</h3>
+    <p class="sm muted">Ordinary English words affected, by rule. Because matching is unanchored,
+    an entry's blast radius grows as its length shrinks.</p>
+    <div class="bars">
+      <div class="bar"><span class="nm">cu</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">5,016</span><span class="ex">document, discuss, security</span></div>
+      <div class="bar"><span class="nm">nb</span><span class="track"><span class="fill" style="width:19.1%"></span></span><span class="val">956</span><span class="ex">number, inbox, unbind</span></div>
+      <div class="bar"><span class="nm">meter</span><span class="track"><span class="fill alt" style="width:13.9%"></span></span><span class="val">695</span><span class="ex">parameter, diameter</span></div>
+      <div class="bar"><span class="nm">anta</span><span class="track"><span class="fill alt" style="width:8.4%"></span></span><span class="val">419</span><span class="ex">advantage, santa, fantastic</span></div>
+      <div class="bar"><span class="nm">ks</span><span class="track"><span class="fill" style="width:8.1%"></span></span><span class="val">408</span><span class="ex">thanks, tasks, books, works</span></div>
+      <div class="bar"><span class="nm">pus</span><span class="track"><span class="fill alt" style="width:4.6%"></span></span><span class="val">230</span><span class="ex">campus, octopus, push</span></div>
+      <div class="bar"><span class="nm">pica</span><span class="track"><span class="fill alt" style="width:4.5%"></span></span><span class="val">227</span><span class="ex">typical, tropical</span></div>
+      <div class="bar"><span class="nm">puta</span><span class="track"><span class="fill alt" style="width:1.9%"></span></span><span class="val">95</span><span class="ex">reputation, computation</span></div>
+    </div>
+    <p class="sm muted">Eight further rules account for the remainder.
+    <span style="display:inline-block;width:9pt;height:7pt;background:#14181c;border-radius:1pt;margin:0 2pt 0 6pt"></span>
+    two-character entry
+    <span style="display:inline-block;width:9pt;height:7pt;background:#b9c0c7;border-radius:1pt;margin:0 2pt 0 6pt"></span>
+    longer entry</p>
+  </section>
+
+  <section>
+    <h3>Coverage is uneven by language, not uniformly strict</h3>
+    <p>Twenty-seven Portuguese profanity terms were tested and <strong>all
+    twenty-seven were refused</strong>, down to low-frequency items like
+    <code>arrombado</code> and <code>otario</code>. Tested identically:</p>
+    <div class="demo" style="margin-bottom:6pt">
+      <div class="chip pass"><div class="w" style="font-size:12pt">bitch</div><div class="verdict">Delivered</div></div>
+      <div class="chip pass"><div class="w" style="font-size:12pt">rape</div><div class="verdict">Delivered</div></div>
+      <div class="chip pass"><div class="w" style="font-size:12pt">slut</div><div class="verdict">Delivered</div></div>
+      <div class="chip pass"><div class="w" style="font-size:12pt">whore</div><div class="verdict">Delivered</div></div>
+    </div>
+    <p class="sm muted">Both halves share one cause: a term list that has not
+    been reviewed against the locales it is applied to.</p>
+  </section>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit</span><span>2 / 6</span></div>
+</div>
+
+<!-- ===================== 3 · IMPACT ===================== -->
+<div class="page">
+  <h2>02 · Impact</h2>
+  <h3>Every market, and the game's own interface text</h3>
+  <p>The refusal rate was measured separately against the common vocabulary of
+  each shipped language. It is uniform — this is not an English-only problem.</p>
+
+  <div class="bars" style="margin-bottom:12pt">
+    <div class="bar"><span class="nm" style="width:60pt">Indonesian</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">5.2%</span><span class="ex">aksi, manusia, perubahan</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Vietnamese</span><span class="track"><span class="fill" style="width:69%"></span></span><span class="val">3.6%</span><span class="ex">anh, thanh, linh, kho</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">English</span><span class="track"><span class="fill" style="width:65%"></span></span><span class="val">3.4%</span><span class="ex">thanks, document, security</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Portuguese</span><span class="track"><span class="fill" style="width:62%"></span></span><span class="val">3.2%</span><span class="ex">acumulado, vermelho</span></div>
+    <div class="bar"><span class="nm" style="width:60pt">Thai</span><span class="track"><span class="fill" style="width:62%"></span></span><span class="val">3.2%</span><span class="ex">romanised interface tokens</span></div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>The service censors words from its own shipped localisation
+    files.</strong> A player who types a word they can read on screen is told
+    their speech is inappropriate.</p>
+  </div>
+
+  <section>
+    <h3>What the player experiences</h3>
+    <p>The message is not delivered and the sender sees a modal stating the
+    speech is inappropriate. Nothing indicates which word caused it, and the
+    offending sequence is not visible as a word — so the rule cannot be learned
+    and cannot be avoided. Repeated refusals of ordinary vocabulary read as the
+    game being broken rather than as moderation.</p>
+  </section>
+
+  <section>
+    <h3>Why it carries a support cost</h3>
+    <table class="d">
+      <tr><th>Property</th><th>Consequence</th></tr>
+      <tr><td>Affects high-frequency vocabulary</td>
+          <td><code>thanks</code> is among the most common words in social game chat, and it is refused</td></tr>
+      <tr><td>Silent and unattributable</td>
+          <td>Players cannot infer the rule, so behaviour does not adapt</td></tr>
+      <tr><td>Not individually actionable</td>
+          <td>Each report names a different ordinary word produced by the same handful of rules</td></tr>
+      <tr><td>Asymmetric by market</td>
+          <td>Indonesian shows the highest rate of the five vocabularies measured</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h3>Confidence in these figures</h3>
+    <table class="d">
+      <tr><th>Figure</th><th>Basis</th></tr>
+      <tr><td><strong>342</strong> words confirmed censored</td>
+          <td>Measured. Each required two independent refused observations against a measured 1.2% per-probe error rate.</td></tr>
+      <tr><td><strong>8,414</strong> English words affected</td>
+          <td>Derived. Confirmed rules projected across a dictionary; these specific words were not each sent.</td></tr>
+      <tr><td><strong>16</strong> rules</td>
+          <td>A lower bound. Entries whose letters did not occur in the 11,868 strings tested would not have surfaced.</td></tr>
+    </table>
+  </section>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit</span><span>3 / 6</span></div>
+</div>
+
+<!-- ===================== 4 · REMEDIATION ===================== -->
+<div class="page">
+  <h2>03 · Remediation</h2>
+  <h3>Four options. None of them blocks less.</h3>
+  <p>Every option below removes false positives only — no entry is taken off
+  the block list. They are independent and can ship in any order.</p>
+
+  <table class="d" style="margin-bottom:16pt">
+    <tr><th>&nbsp;</th><th>Approach</th><th>Touches</th><th>Residual risk</th><th class="n">Effort</th></tr>
+    <tr><td><strong>A</strong></td><td>Ship the confirmed allowlist</td><td>Data only</td>
+        <td>Words outside the tested set</td><td class="n">Hours</td></tr>
+    <tr><td><strong>B</strong></td><td>Add the rescue shim</td><td>One call site</td>
+        <td>Names and slang not in a dictionary</td><td class="n">1 day</td></tr>
+    <tr><td><strong>C</strong></td><td>Minimum-length boundary rule</td><td>Matcher condition</td>
+        <td>Long entries still match as substrings</td><td class="n">1–2 days</td></tr>
+    <tr><td><strong>D</strong></td><td>Replace the matcher</td><td>Component swap</td>
+        <td>None of this class</td><td class="n">1–2 weeks</td></tr>
+  </table>
+
+  <div class="two">
+    <div>
+      <h4>A · Allowlist <span class="sm muted">— no code change</span></h4>
+      <p class="sm">If the filter already consults an exception list, this is a
+      data deployment. <code>words-to-allow.txt</code> holds the 342 confirmed
+      words, one per line, each annotated with the rule responsible.</p>
+    </div>
+    <div>
+      <h4>C · Boundary rule <span class="sm muted">— best value per line</span></h4>
+      <p class="sm">One condition addresses the cause rather than the symptoms.
+      Long entries such as <code>caralho</code> behave exactly as they do
+      today, so strength against substantial terms is untouched.</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:4pt">
+    <p><strong>Entries shorter than five characters match only as whole
+    words.</strong> Entries of five characters or more are unchanged.</p>
+  </div>
+
+  <p class="sm muted" style="margin-bottom:16pt">Under this rule <code>cu</code>
+  still refuses <code>cu</code> and stops refusing <code>document</code>;
+  <code>ks</code> still refuses <code>ks</code> and stops refusing
+  <code>thanks</code>.</p>
+
+  <section>
+    <h3>Recommended rollout</h3>
+    <div class="step"><span class="no">1</span><div><strong>Shadow.</strong>
+      Evaluate the new decision alongside the current one and log where they
+      differ, without changing what players see.</div></div>
+    <div class="step"><span class="no">2</span><div><strong>Check the direction of every difference.</strong>
+      All differences must be messages previously refused that would now be
+      delivered. A message newly <em>refused</em> indicates a wiring error, not
+      a tuning question — none of these options adds blocking.</div></div>
+    <div class="step"><span class="no">3</span><div><strong>Enable.</strong>
+      A and B may ship independently and in either order.</div></div>
+  </section>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit</span><span>4 / 6</span></div>
+</div>
+
+<!-- ===================== 5 · INTEGRATION ===================== -->
+<div class="page">
+  <h2>04 · Integration</h2>
+  <h3>Three lines at one call site</h3>
+  <p>Call the shim where the existing filter has decided to block and knows the
+  matched span. If that span sits inside ordinary vocabulary, suppress the
+  block. Your matching logic, word list, severity rules and protocol are all
+  unchanged.</p>
+
+<pre><span class="c"># once, at startup</span>
+<span class="k">from</span> rescue <span class="k">import</span> Rescue
+rescue = Rescue(<span class="k">"allowlist-en.txt"</span>)
+
+<span class="c"># inside your filter, where you were about to block:</span>
+<span class="k">if</span> rescue.is_rescued(text, match_start, match_end):
+    <span class="k">pass</span>          <span class="c"># ordinary word — deliver the message</span>
+<span class="k">else</span>:
+    block()       <span class="c"># unchanged behaviour</span>
+</pre>
+
+  <p class="sm muted" style="margin-bottom:14pt"><strong>Cost:</strong> 473,532
+  entries as a hash set, loaded once. Lookup is a single hash probe — not
+  measurable against a network round trip. <strong>Why it works without
+  knowing your list:</strong> you assert what is legitimate rather than
+  identifying which entries are at fault, so it holds however the list
+  changes.</p>
+
+  <h3>The boundary rule, language-agnostic</h3>
+<pre><span class="c">// term matched at [start, end) in the message</span>
+<span class="k">func</span> accept(term, message, start, end) {
+    <span class="k">if</span> (len(term) >= MIN_SUBSTRING_LEN) <span class="k">return</span> true;   <span class="c">// 5 — unchanged</span>
+
+    <span class="c">// short term: require a word boundary on both sides</span>
+    before = (start == 0)          ? <span class="k">null</span> : message[start-1];
+    after  = (end == len(message)) ? <span class="k">null</span> : message[end];
+    <span class="k">return</span> !isLetter(before) && !isLetter(after);
+}
+</pre>
+  <p class="sm muted" style="margin-bottom:14pt">If your matcher is a compiled
+  automaton, tag short patterns at build time and apply the boundary test only
+  to those, so throughput is unaffected for the rest.</p>
+
+  <h3>What ships in this package</h3>
+  <table class="d">
+    <tr><th>Path</th><th>Format</th><th class="n">Size</th><th>Use</th></tr>
+    <tr><td class="mono">findings/words-to-allow.txt</td><td>one word per line</td><td class="n">342</td><td>Option A payload</td></tr>
+    <tr><td class="mono">findings/affected-words.txt</td><td>one word per line, by rule</td><td class="n">8,414</td><td>Option A, broader set</td></tr>
+    <tr><td class="mono">fix/allowlist-en.txt</td><td>one word per line</td><td class="n">473,532</td><td>Option B corpus</td></tr>
+    <tr><td class="mono">fix/rescue.py</td><td>Python 3, no dependencies</td><td class="n">138 ln</td><td>Option B shim</td></tr>
+    <tr><td class="mono">appendix/reference-engine/</td><td>Python 3, no dependencies</td><td class="n">~650 ln</td><td>Option D matcher</td></tr>
+    <tr><td class="mono">vectors/golden.jsonl</td><td>JSONL</td><td class="n">29</td><td>Conformance for any port</td></tr>
+  </table>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit</span><span>5 / 6</span></div>
+</div>
+
+<!-- ===================== 6 · VERIFICATION + METHOD ===================== -->
+<div class="page tight">
+  <h2>05 · Verification</h2>
+  <h3>Confirm the defect in ten seconds</h3>
+  <p>Send <code>thank</code> in game, then <code>thanks</code>. The first is
+  delivered, the second refused. This requires nothing from this package.</p>
+
+  <div class="two" style="margin-bottom:6pt">
+    <div>
+      <h4>Must become deliverable</h4>
+      <table class="d">
+        <tr><th>Input</th><th>Refused by</th></tr>
+        <tr><td class="mono">thanks</td><td class="mono">ks</td></tr>
+        <tr><td class="mono">document</td><td class="mono">cu</td></tr>
+        <tr><td class="mono">number</td><td class="mono">nb</td></tr>
+        <tr><td class="mono">advantage</td><td class="mono">anta</td></tr>
+        <tr><td class="mono">parameter</td><td class="mono">meter</td></tr>
+        <tr><td class="mono">reputation</td><td class="mono">puta</td></tr>
+      </table>
+    </div>
+    <div>
+      <h4>Must stay refused</h4>
+      <table class="d">
+        <tr><th>Input</th><th>Note</th></tr>
+        <tr><td class="mono">cu</td><td>the entry itself, as a word</td></tr>
+        <tr><td class="mono">ks</td><td>the entry itself, as a word</td></tr>
+        <tr><td class="mono">puta</td><td>short entry, still matches</td></tr>
+        <tr><td class="mono">caralho</td><td>long entry, rule does not apply</td></tr>
+        <tr><td class="mono">arrombado</td><td>long entry, unaffected</td></tr>
+      </table>
+      <p class="sm muted">If any of these becomes deliverable the change was
+      wired incorrectly — no option removes an entry from the block list.</p>
+    </div>
+  </div>
+
+<pre>python3 tests/test_all.py        <span class="c"># 53 tests</span>
+python3 tools/conformance.py     <span class="c"># 29 language-agnostic vectors</span>
+python3 tools/check_numbers.py   <span class="c"># every figure here traces to the evidence</span>
+</pre>
+
+  <h2 style="margin-top:14pt">06 · Method &amp; limitations</h2>
+  <p>Messages were sent through the retail client into a private party channel,
+  one at a time, read back from chat history. Three controls govern what reached
+  this report:</p>
+
+  <table class="d">
+    <tr><th>Control</th><th>Why</th></tr>
+    <tr><td>A substring is not reported until isolated in inert padding</td>
+        <td>That <code>cucumber</code> is refused does not identify the responsible part</td></tr>
+    <tr><td>Two independent refused observations required</td>
+        <td>Measured per-probe error rate is 1.2% (6 spurious in 491), so one reading is not a result</td></tr>
+    <tr><td>An unsent probe counts as untested, not as passing</td>
+        <td>All but 15 were retried to a real verdict; a false-negative audit over 250 words returned zero misses</td></tr>
+  </table>
+
+  <table class="d">
+    <tr><th>Limitation</th><th>Consequence</th></tr>
+    <tr><td>Rule set is a lower bound</td><td>There may be further entries the tested vocabulary did not reveal</td></tr>
+    <tr><td>Dictionary counts are derived</td><td>8,414 is a projection; the 342 measured words are kept separately</td></tr>
+    <tr><td>Point-in-time</td><td>Describes the service on 11–12 September 2026; a list edit changes it</td></tr>
+    <tr><td>Non-Latin locales under-covered</td><td>Korean, Chinese and Japanese were not swept; no conclusion is offered</td></tr>
+  </table>
+
+  <p class="sm muted">Every quantity here derives from
+  <code>findings/findings.json</code> and is checked by
+  <code>tools/check_numbers.py</code>, which fails if a published figure is not
+  supported by the evidence. All 15,307 probe records: <code>findings/raw-logs/</code>.</p>
+
+  <div class="foot"><span>Chat Filter Accuracy Audit · 12 September 2026</span><span>6 / 6</span></div>
+</div>
+
+</body>
+</html>

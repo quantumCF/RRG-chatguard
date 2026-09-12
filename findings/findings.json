@@ -443,22 +443,22 @@
   "xxshitxx"
  ],
  "rules": [
-  "cu",
   "ks",
+  "cu",
   "nb",
-  "nub",
   "pau",
   "pus",
+  "nub",
+  "puta",
+  "coon",
   "vaca",
   "rola",
   "anta",
-  "coon",
-  "puta",
-  "pica",
-  "japa",
   "anus",
-  "meter",
-  "crack"
+  "japa",
+  "pica",
+  "crack",
+  "meter"
  ],
  "attribution": {
   "accumulate": "cu",
@@ -1620,21 +1620,21 @@
   "zygomaticum"
  ],
  "derived_counts": {
-  "cu": 5016,
   "ks": 408,
+  "cu": 5016,
   "nb": 956,
-  "nub": 65,
   "pau": 134,
   "pus": 230,
+  "nub": 65,
+  "puta": 95,
+  "coon": 20,
   "vaca": 21,
   "rola": 81,
   "anta": 419,
-  "coon": 20,
-  "puta": 95,
-  "pica": 227,
-  "japa": 28,
   "anus": 47,
-  "meter": 695,
-  "crack": 50
+  "japa": 28,
+  "pica": 227,
+  "crack": 50,
+  "meter": 695
  }
 }

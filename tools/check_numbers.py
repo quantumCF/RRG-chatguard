@@ -25,7 +25,8 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOCS = ["REPORT.md", "docs/report-onepage.html", "README.md", "fix/DEPLOY.md"]
+DOCS = ["REPORT.md", "docs/report-onepage.html", "docs/audit-report.html",
+        "README.md", "fix/DEPLOY.md"]
 
 # Figures that are real but do not come from the probe evidence.
 ALLOWED = {
@@ -50,6 +51,7 @@ ALLOWED = {
     162253: "allowlist source: US Census surnames",
     1297: "allowlist source: BSD propernames",
     222: "allowlist source: hand-written MMO vocabulary",
+    138: "line count of fix/rescue.py (verified with wc -l)",
     2010: "US Census year for the surname source",
 }
 
